@@ -1,0 +1,36 @@
+{
+  "name": "openapi_vicsam",
+  "version": "1.0.0",
+  "description": "Open api estrazione dati aziendali vicsamgroup",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "client": "npm run dev --prefix ../client",
+    "build": "npm run build --prefix ../client",
+    "dev": "NODE_ENV=development concurrently \"nodemon app.js\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://infoInterjob@bitbucket.org/interjob/openapi_vicsam.git"
+  },
+  "author": "Interjob",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://bitbucket.org/interjob/openapi_vicsam/issues"
+  },
+  "homepage": "https://bitbucket.org/interjob/openapi_vicsam#readme",
+  "dependencies": {
+    "@altravia/openapi": "^1.4.2",
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "express-error-handler": "^1.1.0",
+    "nodemon": "^3.1.7",
+    "react-router-dom": "^6.27.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  },
+  "keywords": []
+}

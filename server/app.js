@@ -1,27 +1,33 @@
-const express = require('express');
-const errorHandler = require('express-error-handler');
+import express from 'express';
+import errorHandler from 'express-error-handler';
+import dotenv from 'dotenv';
+import { __dirname, path, distDir } from './utils/paths.js';
+
+// My imports
+import apiRoutes from './routes/api/openapi.js';
+import closedCompanyRouter from './routes/closed-company.js';
+
 const app = express();
-const path = require('path');
 
 if (process.env.NODE_ENV === 'development') {
     app.use(errorHandler({ dumpExceptions: true, showStack: true }));
-    require('dotenv').config({ path: '.env.development' });
+    dotenv.config({ path: '.env.development' });
 } else {
     app.use(errorHandler());
-    require('dotenv').config();
+    dotenv.config();
 }
 
 const port = process.env.PORT || 3000;
 
 // Serve static files from the Vue app
-app.use(express.static(path.join(__dirname, '../client/dist')));
+app.use(express.static(path.join(distDir)));
 
-const apiRoutes = require('./routes/api/openapi');
 app.use('/api', apiRoutes);
+app.use('/closed-company', closedCompanyRouter);
 
 // All other routes should serve the Vue app
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    res.sendFile(path.join(distDir +'index.html'));
 });
 
 app.listen(port, () => {

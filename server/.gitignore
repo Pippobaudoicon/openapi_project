@@ -11,6 +11,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Runtime data and imports
+*.csv
+
 # dotenv environment variables file
 .env
 .env.development

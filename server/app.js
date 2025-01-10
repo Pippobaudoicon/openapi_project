@@ -5,7 +5,8 @@ import { __dirname, path, distDir } from './utils/paths.js';
 
 // My imports
 import apiRoutes from './routes/api/openapi.js';
-import closedCompanyRouter from './routes/closed-company.js';
+//ONE TIME SCRIPT
+import closedCompanyRouter from './routes/one-time-script/closed-company.js';
 
 const app = express();
 
@@ -23,11 +24,12 @@ const port = process.env.PORT || 3000;
 app.use(express.static(path.join(distDir)));
 
 app.use('/api', apiRoutes);
+//ONE TIME SCRIPT
 app.use('/closed-company', closedCompanyRouter);
 
 // All other routes should serve the Vue app
 app.get('*', (req, res) => {
-    res.sendFile(path.join(distDir +'index.html'));
+    res.sendFile(path.join(distDir + '/index.html'));
 });
 
 app.listen(port, () => {

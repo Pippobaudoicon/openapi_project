@@ -1,3 +1,4 @@
+// Used to process the companies.csv file and add the taxCodeCeased field to the output-closed-companies.csv file ONE TIME SCRIPT
 import fs from 'fs';
 import path from 'path';
 import csv from 'csv-parser';

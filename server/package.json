@@ -30,8 +30,7 @@
     "express": "^4.21.1",
     "express-error-handler": "^1.1.0",
     "nodemon": "^3.1.7",
-    "p-limit": "^6.1.0",
-    "react-router-dom": "^6.27.0"
+    "p-limit": "^6.1.0"
   },
   "devDependencies": {
     "concurrently": "^9.0.1"

@@ -29,8 +29,10 @@
     "ejs": "^3.1.10",
     "express": "^4.21.1",
     "express-error-handler": "^1.1.0",
+    "morgan": "^1.10.0",
     "nodemon": "^3.1.7",
-    "p-limit": "^6.1.0"
+    "p-limit": "^6.1.0",
+    "rotating-file-stream": "^3.2.5"
   },
   "devDependencies": {
     "concurrently": "^9.0.1"

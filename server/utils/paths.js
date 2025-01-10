@@ -9,4 +9,5 @@ export const clientDir = path.resolve(rootDir, 'client');
 export const distDir = path.resolve(clientDir, 'dist');
 export const publicDir = path.resolve(clientDir, 'public');
 export const serverDir = path.resolve(rootDir, 'server');
+export const logsDir = path.resolve(serverDir, 'logs');
 export const dataCompaniesDir = path.resolve(serverDir, 'companies/data');

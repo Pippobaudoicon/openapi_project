@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const axiosInstance = axios.create({
-    baseURL: process.env.OPENAPI_URL,
+    baseURL: process.env.OPENAPI_COMPANY_URL,
     headers: {
         'Authorization': `Bearer ${process.env.ACCESS_TOKEN_COMPANY}`
     }

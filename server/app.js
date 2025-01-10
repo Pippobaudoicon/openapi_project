@@ -6,7 +6,7 @@ import { __dirname, path, distDir } from './utils/paths.js';
 // My imports
 import apiRoutes from './routes/api/openapi.js';
 //ONE TIME SCRIPT
-import closedCompanyRouter from './routes/one-time-script/closed-company.js';
+import closedCompanyRouter from './routes/api/one-time-script/closedCompany.js';
 
 const app = express();
 

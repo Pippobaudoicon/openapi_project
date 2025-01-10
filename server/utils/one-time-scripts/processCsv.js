@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import csv from 'csv-parser';
-import axiosOpenapi from '../../utils/axiosOpenapi.js';
+import axiosOpenapi from '../axiosCompanyOpenapi.js';
 import { __dirname } from '../paths.js';
 import { stringify } from 'csv-stringify';
 import { finished } from 'stream/promises';

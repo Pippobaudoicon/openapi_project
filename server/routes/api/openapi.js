@@ -1,5 +1,5 @@
 import express from 'express';
-import axiosInstance from '../../utils/axiosOpenapi.js';
+import axiosInstance from '../../utils/axiosCompanyOpenapi.js';
 import fs from 'fs';
 import { __dirname, path, dataCompaniesDir } from '../../utils/paths.js';
 

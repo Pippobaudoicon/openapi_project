@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import csv from 'csv-parser';
 import * as rfs from 'rotating-file-stream';
-import axiosOpenapi from '../axiosCompanyOpenapi.js';
+import { axiosCompanyService } from '../axiosOpenapi.js';
 import { __dirname } from '../paths.js';
 import { stringify } from 'csv-stringify';
 import { finished } from 'stream/promises';
@@ -58,7 +58,7 @@ const processCsv = async () => {
             logError(`Missing piva in row: ${JSON.stringify(row)}`);
             return;
         }
-        const promise = limit(() => axiosOpenapi.get(`/IT-closed/${piva}`)
+        const promise = limit(() => axiosCompanyService.get(`/IT-closed/${piva}`)
             .then(response => {
                 const taxCodeCeased = response.data.data[0]?.taxCodeCeased ? 1 : 0;
                 const result = {

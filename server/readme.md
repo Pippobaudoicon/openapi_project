@@ -2,19 +2,6 @@
 
 This is the server component of the OpenAPI Vicsam project. It is built using Node.js and Express.js to provide API endpoints and serve the client application.
 
-## Project Structure
-server/
-    ├── .env
-    ├── .env.development
-    ├── .gitignore
-    ├── app.js
-    ├── controller/
-    │   └── exampleController.js
-    ├── package.json
-    ├── routes/
-    │   └── api/
-    │       └── openapi.js
-    └── README.md
 ## Getting Started
 
 ### Prerequisites
@@ -37,11 +24,25 @@ cd openapi_vicsam/server
 npm install
 ```
 
+3. Do the same with client
+
+```sh
+cd openapi_vicsam/server
+```
+
+```sh
+npm install
+```
+
 ### Running the Server
 
 #### Development Mode
 
-To run the server in development mode with hot-reloading:
+To run the server in development mode with hot-reloading be sure to be on server folder:
+
+```sh
+cd openapi_vicsam/server
+```
 
 ```sh
 npm run dev

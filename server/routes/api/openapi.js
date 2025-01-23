@@ -1,30 +1,21 @@
 import express from 'express';
-import { axiosCompanyService } from '../../utils/axiosOpenapi.js';
-import fs from 'fs';
-import { __dirname, path, dataCompaniesDir } from '../../utils/paths.js';
+import { axiosCompanyService, axiosOauthService } from '../../utils/axiosOpenapi.js';
 
 const router = express.Router();
 
+//get credit api
+router.get('/credit', (req, res) => {
+    axiosOauthService.get('/credit')
+        .then(response => res.json(response.data))
+        .catch(error => res.json(error.message));
+});
+
 //Check if a company is closed by PIVA
-router.get('/v1/check-closed-company/:piva', (req, res) => {
+router.get('/check-closed-company/:piva', (req, res) => {
     const piva = req.params.piva;
     axiosCompanyService.get(`/IT-closed/${piva}`)
         .then(response => res.json(response.data))
-        .catch(error => res.json(error));
-});
-
-//Convert base64 to zip file and saves it to disk
-router.post('/v1/base64tozip', express.json({ limit: '10mb' }), (req, res) => {
-    const base64 = req.body?.data?.file;
-    const fileName = req.body?.data?.nome || 'default.zip';
-    const zipFilePath = path.join(dataCompaniesDir, fileName);
-    const zipOutput = fs.createWriteStream(zipFilePath);
-    const buffer = Buffer.from(base64 || '', 'base64');
-    zipOutput.write(buffer);
-    zipOutput.end();
-    zipOutput.on('finish', () => {
-        res.json({ message: 'File saved successfully', path: zipFilePath });
-    });
+        .catch(error => res.json(error.message));
 });
 
 export default router;

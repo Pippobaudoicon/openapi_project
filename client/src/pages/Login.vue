@@ -23,9 +23,11 @@
                                 <input id="user" name="user" type="text" autocomplete="user" required class="" placeholder="Password">
                             </div>
                         </div>
-                        <div class="w-full text-center bg-blue-400 text-white py-2 cursor-pointer">
-                            <button>ACCEDI ORA</button>
-                        </div>
+                        <router-link :to="{ name: 'dashboard' }">
+                            <button class="w-full text-center bg-blue-400 text-white py-2 cursor-pointer">
+                                ACCEDI ORA
+                            </button>
+                        </router-link>
 			        </form>
                 </div>
             </div>

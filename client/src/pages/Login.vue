@@ -1,7 +1,7 @@
 <template>
     <main>
-        <div class="flex justify-center basis-0.5 h-screen">
-            <div class="flex flex-col justify-center gap-12">
+        <div class="flex justify-center h-screen w-screen">
+            <div class="flex flex-col basis-1/3 justify-center gap-12">
                 <div class="w-full">
                     <img src="../media/vicsam-dtextr.png" alt="">
                 </div>
@@ -33,7 +33,7 @@
     </main>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
     main {
         background-image: url('../media/bgapp.jpg');
         background-size: cover;

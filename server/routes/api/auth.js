@@ -1,6 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import bcrypt from 'bcrypt';
+import User from '../../models/User.js';
 
 const router = express.Router();
 
@@ -19,13 +20,25 @@ router.post('/login', (req, res, next) => {
 
 router.post('/register', async (req, res) => {
     try {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const user = { username: req.body.username, password: hashedPassword };
+        const { email, password } = req.body;
+        
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Email already registered' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = await User.create({
+            email,
+            password: hashedPassword
+        });
+
         req.login(user, (err) => {
             if (err) return res.status(500).json({ message: 'Error logging in' });
             res.json({ message: 'User created and logged in successfully' });
         });
-    } catch {
+    } catch (error) {
+        console.error('Registration error:', error);
         res.status(500).json({ message: 'Error creating user' });
     }
 });

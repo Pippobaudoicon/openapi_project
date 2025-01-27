@@ -22,3 +22,6 @@ yarn-error.log*
 
 # Zip files
 *.zip
+
+#MongoDB data
+*.mongodb

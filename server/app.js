@@ -7,11 +7,15 @@ import { __dirname, path, distDir, logsDir } from './utils/paths.js';
 import session from 'express-session';
 import passport from 'passport';
 import { initializePassport } from './auth/passport-config.js';
+import connectDB, { sessionStore } from './config/database.js';
 
 // Import routes
 import apiRoutes from './routes/api/index.js';
 import closedCompanyRouter from './routes/api/one-time-script/closedCompany.js';
 import authRoutes from './routes/api/auth.js';
+
+// Connect to MongoDB
+connectDB();
 
 // Create the Express app
 const app = express();
@@ -40,16 +44,19 @@ initializePassport();
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
-// Session and passport middleware (add before routes)
+// Session configuration - must be before passport middleware
 app.use(session({
     secret: process.env.SESSION_SECRET || 'scemo-chi-legge',
     resave: false,
     saveUninitialized: false,
+    store: sessionStore,
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
+
+// Initialize passport after session
 app.use(passport.initialize());
 app.use(passport.session());
 

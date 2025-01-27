@@ -1,17 +1,13 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
-import bcrypt from 'bcrypt';
-
-// Replace this with your user model/database logic
-const users = [
-    { id: '1', email: 'test@test.it', password: '$2a$12$pqKEvGLGwPOOqfU3RMxB8.787GxvciB5weUod0kTlvSYRMw6ko2DC' } // Password is 'test'
-]; // Temporary user store - replace with your database
+import bcrypt from 'bcryptjs';
+import User from '../models/User.js';
 
 export function initializePassport() {
     passport.use(new LocalStrategy({ usernameField: 'email' },
         async (email, password, done) => {
             try {
-                const user = users.find(user => user.email === email);
+                const user = await User.findOne({ email });
                 if (!user) {
                     return done(null, false, { message: 'No user found with that email' });
                 }
@@ -25,9 +21,25 @@ export function initializePassport() {
         }
     ));
 
-    passport.serializeUser((user, done) => done(null, user.id));
-    passport.deserializeUser((id, done) => {
-        const user = users.find(user => user.id === id);
-        done(null, user);
+    passport.serializeUser((user, done) => {
+        try {
+            // Only store essential user data in session
+            done(null, {
+                id: user._id.toString(),
+                email: user.email,
+                role: user.role
+            });
+        } catch (err) {
+            done(err);
+        }
+    });
+
+    passport.deserializeUser(async (sessionUser, done) => {
+        try {
+            const user = await User.findById(sessionUser.id).select('-password');
+            done(null, user);
+        } catch (err) {
+            done(err);
+        }
     });
 }

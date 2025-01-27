@@ -23,7 +23,7 @@
                                 <input v-model="password" id="password" name="password" type="password" autocomplete="current-password" required class="w-full focus:outline-none" placeholder="Password">
                             </div>
                         </div>
-                        <button type="submit" class="w-full text-center bg-blue-400 text-white py-2 cursor-pointer uppercase">
+                        <button type="submit" class="w-full text-center bg-blue-400 text-white py-2 cursor-pointer uppercase main-font">
                             accedi ora
                         </button>
                     </form>
@@ -54,7 +54,6 @@ const login = async () => {
                 password: password.value
             })
         });
-        console.log(response.body);
         const data = await response.json();
         if (response.ok) {
             router.push({ name: 'dashboard' });

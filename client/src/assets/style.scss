@@ -1,0 +1,17 @@
+@font-face {
+    font-family: 'Ailerons-Typeface';
+    src: url('../font/Bellarina.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'mainfont';    
+    src: url('../font/main-font/MaisonNeue-Medium.otf')format('opentype');
+}
+.italic-font {
+    font-family: 'Ailerons-Typeface';
+}
+
+body {
+    font-family: 'mainfont';
+    font-weight: normal;
+}

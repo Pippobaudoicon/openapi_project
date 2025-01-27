@@ -1,7 +1,9 @@
 import express from 'express';
 import passport from 'passport';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import User from '../../models/User.js';
+import { sendVerificationEmail } from '../../utils/emailService.js';
 
 const router = express.Router();
 
@@ -27,19 +29,43 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'Email already registered' });
         }
 
+        const verificationToken = crypto.randomBytes(32).toString('hex');
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await User.create({
+        
+        await User.create({
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            verificationToken,
+            isActive: false
         });
 
-        req.login(user, (err) => {
-            if (err) return res.status(500).json({ message: 'Error logging in' });
-            res.json({ message: 'User created and logged in successfully' });
-        });
+        await sendVerificationEmail(email, verificationToken);
+        
+        res.json({ message: 'Registration successful. Please check your email to verify your account.' });
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ message: 'Error creating user' });
+    }
+});
+
+router.get('/verify/:token', async (req, res) => {
+    try {
+        const user = await User.findOne({ verificationToken: req.params.token });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid verification token' });
+        }
+
+        user.isActive = true;
+        user.verificationToken = undefined;
+        await user.save();
+
+        req.login(user, (err) => {
+            if (err) return res.status(500).json({ message: 'Error logging in' });
+            res.json({ message: 'Email verified successfully. You are now logged in.' });
+        });
+    } catch (error) {
+        console.error('Verification error:', error);
+        res.status(500).json({ message: 'Error verifying email' });
     }
 });
 

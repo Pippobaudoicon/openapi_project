@@ -21,9 +21,10 @@ connectDB();
 // Create the Express app
 const app = express();
 
+// CORS configuration
 app.use(cors({
-    origin: 'http://localhost:5173', // Your Vue dev server URL
-    credentials: true // Allow credentials
+    origin: process.env.WEBSITE_URL,
+    credentials: true  
 }));
 
 // Logging configuration

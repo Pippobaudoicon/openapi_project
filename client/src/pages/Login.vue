@@ -6,13 +6,13 @@
                     <img src="../media/vicsam-dtextr.png" alt="">
                 </div>
                 <div class="px-0 md:px-12">
-                    <form id="loginForm" class="space-y-6 flex flex-col" action="#" method="POST">
+                    <form id="loginForm" class="space-y-6 flex flex-col" @submit.prevent="login">
                         <div class="flex items-end gap-5 border-b-2 px-2 py-1 border-gray-300">
                             <div>
                                 <img class="icon" src="../svg/teacher.svg" alt="">
                             </div>
                             <div>
-                                <input id="user" name="user" type="text" autocomplete="user" required class="" placeholder="User">
+                                <input v-model="user" id="user" name="user" type="text" autocomplete="user" required class="" placeholder="User">
                             </div>
                         </div>
                         <div class="flex items-end gap-5 border-b-2 px-2 py-1 border-gray-300">
@@ -20,20 +20,52 @@
                                 <img class="icon" src="../svg/secure.svg" alt="">
                             </div>
                             <div>
-                                <input id="user" name="user" type="text" autocomplete="user" required class="" placeholder="Password">
+                                <input v-model="password" id="password" name="password" type="password" autocomplete="current-password" required class="" placeholder="Password">
                             </div>
                         </div>
-                        <router-link :to="{ name: 'dashboard' }">
-                            <button class="w-full text-center bg-blue-400 text-white py-2 cursor-pointer">
-                                ACCEDI ORA
-                            </button>
-                        </router-link>
-			        </form>
+                        <button type="submit" class="w-full text-center bg-blue-400 text-white py-2 cursor-pointer">
+                            ACCEDI ORA
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </main>
 </template>
+
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const user = ref('');
+const password = ref('');
+const router = useRouter();
+
+const login = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'no-cors',
+            body: JSON.stringify({
+                email: user.value,
+                password: password.value
+            })
+        });
+        console.log(response.body);
+        const data = await response.json();
+        if (response.ok) {
+            router.push({ name: 'dashboard' });
+        } else {
+            alert('Login failed: ' + data.message);
+        }
+    } catch (error) {
+        alert('Login failed: ' + error.message);
+    }
+};
+</script>
 
 <style lang="scss" scoped>
     main {

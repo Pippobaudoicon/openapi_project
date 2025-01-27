@@ -1,5 +1,5 @@
 <template>
     <div class=" text-9xl">
-        GAY
+        ciao
     </div>
 </template>

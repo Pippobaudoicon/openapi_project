@@ -1,7 +1,7 @@
 <template>
     <main>
         <div class="flex justify-center h-screen w-screen">
-            <div class="flex flex-col basis-1/3 justify-center gap-12">
+            <div class="flex flex-col basis-4/5 md:basis-1/4 justify-center gap-12">
                 <div class="w-full">
                     <img src="../media/vicsam-dtextr.png" alt="">
                 </div>
@@ -11,20 +11,20 @@
                             <div>
                                 <img class="icon" src="../svg/teacher.svg" alt="">
                             </div>
-                            <div>
-                                <input v-model="user" id="user" name="user" type="text" autocomplete="user" required class="" placeholder="User">
+                            <div class="grow"> 
+                                <input v-model="user" id="user" name="user" type="text" autocomplete="user" required class="w-full focus:outline-none" placeholder="User">
                             </div>
                         </div>
                         <div class="flex items-end gap-5 border-b-2 px-2 py-1 border-gray-300">
                             <div>
                                 <img class="icon" src="../svg/secure.svg" alt="">
                             </div>
-                            <div>
-                                <input v-model="password" id="password" name="password" type="password" autocomplete="current-password" required class="" placeholder="Password">
+                            <div class="grow">
+                                <input v-model="password" id="password" name="password" type="password" autocomplete="current-password" required class="w-full focus:outline-none" placeholder="Password">
                             </div>
                         </div>
-                        <button type="submit" class="w-full text-center bg-blue-400 text-white py-2 cursor-pointer">
-                            ACCEDI ORA
+                        <button type="submit" class="w-full text-center bg-blue-400 text-white py-2 cursor-pointer uppercase">
+                            accedi ora
                         </button>
                     </form>
                 </div>

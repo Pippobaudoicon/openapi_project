@@ -48,7 +48,7 @@ const login = async () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            mode: 'no-cors',
+            credentials: 'include',
             body: JSON.stringify({
                 email: user.value,
                 password: password.value

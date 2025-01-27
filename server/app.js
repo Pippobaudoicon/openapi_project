@@ -8,6 +8,7 @@ import session from 'express-session';
 import passport from 'passport';
 import { initializePassport } from './auth/passport-config.js';
 import connectDB, { sessionStore } from './config/database.js';
+import cors from 'cors';
 
 // Import routes
 import apiRoutes from './routes/api/index.js';
@@ -19,6 +20,11 @@ connectDB();
 
 // Create the Express app
 const app = express();
+
+app.use(cors({
+    origin: 'http://localhost:5173', // Your Vue dev server URL
+    credentials: true // Allow credentials
+}));
 
 // Logging configuration
 const accessLogStream = rfs.createStream('access.log', {

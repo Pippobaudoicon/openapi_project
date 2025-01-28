@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="text-sm">
         <HeaderTop />
         <HeaderBottom />
     </div>

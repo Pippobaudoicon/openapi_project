@@ -1,6 +1,6 @@
 <template>
     <main>
-        <div class="flex justify-center h-screen w-screen">
+        <div class="flex justify-center h-screen w-screen text-sm">
             <div class="flex flex-col basis-4/5 md:basis-1/4 justify-center gap-12">
                 <div class="w-full">
                     <img src="../media/vicsam-dtextr.png" alt="">
@@ -23,7 +23,7 @@
                                 <input v-model="password" id="password" name="password" type="password" autocomplete="current-password" required class="w-full focus:outline-none" placeholder="Password">
                             </div>
                         </div>
-                        <button type="submit" class="w-full text-center bg-blue-400 text-white py-2 cursor-pointer uppercase main-font">
+                        <button type="submit" class="w-full text-center light-blue-bkg text-white py-2 cursor-pointer uppercase main-font">
                             accedi ora
                         </button>
                     </form>

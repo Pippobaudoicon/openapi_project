@@ -5,7 +5,7 @@
 
 @font-face {
     font-family: 'mainfont';    
-    src: url('../font/main-font/MaisonNeue-Medium.otf')format('opentype');
+    src: url('../font/main-font/MaisonNeue-Light.otf')format('opentype');
 }
 .italic-font {
     font-family: 'Ailerons-Typeface';
@@ -15,4 +15,8 @@ body {
     font-family: 'mainfont';
     font-weight: normal;
     letter-spacing: 2px;
+}
+
+.light-blue-bkg {
+    background-color: #1C9AD7;
 }

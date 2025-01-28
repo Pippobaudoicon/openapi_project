@@ -3,6 +3,7 @@ import express from 'express';
 import openapiRoutes from './openapi.js';
 import authRoutes from './auth.js';
 
+import { checkPermission, checkRole } from '../../middleware/roleAuth.js';
 import { fileService } from '../../services/fileService.js';
 import { path, dataCompaniesDir, companiesDir } from '../../utils/paths.js';
 
@@ -27,7 +28,7 @@ router.post('/v1/base64tozip', express.json({ limit: '10mb' }), (req, res) => {
 });
 
 //Download a file from disk by name and extension (e.g. 'default.zip')
-router.get('/v1/download/*', async (req, res) => {
+router.get('/v1/download/*', checkRole('admin'), async (req, res) => {
     try {
         const file = req.params[0];
         await fileService.validateCompanyFile(file);
@@ -39,7 +40,7 @@ router.get('/v1/download/*', async (req, res) => {
 });
 
 //DEBUGGING purposes only
-router.get('/v1/test', (req, res) => {
+router.get('/v1/test',  checkRole(['admin', 'user']), checkPermission(['read_data']), (req, res) => {
     const test = `Basic ${Buffer.from(`${'info@interjob.it'}:${'4d8875edeb2554e01f3ccc083938cbb6'}`).toString('base64')}`;
     res.json({ message: test });
 });

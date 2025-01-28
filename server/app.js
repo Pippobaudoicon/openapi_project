@@ -13,7 +13,6 @@ import cors from 'cors';
 // Import routes
 import apiRoutes from './routes/api/index.js';
 import closedCompanyRouter from './routes/api/one-time-script/closedCompany.js';
-import authRoutes from './routes/api/auth.js';
 
 // Connect to MongoDB
 connectDB();
@@ -69,7 +68,6 @@ app.use(passport.session());
 
 // Use the routes
 app.use(express.static(path.join(distDir))); // Serve static files from the Vue app
-app.use('/api/auth', authRoutes);  // Add auth routes first
 app.use('/api', apiRoutes);
 app.use('/closed-company', closedCompanyRouter); //ONE TIME SCRIPT
 

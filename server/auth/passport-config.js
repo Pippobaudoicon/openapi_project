@@ -27,7 +27,8 @@ export function initializePassport() {
             done(null, {
                 id: user._id.toString(),
                 email: user.email,
-                role: user.role
+                role: user.role,
+                isActive: user.isActive
             });
         } catch (err) {
             done(err);

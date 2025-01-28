@@ -5,7 +5,7 @@
                 <div class="w-full">
                     <img src="../media/vicsam-dtextr.png" alt="">
                 </div>
-                <div class="px-0 md:px-12">
+                <div class="px-0 md:px-6">
                     <form id="loginForm" class="space-y-6 flex flex-col" @submit.prevent="login">
                         <div class="flex items-end gap-5 border-b-2 px-2 py-1 border-gray-300">
                             <div>

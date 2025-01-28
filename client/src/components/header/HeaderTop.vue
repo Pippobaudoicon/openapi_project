@@ -17,7 +17,7 @@
                     <img class="scale-75" src="../../svg/dollar.svg" alt="">
                 </div>
                 <div>
-                    Crediti: <span class=" font-bold">111</span>
+                    Crediti: <span class="font-bold">111</span>
                 </div>
             </div>
             <div class="flex gap-3 items-center">
@@ -25,7 +25,7 @@
                     <img class="scale-50" src="../../svg/logout.svg" alt="">
                 </div>
                 <div>
-                    <router-link :to="{ name: 'login' }">Esci</router-link>
+                    <router-link :to="{ name: 'login' }"><span class="font-bold">Esci</span></router-link>
                 </div>
             </div>
         </div>

@@ -5,7 +5,7 @@ import { axiosCompanyService, axiosOauthService } from '../../utils/axiosOpenapi
 const router = express.Router();
 
 //get credit api
-router.get('/credit', checkRole(['admin', 'user']), (req, res) => {
+router.get('/credit', checkPermission(['get_credit']), (req, res) => {
     axiosOauthService.get('/credit')
         .then(response => res.json(response.data))
         .catch(error => res.json(error.message));

@@ -10,7 +10,7 @@ import { path, dataCompaniesDir, companiesDir } from '../../utils/paths.js';
 const router = express.Router();
 
 // Mount all routes from openapi.js under /v1
-router.use('/auth', authRoutes);
+router.use('/v1/auth', authRoutes);
 router.use('/v1', openapiRoutes);
 
 //Convert base64 to zip file and saves it to disk

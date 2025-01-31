@@ -67,9 +67,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Use the routes
-app.use(express.static(path.join(distDir))); // Serve static files from the Vue app
 app.use('/api', apiRoutes);
 app.use('/closed-company', closedCompanyRouter); //ONE TIME SCRIPT
+
+ // Serve static files from the Vue app
+app.use(express.static(path.join(distDir)));
 
 // All other routes should serve the Vue app
 app.get('*', (req, res) => {

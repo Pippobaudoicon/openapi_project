@@ -7,6 +7,7 @@ import { sendVerificationEmail } from '../../utils/emailService.js';
 
 const router = express.Router();
 
+// Login route
 router.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
         if (err) return next(err);
@@ -20,6 +21,7 @@ router.post('/login', (req, res, next) => {
     })(req, res, next);
 });
 
+// Register route
 router.post('/register', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -48,6 +50,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
+// Verify email route
 router.get('/verify/:token', async (req, res) => {
     try {
         const user = await User.findOne({ verificationToken: req.params.token });
@@ -69,6 +72,7 @@ router.get('/verify/:token', async (req, res) => {
     }
 });
 
+// Logout route
 router.post('/logout', (req, res) => {
     req.logout((err) => {
         if (err) return res.status(500).json({ message: 'Error logging out' });
@@ -76,6 +80,7 @@ router.post('/logout', (req, res) => {
     });
 });
 
+// Check if user is authenticated for client-side
 router.get('/check', (req, res) => {
     if (req.isAuthenticated()) {
         res.json({ isAuthenticated: true, user: req.user });

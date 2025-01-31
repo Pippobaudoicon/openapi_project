@@ -40,9 +40,10 @@ router.get('/v1/download/*', checkRole('admin'), async (req, res) => {
 });
 
 //DEBUGGING purposes only
-router.get('/v1/test',  checkRole(['admin', 'user']), checkPermission(['read_data']), (req, res) => {
-    const test = `Basic ${Buffer.from(`${'info@interjob.it'}:${'4d8875edeb2554e01f3ccc083938cbb6'}`).toString('base64')}`;
-    res.json({ message: test });
+router.get('/v1/test/:test', (req, res) => {
+    const test = req.params.test;
+    const test2 = `Basic ${Buffer.from(`${'info@interjob.it'}:${'4d8875edeb2554e01f3ccc083938cbb6'}`).toString('base64')}`;
+    res.json({ test: test, test2: test2 });
 });
 
 export default router;

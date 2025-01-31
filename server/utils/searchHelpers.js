@@ -10,3 +10,11 @@ export const isDataCurrentYear = (data) => {
     const dataYear = new Date(data.createdAt).getFullYear();
     return currentYear === dataYear;
 };
+
+export const getTimestamps = () => {
+    const now = new Date();
+    return {
+        createdAt: now,
+        expiresAt: new Date(now.getFullYear(), now.getMonth() + 12, now.getDate()) // expires in 1 year
+    };
+};

@@ -18,7 +18,7 @@ const CompanySearchSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-        expires: '30d' // Automatically delete after 1 year
+        expires: '30d' // Automatically delete after 30 days
     }
 });
 

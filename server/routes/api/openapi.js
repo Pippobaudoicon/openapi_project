@@ -13,6 +13,7 @@ router.get('/credit', checkPermission('get_credit'), (req, res) => {
         .catch(error => res.json(error.message));
 });
 
+// get advanced company data by piva
 router.get('/IT-advanced/:piva', 
     checkPermission('advanced_search'),
     checkCache('advanced'),
@@ -20,11 +21,19 @@ router.get('/IT-advanced/:piva',
         try {   
             const response = await axiosCompanyService.get(`/IT-advanced/${req.params.piva}`);
             
-            await CompanySearch.create({
-                piva: req.params.piva,
-                searchType: 'advanced',
-                data: response.data
-            });
+            await CompanySearch.updateOne(
+                { 
+                    piva: req.params.piva,
+                    searchType: 'advanced'
+                },
+                {
+                    $set: {
+                        data: response.data,
+                        createdAt: new Date()
+                    }
+                },
+                { upsert: true }
+            );
 
             res.json({
                 source: 'api',
@@ -37,6 +46,7 @@ router.get('/IT-advanced/:piva',
     }
 );
 
+// get full company data by piva
 router.get('/IT-full/:piva', 
     checkPermission('full_search'),
     checkCache('full'),
@@ -44,11 +54,19 @@ router.get('/IT-full/:piva',
         try {
             const response = await axiosCompanyService.get(`/IT-full/${req.params.piva}`);
 
-            await CompanySearch.create({
-                piva: req.params.piva,
-                searchType: 'full',
-                data: response.data
-            });
+            await CompanySearch.updateOne(
+                { 
+                    piva: req.params.piva,
+                    searchType: 'full'
+                },
+                {
+                    $set: {
+                        data: response.data,
+                        createdAt: new Date()
+                    }
+                },
+                { upsert: true }
+            );
 
             res.json({
                 source: 'api',
@@ -61,6 +79,7 @@ router.get('/IT-full/:piva',
     }
 );
 
+// get boolean if company is closed by piva
 router.get('/IT-closed/:piva', 
     checkRole(['admin']),
     checkCache('closed'),
@@ -68,11 +87,19 @@ router.get('/IT-closed/:piva',
         try {
             const response = await axiosCompanyService.get(`/IT-closed/${req.params.piva}`);
             
-            await CompanySearch.create({
-                piva: req.params.piva,
-                searchType: 'closed',
-                data: response.data
-            });
+            await CompanySearch.updateOne(
+                { 
+                    piva: req.params.piva,
+                    searchType: 'closed'
+                },
+                {
+                    $set: {
+                        data: response.data,
+                        createdAt: new Date()
+                    }
+                },
+                { upsert: true }
+            );
 
             res.json({
                 source: 'api',

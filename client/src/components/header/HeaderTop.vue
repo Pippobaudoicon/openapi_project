@@ -39,9 +39,6 @@ const router = useRouter();
 
 const logout = () => {
     if (confirm("Sei sicuro di voler uscire?")) {
-        // Esegui il logout rimuovendo eventuali dati dell'utente
-        localStorage.removeItem("userToken"); // Esempio: Rimuovi token di autenticazione
-        localStorage.removeItem("userData");  // Esempio: Rimuovi dati utente salvati
         router.push({ name: "login" }); // Reindirizza alla pagina di login
     }
 };

@@ -30,6 +30,7 @@ router.post('/v1/base64tozip', express.json({ limit: '10mb' }), (req, res) => {
 //Download a file from disk by name and extension (e.g. 'default.zip')
 router.get('/v1/download/*', checkRole('admin'), async (req, res) => {
     try {
+        //Extract the file name from the URL path (e.g. 'default.zip' or 'default/default2/default.pdf') 
         const file = req.params[0];
         await fileService.validateCompanyFile(file);
         const filePath = path.join(companiesDir, file);

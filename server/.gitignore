@@ -25,3 +25,5 @@ yarn-error.log*
 
 #MongoDB data
 *.mongodb
+
+deploy-dev.sh

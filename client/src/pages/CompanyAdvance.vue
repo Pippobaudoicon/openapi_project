@@ -1,12 +1,6 @@
 <script setup>
-import { useRoute } from 'vue-router';
 import Header from "@/components/header/Header.vue";
-
-const route = useRoute();
-
-// Recupera i dati passati dalla pagina precedente
-const companyData = route.state?.companyData || null;
-console.log(companyData);
+import CompanyData from "@/components/company_advance/CompanyData.vue";
 </script>
 
 <template>
@@ -14,8 +8,8 @@ console.log(companyData);
         <div>
             <Header />
         </div>
-        <div class="grow">
-            
+        <div class="grow gray-bkg">
+            <CompanyData />
         </div>
     </div>
 </template>

@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useCompanyStore } from "@/stores/companyStore";
 
+const store = useCompanyStore();
 const router = useRouter();
 const vat = ref('');
 const companyType = ref('advance'); // Valore predefinito
@@ -25,13 +27,12 @@ const searchCompany = async () => {
         if (!response.ok) {
             throw new Error("Errore nella richiesta API");
         }
-        console.log(response.data);
         const data = await response.json(); 
+        store.setCompanyData(data);
         // Naviga alla pagina corretta con i dati ricevuti
         router.push({
             name: 'company-advance',
             params: { vat: vat.value },
-            state: { companyData: data } 
         });
     } catch (error) {
         alert("Errore nel recupero dati: " + error.message);

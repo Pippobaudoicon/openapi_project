@@ -5,18 +5,40 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const vat = ref('');
 const companyType = ref('advance'); // Valore predefinito
+const loading = ref(false);
 
-const searchCompany = () => {
+const searchCompany = async () => {
     if (!vat.value) {
         alert("Inserisci una Partita IVA!");
         return;
     }
-    // Costruzione dinamica del nome della rotta
-    const routeName = `company-${companyType.value}`;
-    // Navigazione verso la nuova pagina con il parametro Partita IVA
-    router.push({ name: routeName, params: { vat: vat.value } });
+    console.log(vat.value);
+    loading.value = true; // Mostra il caricamento
+    const requestOptions = {
+        method: "GET",
+        redirect: "follow",
+        credentials: 'include'
+    };
+    try {
+        // Effettua la chiamata API
+        const response = await fetch(`http://localhost:3000/api/v1/IT-${companyType.value}/${vat.value}`, requestOptions);
+        if (!response.ok) {
+            throw new Error("Errore nella richiesta API");
+        }
+        console.log(response.data);
+        const data = await response.json(); 
+        // Naviga alla pagina corretta con i dati ricevuti
+        router.push({
+            name: 'company-advance',
+            params: { vat: vat.value },
+            state: { companyData: data } 
+        });
+    } catch (error) {
+        alert("Errore nel recupero dati: " + error.message);
+    } finally {
+        loading.value = false; 
+    }
 };
-
 </script>
 
 <template>
@@ -42,12 +64,12 @@ const searchCompany = () => {
                     <div>
                         <input 
                             type="radio" 
-                            id="advance" 
+                            id="advanced" 
                             name="company" 
-                            value="advance" 
+                            value="advanced" 
                             v-model="companyType"
                         >
-                        <span class="ml-2 font-bold">Company Advance</span>
+                        <span class="ml-2 font-bold">Company Advanced</span>
                     </div>
                     <div>
                         <input 
@@ -62,7 +84,8 @@ const searchCompany = () => {
                 </div>
                 <button 
                     @click="searchCompany" 
-                    class="w-full text-center light-blue-bkg text-white py-2 cursor-pointer uppercase main-font" :disabled="loading"
+                    class="w-full text-center light-blue-bkg text-white py-2 cursor-pointer uppercase main-font" 
+                    :disabled="loading"
                 >
                     {{ loading ? "Caricamento..." : "Avvia Ricerca" }}
                 </button>

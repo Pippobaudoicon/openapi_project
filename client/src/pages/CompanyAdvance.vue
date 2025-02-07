@@ -1,11 +1,12 @@
 <script setup>
-import Header from "@/components/header/Header.vue";
 import { useRoute } from 'vue-router';
-import { computed } from 'vue';
+import Header from "@/components/header/Header.vue";
 
 const route = useRoute();
-const companyData = computed(() => history.state.companyData || {});
 
+// Recupera i dati passati dalla pagina precedente
+const companyData = route.state?.companyData || null;
+console.log(companyData);
 </script>
 
 <template>
@@ -14,13 +15,7 @@ const companyData = computed(() => history.state.companyData || {});
             <Header />
         </div>
         <div class="grow">
-            <div v-if="Object.keys(companyData).length">
-            <p><strong>Nome:</strong> {{ companyData.name }}</p>
-            <p><strong>Indirizzo:</strong> {{ companyData.address }}</p>
-            <p><strong>Settore:</strong> {{ companyData.industry }}</p>
-            <!-- Aggiungi altri campi in base alla risposta dell'API -->
-        </div>
+            
         </div>
     </div>
 </template>
-

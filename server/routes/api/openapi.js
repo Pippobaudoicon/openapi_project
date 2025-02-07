@@ -38,7 +38,7 @@ router.get('/IT-advanced/:piva',
             res.json({
                 source: 'api',
                 timestamp: new Date(),
-                data: response.data
+                data: response.data.data[0]
             });
         } catch (error) {
             res.status(500).json(error.message);
@@ -71,7 +71,7 @@ router.get('/IT-full/:piva',
             res.json({
                 source: 'api',
                 timestamp: new Date(),
-                data: response.data
+                data: response.data.data[0]
             });
         } catch (error) {
             res.status(500).json(error.message);
@@ -104,7 +104,7 @@ router.get('/IT-closed/:piva',
             res.json({
                 source: 'api',
                 timestamp: new Date(),
-                data: response.data
+                data: response.data.data[0]
             });
         } catch (error) {
             res.status(500).json(error.message);

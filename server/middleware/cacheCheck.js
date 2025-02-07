@@ -35,7 +35,7 @@ export const checkCache = (searchType) => async (req, res, next) => {
                 return res.json({
                     source: 'cache',
                     timestamp: existingSearch.createdAt,
-                    data: existingSearch.data
+                    data: existingSearch.data.data[0]
                 });
             }
         } catch (error) {

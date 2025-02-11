@@ -14,7 +14,6 @@ const searchCompany = async () => {
         alert("Inserisci una Partita IVA!");
         return;
     }
-    console.log(vat.value);
     loading.value = true; // Mostra il caricamento
     const requestOptions = {
         method: "GET",
@@ -24,14 +23,16 @@ const searchCompany = async () => {
     try {
         // Effettua la chiamata API
         const response = await fetch(`http://localhost:3000/api/v1/IT-${companyType.value}/${vat.value}`, requestOptions);
+        console.log(response);
         if (!response.ok) {
             throw new Error("Errore nella richiesta API");
         }
         const data = await response.json(); 
         store.setCompanyData(data);
         // Naviga alla pagina corretta con i dati ricevuti
+        const routeName = companyType.value === 'advanced' ? 'company-advance' : 'company-full';
         router.push({
-            name: 'company-advance',
+            name: routeName,
             params: { vat: vat.value },
         });
     } catch (error) {

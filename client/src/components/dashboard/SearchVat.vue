@@ -23,11 +23,11 @@ const searchCompany = async () => {
     try {
         // Effettua la chiamata API
         const response = await fetch(`http://localhost:3000/api/v1/IT-${companyType.value}/${vat.value}`, requestOptions);
-        console.log(response);
         if (!response.ok) {
             throw new Error("Errore nella richiesta API");
         }
         const data = await response.json(); 
+        console.log(data);
         store.setCompanyData(data);
         // Naviga alla pagina corretta con i dati ricevuti
         const routeName = companyType.value === 'advanced' ? 'company-advance' : 'company-full';

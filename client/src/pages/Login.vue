@@ -1,3 +1,52 @@
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useCompanyStore } from "@/stores/companyStore";
+const store = useCompanyStore();
+
+const user = ref('');
+const password = ref('');
+const router = useRouter();
+
+const login = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/api/v1/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                email: user.value,
+                password: password.value
+            })
+        });
+        const data = await response.json();
+        await fetchCredits();
+        if (response.ok) {
+            router.push({ name: 'dashboard' });
+        } else {
+            alert('Login failed: ' + data.message);
+        }
+    } catch (error) {
+        alert('Login failed: ' + error.message);
+    }
+};
+
+const fetchCredits = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/api/v1/credit', {
+            method: 'GET',
+            credentials: 'include',
+        });
+        const creditData = await response.json();
+        store.setCredit(creditData); // Salva il credito nello store
+    } catch (error) {
+        console.error('Failed to fetch credits:', error);
+    }
+};
+</script>
+++
 <template>
     <main>
         <div class="flex justify-center h-screen w-screen text-sm">
@@ -32,39 +81,6 @@
         </div>
     </main>
 </template>
-
-<script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
-const user = ref('');
-const password = ref('');
-const router = useRouter();
-
-const login = async () => {
-    try {
-        const response = await fetch('http://localhost:3000/api/v1/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                email: user.value,
-                password: password.value
-            })
-        });
-        const data = await response.json();
-        if (response.ok) {
-            router.push({ name: 'dashboard' });
-        } else {
-            alert('Login failed: ' + data.message);
-        }
-    } catch (error) {
-        alert('Login failed: ' + error.message);
-    }
-};
-</script>
 
 <style lang="scss" scoped>
     main {

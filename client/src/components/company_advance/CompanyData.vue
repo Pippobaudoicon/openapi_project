@@ -2,8 +2,8 @@
 import { useCompanyStore } from "@/stores/companyStore";
 const store = useCompanyStore();
 const companyData = store.companyData;
-const data = companyData?.data || {}; // Evita errori se i dati non sono disponibili
-
+const data = companyData?.data[0] || {}; // Evita errori se i dati non sono disponibili
+console.log(data);
 const fields = [
   { label: "Denominazione sociale completa", key: "companyName" },
   { label: "Codice Fiscale e Partita IVA", key: "taxCode" },
@@ -167,10 +167,10 @@ const getValue = (field) => {
     </div>
     <div class="px-0 md:px-6 h-custom overflow-auto">
       <div v-for="field in fields" :key="field.key" class="flex flex-col md:flex-row">
-        <div class="uppercase basis-2/6 text-sm px-6 py-4 dark-gray-bkg text-white border-b-1 border-white">
+        <div class="uppercase basis-2/6 text-sm px-5 py-3 dark-gray-bkg text-white border-b-1 border-white">
           {{ field.label }}
         </div>
-        <div class="px-6 py-4 grow text-sm bg-white border-gray">
+        <div class="px-5 py-3 grow basis-custom text-sm bg-white border-gray">
             {{ getValue(field) }}
         </div>
       </div>
@@ -178,11 +178,14 @@ const getValue = (field) => {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .border-gray {
   border-bottom: 1px solid #EFEFEF;
 }
 .h-custom {
-  height: 65vh;
+  height: 55vh;
+}
+.basis-custom {
+  flex-basis: min-content;
 }
 </style>

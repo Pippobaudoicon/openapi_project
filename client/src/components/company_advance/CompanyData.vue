@@ -2,7 +2,7 @@
 import { useCompanyStore } from "@/stores/companyStore";
 const store = useCompanyStore();
 const companyData = store.companyData;
-const data = companyData?.data[0] || {}; // Evita errori se i dati non sono disponibili
+const data = companyData?.data || {}; // Evita errori se i dati non sono disponibili
 console.log(data);
 const fields = [
   { label: "Denominazione sociale completa", key: "companyName" },

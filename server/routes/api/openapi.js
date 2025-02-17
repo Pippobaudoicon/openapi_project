@@ -1,8 +1,9 @@
 import express from 'express';
 import { checkRole, checkPermission } from '../../middleware/roleAuth.js';
 import { checkCache } from '../../middleware/cacheCheck.js';
-import { axiosCompanyService, axiosOauthService } from '../../utils/axiosOpenapi.js';
+import { axiosCompanyService, axiosOauthService, axiosVisureCameraliService } from '../../utils/axiosOpenapi.js';
 import CompanySearch from '../../models/CompanySearch.js';
+import VisureSearch from '../../models/VisureSearch.js';
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.get('/credit', checkPermission('get_credit'), (req, res) => {
 // get advanced company data by piva
 router.get('/IT-advanced/:piva', 
     checkPermission('advanced_search'),
-    checkCache('advanced'),
+    checkCache('company', 'advanced'),
     async (req, res) => {
         try {   
             const response = await axiosCompanyService.get(`/IT-advanced/${req.params.piva}`);
@@ -49,7 +50,7 @@ router.get('/IT-advanced/:piva',
 // get full company data by piva
 router.get('/IT-full/:piva', 
     checkPermission('full_search'),
-    checkCache('full'),
+    checkCache('company', 'full'),
     async (req, res) => {
         try {
             const response = await axiosCompanyService.get(`/IT-full/${req.params.piva}`);
@@ -82,7 +83,7 @@ router.get('/IT-full/:piva',
 // get boolean if company is closed by piva
 router.get('/IT-closed/:piva', 
     checkRole(['admin']),
-    checkCache('closed'),
+    checkCache('company', 'closed'),
     async (req, res) => {
         try {
             const response = await axiosCompanyService.get(`/IT-closed/${req.params.piva}`);
@@ -111,5 +112,221 @@ router.get('/IT-closed/:piva',
         }
     }
 );
+
+// get impresa data by piva
+router.get('/impresa/:piva',
+    checkRole(['admin']),
+    checkCache('visure', 'impresa'),
+    async (req, res) => {
+        try {
+            const response = await axiosVisureCameraliService.get(`/impresa/${req.params.piva}`);
+
+            await CompanySearch.updateOne(
+                { 
+                    piva: req.params.piva,
+                    searchType: 'impresa'
+                },
+                {
+                    $set: {
+                        data: response.data.data[0],
+                        createdAt: new Date()
+                    }
+                },
+                { upsert: true }
+            );
+
+            res.json({
+                source: 'api',
+                timestamp: new Date(),
+                data: response.data.data[0]
+            });
+        } catch (error) {
+            res.status(500).json(error.message);
+        }
+    }
+)
+
+// search companies by parameters
+router.get('/impresa',
+    checkRole(['admin']),
+    checkCache('visure', 'search'),
+    async (req, res) => {
+        try {
+            // Build query parameters object
+            const queryParams = {};
+            const validParams = [
+                'denominazione', 'provincia', 'codice_ateco',
+                'fatturato_min', 'fatturato_max', 'dipendenti_min',
+                'dipendenti_max', 'skip', 'limit', 'lat', 'lng', 'radius'
+            ];
+
+            // Only include provided parameters
+            validParams.forEach(param => {
+                if (req.query[param] !== undefined) {
+                    queryParams[param] = req.query[param];
+                }
+            });
+
+            // Make API call with query parameters
+            const response = await axiosVisureCameraliService.get('/impresa', {
+                params: queryParams
+            });
+
+            // Generate a unique key for this search based on parameters
+            const searchKey = JSON.stringify(queryParams);
+
+            // Store the search results
+            await CompanySearch.updateOne(
+                {
+                    searchKey,
+                    searchType: 'search'
+                },
+                {
+                    $set: {
+                        parameters: queryParams,
+                        data: response.data.data,
+                        createdAt: new Date()
+                    }
+                },
+                { upsert: true }
+            );
+
+            res.json({
+                source: 'api',
+                timestamp: new Date(),
+                data: response.data.data
+            });
+        } catch (error) {
+            res.status(500).json(error.message);
+        }
+    }
+);
+
+// get bilancio-ottico by piva
+router.post('/bilancio-ottico',
+    checkRole(['admin']),
+    checkCache('visure', 'bilancio'),
+    async (req, res) => {
+        try {
+            const data = {
+                cf_piva_id: req.body.piva,
+                callback: {
+                    url: `${process.env.SERVER_URL}/api/v1/callback/visure`,
+                    method: 'POST',
+                    data: {
+                        type: 'bilancio',
+                        piva: req.body.piva,
+                        requestTime: new Date().toISOString()
+                    }
+                }
+            }
+            const response = await axiosVisureCameraliService.post('/bilancio-ottico', data);
+
+            // Store the initial request with status "in progress"
+            await VisureSearch.updateOne(
+                { 
+                    piva: req.body.piva,
+                    searchType: 'bilancio'
+                },
+                {
+                    $set: {
+                        requestId: response.data.data.id,
+                        status: 'pending',
+                        createdAt: new Date(),
+                        data: response.data.data
+                    }
+                },
+                { upsert: true }
+            );
+
+            res.json({
+                source: 'api',
+                timestamp: new Date(),
+                data: response.data.data
+            });
+        } catch (error) {
+            res.status(500).json(error.message);
+        }
+    }
+);
+
+// get all bilancio-ottico requets status
+router.get('/bilancio-ottico', 
+    checkRole(['admin']),
+    async (req, res) => {
+        try {
+            const response = await axiosVisureCameraliService.get('/bilancio-ottico');
+            res.json(response.data);
+        } catch (error) {
+            res.status(500).json(error.message);
+        }
+    }
+);
+
+// get bilancio-ottico by id
+router.get('/bilancio-ottico/:id',
+    checkRole(['admin']),
+    async (req, res) => {
+        try {
+            const response = await axiosVisureCameraliService.get(`/bilancio-ottico/${req.params.id}`);
+            
+            // If status is complete, update the database
+            if (response.data.data.stato_richiesta === 'Dati disponibili') {
+                const search = await VisureSearch.findOne({ 
+                    requestId: req.params.id,
+                    searchType: 'bilancio'
+                });
+                
+                if (search) {
+                    await VisureSearch.updateOne(
+                        { 
+                            requestId: req.params.id,
+                            searchType: 'bilancio'
+                        },
+                        {
+                            $set: {
+                                status: 'complete',
+                                data: response.data.data,
+                                updatedAt: new Date()
+                            }
+                        }
+                    );
+                }
+            }
+
+            res.json(response.data);
+        } catch (error) {
+            res.status(500).json(error.message);
+        }
+    }
+);
+
+// download the zip file from the bilancio-ottico request
+router.get('/bilancio-ottico/:id/allegati',
+    checkRole(['admin']),
+    async (req, res) => {
+        try {
+            const response = await axiosVisureCameraliService.get(`/bilancio-ottico/${req.params.id}/allegati`);
+            console.log(response);
+            const fileData = response.data.data;
+            
+            // Convert base64 to buffer
+            const fileBuffer = Buffer.from(fileData.file, 'base64');
+            
+            // Set headers for file download
+            res.setHeader('Content-Type', 'application/zip');
+            res.setHeader('Content-Disposition', `attachment; filename="${fileData.nome}"`);
+            res.setHeader('Content-Length', fileData.dimensione);
+            
+            // Send the file
+            res.send(fileBuffer);
+        } catch (error) {
+            res.status(500).json(error.message);
+        }
+    }
+);
+
+import visureCallbacks from './callbacks/visure.js';
+router.use('/callback', visureCallbacks);
 
 export default router;

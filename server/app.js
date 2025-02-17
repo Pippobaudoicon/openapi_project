@@ -47,7 +47,21 @@ if (process.env.NODE_ENV === 'development') {
 initializePassport();
 
 // Middleware configuration for parsing JSON and URL encoded data
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({
+    limit: '1mb',
+    verify: (req, res, buf, encoding) => {
+        try {
+            JSON.parse(buf);
+        } catch (e) {
+            res.status(400).json({ 
+                error: 'Invalid JSON payload',
+                details: e.message 
+            });
+            throw new Error('Invalid JSON');
+        }
+    }
+}));
+
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
 // Session configuration - must be before passport middleware
@@ -76,6 +90,17 @@ app.use(express.static(path.join(distDir)));
 // All other routes should serve the Vue app
 app.get('*', (req, res) => {
     res.sendFile(path.join(distDir + '/index.html'));
+});
+
+// Add error handling middleware
+app.use((err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return res.status(400).json({ 
+            error: 'Invalid JSON payload',
+            details: err.message 
+        });
+    }
+    next();
 });
 
 const port = process.env.PORT || 3000;

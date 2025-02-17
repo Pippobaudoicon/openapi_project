@@ -176,7 +176,7 @@ router.get('/impresa',
             const searchKey = JSON.stringify(queryParams);
 
             // Store the search results
-            await CompanySearch.updateOne(
+            await VisureSearch.updateOne(
                 {
                     searchKey,
                     searchType: 'search'
@@ -202,7 +202,7 @@ router.get('/impresa',
     }
 );
 
-// get bilancio-ottico by piva
+// post bilancio-ottico by piva
 router.post('/bilancio-ottico',
     checkRole(['admin']),
     checkCache('visure', 'bilancio'),
@@ -243,6 +243,50 @@ router.post('/bilancio-ottico',
 
             res.json({
                 source: 'api',
+                status: 'pending',
+                timestamp: new Date(),
+                data: response.data.data
+            });
+        } catch (error) {
+            res.status(500).json(error.message);
+        }
+    }
+);
+
+// get check for bilancio-ottico by piva
+router.get('/bilancio-ottico/:piva',
+    checkRole(['admin']),
+    checkCache('visure', 'bilancio', 'complete'),
+    async (req, res) => {
+        try {
+            const search = await VisureSearch.findOne({
+                piva: req.params.piva,
+                searchType: 'bilancio'
+            });
+            
+            if (!search) return res.status(404).json({ message: 'No data found' });
+
+            const response = await axiosVisureCameraliService.get(`/bilancio-ottico/${search.data.id}`);
+
+            // If status is complete, update the database
+            if (response.data.data.stato_richiesta === 'Dati disponibili') {
+                await VisureSearch.updateOne(
+                    { 
+                        piva: req.params.piva,
+                        searchType: 'bilancio'
+                    },
+                    {
+                        $set: {
+                            status: 'complete',
+                            data: response.data.data,
+                            updatedAt: new Date()
+                        }
+                    }
+                );
+            }
+
+            res.json({
+                source: 'api',
                 timestamp: new Date(),
                 data: response.data.data
             });
@@ -265,43 +309,25 @@ router.get('/bilancio-ottico',
     }
 );
 
-// get bilancio-ottico by id
-router.get('/bilancio-ottico/:id',
+// get all visure from cache
+router.get('/visure',
     checkRole(['admin']),
     async (req, res) => {
         try {
-            const response = await axiosVisureCameraliService.get(`/bilancio-ottico/${req.params.id}`);
-            
-            // If status is complete, update the database
-            if (response.data.data.stato_richiesta === 'Dati disponibili') {
-                const search = await VisureSearch.findOne({ 
-                    requestId: req.params.id,
-                    searchType: 'bilancio'
-                });
-                
-                if (search) {
-                    await VisureSearch.updateOne(
-                        { 
-                            requestId: req.params.id,
-                            searchType: 'bilancio'
-                        },
-                        {
-                            $set: {
-                                status: 'complete',
-                                data: response.data.data,
-                                updatedAt: new Date()
-                            }
-                        }
-                    );
-                }
-            }
+            const searches = await VisureSearch.find({
+                searchType: { $ne: 'search' }
+            }).sort({ createdAt: -1 });
 
-            res.json(response.data);
+            res.json({
+                source: 'cache',
+                timestamp: new Date(),
+                data: searches
+            });
         } catch (error) {
             res.status(500).json(error.message);
         }
     }
-);
+)
 
 // download the zip file from the bilancio-ottico request
 router.get('/bilancio-ottico/:id/allegati',

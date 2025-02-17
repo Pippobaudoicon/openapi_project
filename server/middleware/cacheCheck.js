@@ -24,7 +24,7 @@ const buildQuery = (strategy, req) => {
  * @param {string} modelSearch - Main search type by model (company/visure)
  * @param {string} [searchType] - Optional sub type by searchType (advanced/full/closed)
  */
-export const checkCache = (modelSearch, searchType = null) => async (req, res, next) => {
+export const checkCache = (modelSearch, searchType = null, searchStatus = null) => async (req, res, next) => {
     const force = req.query.force === 'true';
     if (force) return next();
 
@@ -39,6 +39,10 @@ export const checkCache = (modelSearch, searchType = null) => async (req, res, n
         // Add searchType to query if provided
         if (searchType) {
             query.searchType = searchType;
+        }
+
+        if (searchStatus) {
+            query.status = searchStatus;
         }
 
         const existingSearch = await Model.findOne(query)

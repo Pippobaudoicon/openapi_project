@@ -8,7 +8,7 @@ const VisureSearchSchema = new mongoose.Schema({
     },
     searchType: {
         type: String,
-        enum: ['advanced', 'full', 'closed'],
+        enum: ['bilancio', 'search'],
         required: true
     },
     data: {
@@ -18,6 +18,12 @@ const VisureSearchSchema = new mongoose.Schema({
     requestId: {
         type: String,
         required: true
+    },
+    searchKey: {
+        type: String,
+        required: function() {
+            return this.searchType === 'search';
+        }
     },
     status: {
         type: String,

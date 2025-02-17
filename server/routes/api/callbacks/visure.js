@@ -13,33 +13,25 @@ router.post('/visure',
                 throw new Error('No result data received in callback');
             }
 
-            const { type, piva, requestTime } = result;
+            const { searchType, piva, requestTime } = result;
             const status = result.stato_richiesta || result.status;
             const data = result.data || result;
 
             // Handle different types of callbacks
-            switch (type) {
-                case 'bilancio':
-                    await VisureSearch.updateOne(
-                        { 
-                            piva,
-                            searchType: 'bilancio'
-                        },
-                        {
-                            $set: {
-                                status: status === 'Dati disponibili' ? 'complete' : 'pending',
-                                data: data,
-                                updatedAt: new Date(),
-                                requestTime: new Date(requestTime)
-                            }
-                        }
-                    );
-                    break;
-
-                // Add other cases as needed
-                default:
-                    throw new Error(`Unsupported callback type: ${type}`);
-            }
+            await VisureSearch.updateOne(
+                {
+                    piva,
+                    searchType
+                },
+                {
+                    $set: {
+                        status: status === 'Dati disponibili' ? 'complete' : 'pending',
+                        data: data,
+                        updatedAt: new Date(),
+                        requestTime: new Date(requestTime)
+                    }
+                }
+            );
 
             res.status(200).json({
                 message: 'Callback processed successfully',

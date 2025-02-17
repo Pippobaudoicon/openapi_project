@@ -212,9 +212,11 @@ router.post('/bilancio-ottico',
                 cf_piva_id: req.body.piva,
                 callback: {
                     url: `${process.env.SERVER_URL}/api/v1/callback/visure`,
+                    field: 'result',
                     method: 'POST',
                     data: {
-                        type: 'bilancio',
+                        modelSearch: 'VisureSearch',
+                        searchType: 'bilancio',
                         piva: req.body.piva,
                         requestTime: new Date().toISOString()
                     }

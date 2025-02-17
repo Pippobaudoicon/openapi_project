@@ -1,6 +1,6 @@
 <script setup>
 import Header from "@/components/header/Header.vue";
-import CompanyData from "@/components/company_full/CompanyData.vue";
+import CompanyData from "@/components/company_full/companyData.vue";
 </script>
 
 <template>

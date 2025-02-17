@@ -27,6 +27,7 @@ const searchCompany = async () => {
             throw new Error("Errore nella richiesta API");
         }
         const data = await response.json(); 
+        console.log(data);
         store.setCompanyData(data);
         // Naviga alla pagina corretta con i dati ricevuti
         const routeName = companyType.value === 'advanced' ? 'company-advance' : 'company-full';

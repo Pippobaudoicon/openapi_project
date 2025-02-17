@@ -5,33 +5,33 @@ const companyData = store.companyData;
 const data = companyData?.data || {}; // Evita errori se i dati non sono disponibili
 
 const fields = [
-{ label: "Dettagli Aziendali", key: "dettagliAziendali" },
-  { label: "Modulo Legale", key: "modulolegale" },
-  { label: "Stato dell'Azienda", key: "activityStatus" },
-  { label: "Data Azienda", key: "aziendaDate" },
-  { label: "Indirizzo", key: "indirizzo" },
-  { label: "Commerciale", key: "commerciale" },
-  { label: "Rami", key: "rami" },
-  { label: "Classificazione Ateco", key: "atecoClassificazione" },
-  { label: "Classificazione Internazionale", key: "classificazioneInternazionale" },
-  { label: "Ecofin", key: "ecofin" },
-  { label: "Dipendenti", key: "dipendenti" },
-  { label: "Risultati Operativi", key: "risultatiOperativi" },
-  { label: "Statistiche Dipendenti", key: "dipendentiStatistica" },
-  { label: "Innovativa PMI e SU", key: "innovativaPMIeSu" },
-  { label: "Posta", key: "posta" },
-  { label: "Contatti", key: "contatti" },
-  { label: "Web e Social", key: "webAndSocial" },
+  { label: "Dettagli Aziendali", key: "companyDetails.companyName" },
+  { label: "Modulo Legale", key: "legalForm.detailedLegalForm.description" },
+  { label: "Stato dell'Azienda", key: "companyStatus.activityStatus.description" },
+  { label: "Data Azienda", key: "companyDates.registrationDate" },
+  { label: "Indirizzo", key: "address.streetName", format: (value) => `${value}, ${data.address?.town}` },
+  { label: "Commerciale", key: "marketable.isMarketable" },
+  { label: "Rami", key: "branches.numberOfBranches" },
+  { label: "Classificazione Ateco", key: "atecoClassification.ateco.description" },
+  { label: "Classificazione Internazionale", key: "internationalClassification.nace.description" },
+  { label: "Ecofin", key: "ecofin.turnover" },
+  { label: "Dipendenti", key: "employees.employee" },
+  { label: "Risultati Operativi", key: "operatingResults.ebitda" },
+  { label: "Statistiche Dipendenti", key: "employeesStatistic.permanentContract" },
+  { label: "Innovativa PMI e SU", key: "innovativeSmeAndSu.isInnovativeStartUp" },
+  { label: "Posta", key: "mail.email" },
+  { label: "Contatti", key: "contacts.telephoneNumber" },
+  { label: "Web e Social", key: "webAndSocial.website" },
   { label: "PEC", key: "pec" },
-  { label: "Gare d'Appalto Pubbliche", key: "gareAppaltoPubbliche" },
-  { label: "Commercio Estero", key: "commercioEstero" },
-  { label: "Dirigenti", key: "dirigenti" },
-  { label: "Azionisti", key: "azionisti" },
-  { label: "Gruppi Aziendali", key: "gruppiAziendali" },
-  { label: "Sussidiarie", key: "sussidiarie" },
-  { label: "Affiliazione Aziende", key: "affiliazioneAziende" },
-  { label: "Registro Artigiano Business", key: "artigianoBusinessRegistry" },
-  { label: "Certificazione SOA", key: "soaCertificazione" },
+  { label: "Gare d'Appalto Pubbliche", key: "publicTenders[0].year" },
+  { label: "Commercio Estero", key: "foreignTrade.isImporter" },
+  { label: "Dirigenti", key: "managers[0].name" },
+  { label: "Azionisti", key: "shareholders[0].shareholdersInformation[0].companyName" },
+  { label: "Gruppi Aziendali", key: "corporateGroups.groupName" },
+  { label: "Sussidiarie", key: "subsidiaries" },
+  { label: "Affiliazione Aziende", key: "affiliationCompanies" },
+  { label: "Registro Artigiano Business", key: "artisanBusinessRegistry.belongsToArtisanBusinessRegistry" },
+  { label: "Certificazione SOA", key: "soaCertification.hasSoaCertification" },
 ];
 
 const getValue = (field) => {
@@ -46,6 +46,7 @@ const getValue = (field) => {
   }
   return field.format ? field.format(value) : value || "N/A";
 };
+
 </script>
 
 .<template>

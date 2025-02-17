@@ -1,7 +1,7 @@
 <template>
     <div class="gray-bkg h-full text-sm">
         <div class=" flex flex-col items-center justify-center h-full">
-            <div>
+            <!-- <div>
                 <div class="text-7xl italic-font light-blue-txt mb-6">
                     Ricerca Ora
                 </div>
@@ -25,24 +25,28 @@
                 <button class="w-full text-center light-blue-bkg text-white py-2 cursor-pointer uppercase main-font">
                     avvia ricerca
                 </button>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-
-const selectedOption = ref(null);
-
-const options = [
-    { label: "visura 01", value: "v01" },
-    { label: "visura 02", value: "v02" },
-    { label: "visura 03", value: "v03" },
-    { label: "visura 04", value: "v04" }
-];
-
-const selectOption = (value) => {
-    selectedOption.value = selectedOption.value === value ? null : value;
+const businessReport = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/api/v1/visure', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+        });
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        alert( error.message);
+    }
+};
+window.onload = () => {
+    businessReport();
 };
 </script>

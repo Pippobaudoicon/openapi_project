@@ -1,0 +1,40 @@
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+  nodejs:
+    build: .
+    ports:
+      - "3000:3000"  # API port
+      - "5173:5173"  # Client port
+    volumes:
+      - .:/app
+    working_dir: /app
+    depends_on:
+      - mongodb
+      - elasticsearch
+    environment:
+      - MONGODB_URI=mongodb://admin:password@mongodb:27017
+      - ELASTICSEARCH_NODE=http://elasticsearch:9200
+      - NODE_ENV=development
+
+volumes:
+  mongodb_data:
+  elasticsearch_data:

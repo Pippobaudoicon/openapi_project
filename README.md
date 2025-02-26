@@ -29,8 +29,6 @@ docker compose down -v
 
 - MongoDB: localhost:27017
 - Elasticsearch: localhost:9200
-- API Server: localhost:3000
-- Client App: localhost:5173
 
 ## Troubleshooting
 

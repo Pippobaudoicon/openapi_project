@@ -19,22 +19,6 @@ services:
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
 
-  nodejs:
-    build: .
-    ports:
-      - "3000:3000"  # API port
-      - "5173:5173"  # Client port
-    volumes:
-      - .:/app
-    working_dir: /app
-    depends_on:
-      - mongodb
-      - elasticsearch
-    environment:
-      - MONGODB_URI=mongodb://admin:password@mongodb:27017
-      - ELASTICSEARCH_NODE=http://elasticsearch:9200
-      - NODE_ENV=development
-
 volumes:
   mongodb_data:
   elasticsearch_data:

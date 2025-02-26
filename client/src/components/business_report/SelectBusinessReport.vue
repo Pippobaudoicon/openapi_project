@@ -10,6 +10,9 @@ const loading = ref(false);
 const baseUrl = 'http://localhost:3000/api/v1/';
 const endUrl = '/allegati';
 
+const vatExport = ref('');
+const visuraExport = ref('');
+
 const businessReport = async () => {
     try {
         const response = await fetch('http://localhost:3000/api/v1/visure', {
@@ -26,6 +29,29 @@ const businessReport = async () => {
         alert(error.message);
     }
 };
+
+const newExport = async () => {
+    try {
+        const response = await fetch(`${baseUrl}${visuraExport.value}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                piva: vatExport.value,
+            })
+        });
+        const result = await response.json();
+        if (response.ok) {
+            alert('Export created successfully');
+        } else {
+            alert('Export failed: ' + result.message);
+        }
+    } catch (error) {
+        alert('Login failed: ' + error.message);
+    }
+}; 
 
 const formatDate = (timestamp) => {
     const date = new Date(timestamp * 1000); // Converti in millisecondi
@@ -110,6 +136,33 @@ onMounted(() => {
                 >
                     reset
                 </button>
+                <div class="bg-white px-4 py-8">
+                    <form class="flex flex-col gap-4" @submit.prevent="newExport">
+                        <div class="border-b-2 px-2 py-1 border-gray-500">
+                            <input 
+                                id="vatExport" 
+                                name="vatExport" 
+                                type="text" 
+                                v-model="vatExport" 
+                                autocomplete="vatExport" 
+                                required 
+                                class="w-full focus:outline-none placeholder-black font-bold" 
+                                placeholder="Partita IVA"
+                            >
+                        </div>
+                        <div class="border-b-2 px-2 py-1 font-bold border-gray-500">
+                            <select v-model="visuraExport" class="w-full focus:outline-none">
+                                <option value="">Visura</option>
+                                <option value="bilancio-ottico">
+                                    Bilancio Ottico
+                                </option>
+                            </select>
+                        </div>    
+                        <button class="w-full text-center light-blue-bkg text-white py-2 uppercase main-font cursor-pointer">
+                            nuova esportazione
+                        </button>
+                    </form>
+                </div>
             </div>
             <div class="p-12 h-custom overflow-auto">
                 <div class="flex flex-col flex-wrap gap-1.5 md:flex-row">

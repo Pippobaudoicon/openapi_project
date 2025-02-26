@@ -15,7 +15,7 @@ const visuraExport = ref('');
 
 const businessReport = async () => {
     try {
-        const response = await fetch('http://localhost:3000/api/v1/visure', {
+        const response = await fetch(`${baseUrl}visure`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -45,6 +45,7 @@ const newExport = async () => {
         const result = await response.json();
         if (response.ok) {
             alert('Export created successfully');
+            window.location.reload();
         } else {
             alert('Export failed: ' + result.message);
         }

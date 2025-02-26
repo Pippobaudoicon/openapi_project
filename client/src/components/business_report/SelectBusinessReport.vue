@@ -50,6 +50,13 @@ const startSearch = () => {
     loading.value = false;
 };
 
+const resetFilters = () => {
+    vat.value = '';
+    selectedTipo.value = '';
+    selectedStatus.value = '';
+    filteredData.value = data.value;
+}
+
 onMounted(() => {
     businessReport();
 });
@@ -96,6 +103,12 @@ onMounted(() => {
                     :disabled="loading"
                 >
                     {{ loading ? "Caricamento..." : "Avvia Ricerca" }}
+                </button>
+                <button 
+                    @click="resetFilters" 
+                    class="w-full text-center bg-red-900 text-white py-2 cursor-pointer uppercase main-font" 
+                >
+                    reset
                 </button>
             </div>
             <div class="p-12 h-custom overflow-auto">

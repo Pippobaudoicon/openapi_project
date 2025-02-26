@@ -31,11 +31,11 @@ const router = createRouter ({
             name : 'search-leads',
             component : SearchLeads
         },
-        {
+       /*  {
             path : '/files',
             name : 'files',
             component : Files
-        },
+        }, */
         {
             path : '/dashboard/company-advanced/:vat',
             name : 'company-advance',

@@ -9,7 +9,6 @@ const route = useRoute();
             <li><router-link :to="{ name: 'dashboard' }" :class="{ 'font-bold scale-110 block': route.name === 'dashboard' }"> estrazione dati </router-link></li>
             <li><router-link :to="{ name: 'business-report' }" :class="{ 'font-bold scale-110 block': route.name === 'business-report' }"> visure </router-link></li>
             <li><router-link :to="{ name: 'search-leads' }" :class="{ 'font-bold scale-110 block': route.name === 'search-leads' }"> ricerca leads </router-link></li>
-            <li><router-link :to="{ name: 'files' }" :class="{ 'font-bold scale-110 block': route.name === 'files' }"> scarica i file </router-link></li>
         </ul>
     </div>
 </template>

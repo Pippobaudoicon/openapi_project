@@ -13,10 +13,10 @@ const logout = () => {
 
 <template>
     <div class="flex flex-col md:flex-row justify-between items-center px-6">
-        <div class="py-6 w-full md:w-60">
+        <div class="py-4 w-full md:w-60">
             <img src="../../media/vicsam-dtextr.png" alt="">
         </div>
-        <div class="flex items-center gap-6">
+        <div class="flex items-center gap-6 text-xs md:text-sm">
             <div class="flex gap-3 items-center">
                 <div class="w-10">
                     <img class="profile-media" src="../../media/Molinari_Valentina.jpg" alt="">
@@ -29,7 +29,7 @@ const logout = () => {
                 <div class="w-10 border-icon">
                     <img class="scale-75" src="../../svg/dollar.svg" alt="">
                 </div>
-                <div>
+                <div class="">
                     Crediti: <span class="font-bold">{{ credit.credit }}</span>
                 </div>
             </div>

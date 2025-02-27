@@ -47,10 +47,10 @@ const searchCompany = async () => {
     <div class="gray-bkg h-full text-sm">
         <div class="flex flex-col items-center justify-center h-full">
             <div>
-                <div class="text-7xl italic-font light-blue-txt mb-6">
+                <div class="text-6xl md:text-7xl italic-font light-blue-txt mb-6">
                     Ricerca Ora
                 </div>
-                <div class="border-b-2 px-2 py-1 border-gray-500">
+                <div class="border-b-2 px-2 py-1 border-gray-400">
                     <input 
                         id="vat" 
                         name="vat" 
@@ -58,11 +58,11 @@ const searchCompany = async () => {
                         v-model="vat" 
                         autocomplete="vat" 
                         required 
-                        class="w-full focus:outline-none placeholder-black font-bold" 
+                        class="w-full focus:outline-none placeholder-black font-bold text-xs md:text-sm" 
                         placeholder="Partita IVA"
                     >
                 </div>
-                <div class="flex justify-between py-5">
+                <div class="flex justify-between py-5 text-xs md:text-sm">
                     <div>
                         <input 
                             type="radio" 

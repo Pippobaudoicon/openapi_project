@@ -92,11 +92,11 @@ onMounted(() => {
 <template>
     <div class="gray-bkg h-full text-sm">
         <div class="flex flex-col md:flex-row items-start">
-            <div class="p-12 w-96 flex flex-col gap-4">
-                <div class="text-5xl italic-font light-blue-txt mb-6">
+            <div class="p-8 w-96 flex flex-col gap-4">
+                <div class="text-4xl italic-font light-blue-txt">
                     Filtra per
                 </div>
-                <div class="border-b-2 px-2 py-1 border-gray-500">
+                <div class="border-b-2 px-2 py-1 border-gray-400">
                     <input 
                         id="vat" 
                         name="vat" 
@@ -104,11 +104,11 @@ onMounted(() => {
                         v-model="vat" 
                         autocomplete="vat" 
                         required 
-                        class="w-full focus:outline-none placeholder-black font-bold" 
+                        class="w-full focus:outline-none placeholder-black font-bold text-xs" 
                         placeholder="Partita IVA"
                     >
                 </div>
-                <div class="border-b-2 px-2 py-1 font-bold border-gray-500">
+                <div class="border-b-2 px-2 py-1 text-xs font-bold border-gray-400">
                     <select v-model="selectedTipo" class="w-full focus:outline-none">
                         <option value="">Visura</option>
                         <option v-for="(tipo, index) in [...new Set(data.map(item => item.data.tipo))]" :key="index" :value="tipo">
@@ -116,7 +116,7 @@ onMounted(() => {
                         </option>
                     </select>
                 </div>
-                <div class="border-b-2 px-2 py-1 font-bold border-gray-500">
+                <div class="border-b-2 text-xs px-2 py-1 font-bold border-gray-400">
                     <select v-model="selectedStatus" class="w-full focus:outline-none">
                         <option value="">Stato</option>
                         <option v-for="item in data" :key="item.status" :value="item.status">
@@ -124,22 +124,24 @@ onMounted(() => {
                         </option>
                     </select>
                 </div>
-                <button 
-                    @click="startSearch" 
-                    class="w-full text-center light-blue-bkg text-white py-2 cursor-pointer uppercase main-font" 
-                    :disabled="loading"
-                >
-                    {{ loading ? "Caricamento..." : "Avvia Ricerca" }}
-                </button>
-                <button 
-                    @click="resetFilters" 
-                    class="w-full text-center bg-red-900 text-white py-2 cursor-pointer uppercase main-font" 
-                >
-                    reset
-                </button>
+                <div class="flex gap-4">
+                    <button 
+                        @click="startSearch" 
+                        class="w-full text-center light-blue-bkg text-white py-2 cursor-pointer uppercase main-font" 
+                        :disabled="loading"
+                    >
+                        {{ loading ? "Caricamento..." : "Avvia Ricerca" }}
+                    </button>
+                    <button 
+                        @click="resetFilters" 
+                        class="w-full text-center bg-red-900 text-white py-2 cursor-pointer uppercase main-font" 
+                    >
+                        reset
+                    </button>
+                </div>
                 <div class="bg-white px-4 py-8">
                     <form class="flex flex-col gap-4" @submit.prevent="newExport">
-                        <div class="border-b-2 px-2 py-1 border-gray-500">
+                        <div class="border-b-2 px-2 py-1 border-gray-400">
                             <input 
                                 id="vatExport" 
                                 name="vatExport" 
@@ -147,11 +149,11 @@ onMounted(() => {
                                 v-model="vatExport" 
                                 autocomplete="vatExport" 
                                 required 
-                                class="w-full focus:outline-none placeholder-black font-bold" 
+                                class="w-full focus:outline-none placeholder-black font-bold text-xs" 
                                 placeholder="Partita IVA"
                             >
                         </div>
-                        <div class="border-b-2 px-2 py-1 font-bold border-gray-500">
+                        <div class="border-b-2 px-2 py-1 font-bold border-gray-400 text-xs">
                             <select v-model="visuraExport" class="w-full focus:outline-none">
                                 <option value="">Visura</option>
                                 <option value="bilancio-ottico">
@@ -165,9 +167,9 @@ onMounted(() => {
                     </form>
                 </div>
             </div>
-            <div class="p-12 h-custom overflow-auto">
+            <div class="p-8 h-custom overflow-auto">
                 <div class="flex flex-col flex-wrap gap-1.5 md:flex-row">
-                    <div v-for="item in filteredData" :key="item.requestId" class="bg-white px-4 md:px-12 py-8">
+                    <div v-for="item in filteredData" :key="item.requestId" class="bg-white px-4 md:px-8 py-6">
                         <div class="mb-2 font-semibold text-md md:text-lg">
                             Partita IVA - {{ item.data.cf_piva_id }}
                         </div>

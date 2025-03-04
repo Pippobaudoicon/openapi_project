@@ -1,4 +1,5 @@
 <script setup>
+import FormChange from "@/components/change_password/FormChange.vue";
 import Header from "@/components/header/Header.vue";
 </script>
 
@@ -7,8 +8,8 @@ import Header from "@/components/header/Header.vue";
         <div>
             <Header />
         </div>
-        <div class="grow gray-bkg">
-            
+        <div class="grow">
+            <FormChange />
         </div>
     </div>
 </template>

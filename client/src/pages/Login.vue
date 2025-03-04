@@ -22,8 +22,9 @@ const login = async () => {
             })
         });
         const data = await response.json();
-        await fetchCredits();
         if (response.ok) {
+            store.setEmail(user.value);
+            await fetchCredits();
             router.push({ name: 'dashboard' });
         } else {
             alert('Login failed: ' + data.message);

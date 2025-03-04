@@ -3,6 +3,8 @@ import { useRouter } from 'vue-router';
 import { useCompanyStore } from "@/stores/companyStore";
 const store = useCompanyStore();
 const credit = store.credit ? store.credit.data : { credit: 0 };const router = useRouter();
+const mail = store.email;
+const firstChar = mail.charAt(0).toUpperCase();
 
 const logout = () => {
     if (confirm("Sei sicuro di voler uscire?")) {
@@ -18,11 +20,12 @@ const logout = () => {
         </div>
         <div class="flex items-center gap-6 text-xs md:text-sm">
             <div class="flex gap-3 items-center">
-                <div class="w-10">
-                    <img class="profile-media" src="../../media/Molinari_Valentina.jpg" alt="">
+                <div class="w-10 profile-media aspect-square flex items-center justify-center">
+                    <span class="font-bold text-2xl">{{ firstChar }}</span>
                 </div>
                 <div>
-                    Ciao <span class="font-bold">Valentina</span>
+                    <span>Ciao <span class="font-bold">{{ mail }}</span></span>
+                    <router-link :to="{ name: 'change-password' }"><span class="text-[10px] light-blue-txt block cursor-pointer">cambia password</span></router-link> 
                 </div>
             </div>
             <div class="flex gap-2 items-center">

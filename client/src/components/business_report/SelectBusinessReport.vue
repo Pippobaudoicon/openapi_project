@@ -139,7 +139,7 @@ onMounted(() => {
                         reset
                     </button>
                 </div>
-                <div class="bg-white px-4 py-8">
+                <div class="bg-white px-4 py-8 border-2 border-[#1C9AD7]">
                     <form class="flex flex-col gap-4" @submit.prevent="newExport">
                         <div class="border-b-2 px-2 py-1 border-gray-400">
                             <input 

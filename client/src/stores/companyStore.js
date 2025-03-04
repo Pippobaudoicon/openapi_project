@@ -4,6 +4,7 @@ export const useCompanyStore = defineStore("company", {
   state: () => ({
     companyData: JSON.parse(localStorage.getItem('companyData')) || null,
     credit: JSON.parse(localStorage.getItem('credit')) || null,
+    email: localStorage.getItem('email') || ''
   }),
   actions: {
     setCompanyData(data) {
@@ -17,6 +18,10 @@ export const useCompanyStore = defineStore("company", {
     setCredit(data) {
       this.credit = data; 
       localStorage.setItem('credit', JSON.stringify(data));
+    },
+    setEmail(email) {
+      this.email = email;
+      localStorage.setItem('email', email);
     }
   }
 });

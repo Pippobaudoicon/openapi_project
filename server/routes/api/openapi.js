@@ -4,6 +4,7 @@ import { checkCache } from '../../middleware/cacheCheck.js';
 import { axiosCompanyService, axiosOauthService, axiosVisureCameraliService } from '../../utils/axiosOpenapi.js';
 import CompanySearch from '../../models/CompanySearch.js';
 import VisureSearch from '../../models/VisureSearch.js';
+import { searchCompanies } from '../../utils/meilisearch.js';
 
 const router = express.Router();
 
@@ -14,6 +15,43 @@ router.get('/credit', checkPermission('get_credit'), (req, res) => {
         .catch(error => res.json(error.message));
 });
 
+// Add this new route before the existing routes
+router.get('/search', 
+    checkPermission('search'),
+    async (req, res) => {
+        try {
+            const {
+                q = '', // general search query
+                provincia,
+                codice_ateco,
+                fatturato_min,
+                fatturato_max,
+                dipendenti_min,
+                dipendenti_max,
+                from = 0,
+                size = 10
+            } = req.query;
+
+            const searchParams = {
+                q,
+                provincia,
+                codice_ateco,
+                fatturato_min,
+                fatturato_max,
+                dipendenti_min,
+                dipendenti_max,
+                from: parseInt(from),
+                size: parseInt(size)
+            };
+
+            const results = await searchCompanies(searchParams);
+            res.json(results);
+        } catch (error) {
+            res.status(500).json(error.message);
+        }
+    }
+);
+
 // get advanced company data by piva
 router.get('/IT-advanced/:piva', 
     checkPermission('advanced_search'),
@@ -21,6 +59,7 @@ router.get('/IT-advanced/:piva',
     async (req, res) => {
         try {   
             const response = await axiosCompanyService.get(`/IT-advanced/${req.params.piva}`);
+            const companyData = response.data.data[0];
             
             await CompanySearch.updateOne(
                 { 
@@ -29,7 +68,7 @@ router.get('/IT-advanced/:piva',
                 },
                 {
                     $set: {
-                        data: response.data.data[0],
+                        data: companyData,
                         createdAt: new Date()
                     }
                 },
@@ -39,7 +78,7 @@ router.get('/IT-advanced/:piva',
             res.json({
                 source: 'api',
                 timestamp: new Date(),
-                data: response.data.data[0]
+                data: companyData
             });
         } catch (error) {
             res.status(500).json(error.message);
@@ -54,7 +93,7 @@ router.get('/IT-full/:piva',
     async (req, res) => {
         try {
             const response = await axiosCompanyService.get(`/IT-full/${req.params.piva}`);
-
+            const companyData = response.data.data;
             await CompanySearch.updateOne(
                 { 
                     piva: req.params.piva,
@@ -62,7 +101,7 @@ router.get('/IT-full/:piva',
                 },
                 {
                     $set: {
-                        data: response.data.data,
+                        data: companyData,
                         createdAt: new Date()
                     }
                 },
@@ -72,7 +111,7 @@ router.get('/IT-full/:piva',
             res.json({
                 source: 'api',
                 timestamp: new Date(),
-                data: response.data.data
+                data: companyData
             });
         } catch (error) {
             res.status(500).json(error.message);
@@ -353,6 +392,9 @@ router.get('/bilancio-ottico/:id/allegati',
         }
     }
 );
+
+// elasticsearch search
+
 
 import visureCallbacks from './callbacks/visure.js';
 router.use('/callback', visureCallbacks);

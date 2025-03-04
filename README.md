@@ -34,7 +34,7 @@ docker compose down -v
 
 If you need to rebuild a specific service:
 ```bash
-docker compose up --build nodejs
+docker compose up --build meilisearch
 ```
 
 To check container status:

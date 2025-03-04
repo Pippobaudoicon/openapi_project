@@ -9,16 +9,15 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+  meilisearch:
+    image: getmeili/meilisearch:latest
     environment:
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - MEILI_NO_ANALYTICS=true
     ports:
-      - "9200:9200"
+      - "7700:7700"
     volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
+      - meilisearch_data:/meili_data
 
 volumes:
   mongodb_data:
-  elasticsearch_data:
+  meilisearch_data:

@@ -77,6 +77,9 @@ const fetchCredits = async () => {
                             accedi ora
                         </button>
                     </form>
+                    <div class="mt-2 text-[10px]">
+                        <p class="text-[10px] light-blue-txt text-end"><router-link to="/register">Password dimenticata?</router-link></p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -34,3 +34,25 @@ export const sendVerificationEmail = async (email, token) => {
         throw new Error('Failed to send verification email');
     }
 };
+
+export const sendPasswordResetEmail = async (email, token) => {
+    const resetUrl = `${process.env.SERVER_URL}/reset-password/${token}`;
+    
+    const subject = 'Password Reset Request';
+    const htmlContent = `
+        <h1>Reset Your Password</h1>
+        <p>You requested a password reset. Click the link below to set a new password:</p>
+        <a href="${resetUrl}">Reset Password</a>
+        <p>This link will expire in 1 hour.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+    `;
+    console.log(`Password reset email would be sent to ${email} with token ${token}`);
+    return;
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Verification email sent to:', email);
+    } catch (error) {
+        console.error('Error sending verification email:', error);
+        throw new Error('Failed to send verification email');
+    }
+};

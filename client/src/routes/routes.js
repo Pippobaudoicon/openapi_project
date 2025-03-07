@@ -7,6 +7,8 @@ import Files from '@/pages/Files.vue';
 import CompanyAdvance from '@/pages/CompanyAdvance.vue';
 import CompanyFull from '@/pages/CompanyFull.vue';
 import ChangePassword from '@/pages/ChangePassword.vue';
+import RecoverPassword from '@/pages/RecoverPassword.vue';
+import ResetPassword from '@/pages/ResetPassword.vue';
 
 const router = createRouter ({
     history:createWebHistory(),
@@ -53,6 +55,18 @@ const router = createRouter ({
             path : '/change-password',
             name : 'change-password',
             component : ChangePassword,
+            props: true
+        },
+        {
+            path : '/recover-password',
+            name : 'recover-password',
+            component : RecoverPassword,
+            props: true
+        },
+        {
+            path : '/reset-password/:token',
+            name : 'reset-password',
+            component : ResetPassword,
             props: true
         }
     ]

@@ -46,8 +46,15 @@ const fetchCredits = async () => {
         console.error('Failed to fetch credits:', error);
     }
 };
+
+const forgotPassword = () => {
+    if (confirm('Desideri recuperare la password?')) {
+        router.push({ path: '/recover-password' });
+    }
+};
+
 </script>
-++
+
 <template>
     <main>
         <div class="flex justify-center h-screen w-screen text-sm">
@@ -78,7 +85,7 @@ const fetchCredits = async () => {
                         </button>
                     </form>
                     <div class="mt-2 text-[10px]">
-                        <p class="text-[10px] light-blue-txt text-end"><router-link to="/register">Password dimenticata?</router-link></p>
+                        <p class="text-[10px] light-blue-txt text-end cursor-pointer" @click="forgotPassword">Password dimenticata?</p>
                     </div>
                 </div>
             </div>
@@ -96,3 +103,5 @@ const fetchCredits = async () => {
         }
     }
 </style>
+
+

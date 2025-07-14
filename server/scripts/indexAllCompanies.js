@@ -52,29 +52,83 @@ async function indexAllCompanies() {
         console.log(`Found ${companies.length} companies to index`);
 
         //TODO da mappare tutti i campi (profare gpt)
-        const documents = companies.map(company => {
-            const companyData = Array.isArray(company.data.data) ? company.data.data[0] : company.data.data;
-            return {
-            id: company._id.toString(),
-            piva: company.piva,
-            denominazione: companyData.companyName,
-            indirizzo: {
-                ...companyData.address,
-                full: Object.values(companyData.address || {}).join(' ') // Searchable concatenated address
-            },
-            stato_attivita: companyData.activityStatus,
-            data_registrazione: companyData.registrationDate,
-            pec: companyData.pec,
-            fatturato: {
-                ...companyData.balanceSheets,
-                full: JSON.stringify(companyData.balanceSheets) // Searchable JSON string
-            },
-            shareholders: {
-                ...companyData.shareHolders,
-                full: JSON.stringify(companyData.shareHolders) // Searchable JSON string
-            },
-            createdAt: company.createdAt.toISOString()
-            };
+        const documents = companies.map((company, index) => {
+            try {
+                // Handle different data structures
+                let companyData = company.data;
+                
+                // If data has a nested data property, use it
+                if (companyData.data) {
+                    companyData = Array.isArray(companyData.data) ? companyData.data[0] : companyData.data;
+                }
+
+                // Create a safe mapping that handles missing fields
+                const document = {
+                    id: company._id.toString(),
+                    piva: company.piva,
+                    denominazione: companyData.companyName || 
+                                 companyData.denominazione || 
+                                 companyData.ragione_sociale || 
+                                 companyData.nome || 
+                                 'Unknown',
+                    provincia: companyData.address?.registeredOffice?.province || 
+                              companyData.provincia || 
+                              companyData.province || '',
+                    comune: companyData.address?.registeredOffice?.town || 
+                           companyData.comune || 
+                           companyData.city || '',
+                    codice_ateco: companyData.atecoClassification?.ateco?.code || 
+                                 companyData.codice_ateco || 
+                                 companyData.atecoCode || '',
+                    descrizione_ateco: companyData.atecoClassification?.ateco?.description || '',
+                    fatturato: companyData.balanceSheets?.last?.turnover || 
+                              companyData.fatturato || 
+                              companyData.revenue || 0,
+                    dipendenti: companyData.balanceSheets?.last?.employees || 
+                               companyData.dipendenti || 
+                               companyData.employees || 0,
+                    indirizzo: companyData.address?.registeredOffice?.streetName || 
+                              companyData.indirizzo || 
+                              companyData.address || '',
+                    cap: companyData.address?.registeredOffice?.zipCode || '',
+                    stato_attivita: companyData.activityStatus || 
+                                   companyData.stato_attivita || 
+                                   companyData.stato || 'Unknown',
+                    data_registrazione: companyData.registrationDate || 
+                                       companyData.data_registrazione || '',
+                    data_inizio: companyData.startDate || '',
+                    pec: companyData.pec || '',
+                    codice_fiscale: companyData.taxCode || '',
+                    forma_giuridica: companyData.detailedLegalForm?.description || '',
+                    capitale_sociale: companyData.balanceSheets?.last?.shareCapital || 0,
+                    patrimonio_netto: companyData.balanceSheets?.last?.netWorth || 0,
+                    searchType: company.searchType,
+                    createdAt: company.createdAt.toISOString()
+                };
+
+                return document;
+            } catch (error) {
+                console.error(`Error processing company ${index} (${company.piva}):`, error);
+                console.error('Company data:', JSON.stringify(company.data, null, 2));
+                
+                // Return a minimal document to avoid breaking the entire process
+                return {
+                    id: company._id.toString(),
+                    piva: company.piva,
+                    denominazione: 'Error processing data',
+                    provincia: '',
+                    comune: '',
+                    codice_ateco: '',
+                    fatturato: 0,
+                    dipendenti: 0,
+                    indirizzo: '',
+                    stato_attivita: 'Unknown',
+                    data_registrazione: '',
+                    pec: '',
+                    searchType: company.searchType,
+                    createdAt: company.createdAt.toISOString()
+                };
+            }
         });
 
         // Delete existing documents

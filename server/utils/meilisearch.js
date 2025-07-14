@@ -34,7 +34,7 @@ initializeIndex().catch(console.error);
 
 export const indexCompany = async (company) => {
     try {
-        const index = client.index('companies');
+        const index = meilisearch.index('companies');
         await index.addDocuments([{
             id: company.piva,
             piva: company.piva,
@@ -64,24 +64,27 @@ export const searchCompanies = async ({
     size = 10
 }) => {
     try {
-        const index = client.index('companies');
+        const index = meilisearch.index('companies');
         
-        // Build filter string
+        // Build filter array
         const filters = [];
-        if (provincia) filters.push(`provincia = ${provincia.toUpperCase()}`);
-        if (codice_ateco) filters.push(`codice_ateco = ${codice_ateco}`);
-        if (fatturato_min || fatturato_max) {
-            filters.push(`fatturato ${fatturato_min ? `>= ${fatturato_min}` : ''} ${fatturato_max ? `AND fatturato <= ${fatturato_max}` : ''}`);
-        }
-        if (dipendenti_min || dipendenti_max) {
-            filters.push(`dipendenti ${dipendenti_min ? `>= ${dipendenti_min}` : ''} ${dipendenti_max ? `AND dipendenti <= ${dipendenti_max}` : ''}`);
-        }
+        if (provincia) filters.push(`provincia = "${provincia.toUpperCase()}"`);
+        if (codice_ateco) filters.push(`codice_ateco = "${codice_ateco}"`);
+        if (fatturato_min) filters.push(`fatturato >= ${fatturato_min}`);
+        if (fatturato_max) filters.push(`fatturato <= ${fatturato_max}`);
+        if (dipendenti_min) filters.push(`dipendenti >= ${dipendenti_min}`);
+        if (dipendenti_max) filters.push(`dipendenti <= ${dipendenti_max}`);
 
-        const results = await index.search(q, {
-            filter: filters,
+        const searchOptions = {
             offset: parseInt(from),
             limit: parseInt(size)
-        });
+        };
+
+        if (filters.length > 0) {
+            searchOptions.filter = filters.join(' AND ');
+        }
+
+        const results = await index.search(q, searchOptions);
 
         return {
             total: results.estimatedTotalHits,

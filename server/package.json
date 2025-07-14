@@ -4,11 +4,12 @@
   "description": "Open api estrazione dati aziendali vicsamgroup",
   "main": "app.js",
   "scripts": {
-    "server": "nodemon app.js",
-    "client": "npm run dev --prefix ../client",
-    "build": "npm run build --prefix ../client",
+    "server": "cross-env NODE_ENV=development nodemon app.js",
+    "client": "npm run dev --prefix ../modern-client",
+    "build": "npm run build --prefix ../modern-client",
     "dev": "npm run build && cross-env NODE_ENV=development concurrently \"npm run server\" \"npm run client\"",
-    "start": "npm run build && node app.js"
+    "start": "npm run build && node app.js",
+    "indexCompanies": "NODE_ENV=development node ./scripts/indexCompanies.js"
   },
   "repository": {
     "type": "git",

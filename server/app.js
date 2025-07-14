@@ -84,11 +84,17 @@ app.use(passport.session());
 app.use('/api', apiRoutes);
 app.use('/closed-company', closedCompanyRouter); //ONE TIME SCRIPT
 
- // Serve static files from the Vue app
-app.use(express.static(path.join(distDir)));
+// Serve static files from the Vue app (but only for non-API routes)
+app.use(express.static(path.join(distDir), {
+    index: false // Don't serve index.html automatically for directories
+}));
 
-// All other routes should serve the Vue app
-app.get('*', (req, res) => {
+// All other NON-API routes should serve the Vue app
+app.get('*', (req, res, next) => {
+    // Skip serving index.html for API routes
+    if (req.path.startsWith('/api/')) {
+        return next();
+    }
     res.sendFile(path.join(distDir + '/index.html'));
 });
 

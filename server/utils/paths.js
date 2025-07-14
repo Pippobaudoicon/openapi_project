@@ -11,7 +11,7 @@ export const rootDir = path.resolve(__dirname, '../..');
 /**
  * Full path to the client directory
 */
-export const clientDir = path.resolve(rootDir, 'client');
+export const clientDir = path.resolve(rootDir, 'modern-client');
 /**
  * Full path to the dist directory of the client
 */

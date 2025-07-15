@@ -56,20 +56,25 @@ const router = createRouter({
           props: true
         },
         {
-          path: 'company-advanced',
-          name: 'CompanyAdvanced',
-          component: () => import('@/views/CompanyAdvancedView.vue')
+          path: 'company',
+          name: 'CompanyUnified',
+          component: () => import('@/views/CompanyUnifiedView.vue')
         },
-        {
-          path: 'company-full',
-          name: 'CompanyFull',
-          component: () => import('@/views/CompanyFullView.vue')
-        },
-        {
-          path: 'company-status',
-          name: 'CompanyStatus',
-          component: () => import('@/views/CompanyStatusView.vue')
-        },
+        // {
+        //   path: 'company-advanced',
+        //   name: 'CompanyAdvanced',
+        //   component: () => import('@/views/CompanyAdvancedView.vue')
+        // },
+        // {
+        //   path: 'company-full',
+        //   name: 'CompanyFull',
+        //   component: () => import('@/views/CompanyFullView.vue')
+        // },
+        // {
+        //   path: 'company-status',
+        //   name: 'CompanyStatus',
+        //   component: () => import('@/views/CompanyStatusView.vue')
+        // },
         {
           path: 'visure',
           name: 'Visure',

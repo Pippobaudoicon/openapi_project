@@ -59,122 +59,41 @@
 
           <!-- Advanced Data Display -->
           <div v-if="advancedData" class="space-y-6">
-            <!-- Basic Company Information -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-gray-900">Company Information</h2>
-                <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
-                  Advanced Data
-                </span>
-              </div>
+            <!-- Company Overview -->
+            <CompanyOverview 
+              :data="advancedData" 
+              data-type="advanced" 
+            />
 
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div v-for="(value, key) in flattenedAdvancedData" :key="key" class="space-y-1">
-                  <dt class="text-sm font-medium text-gray-500 capitalize">{{ formatKey(key) }}</dt>
-                  <dd class="text-sm text-gray-900">{{ formatValue(value) }}</dd>
-                </div>
-              </div>
-            </div>
+            <!-- Financial Information -->
+            <CompanyFinancials 
+              :data="advancedData" 
+              data-type="advanced" 
+            />
 
-            <!-- Balance Sheets Section -->
-            <div v-if="hasBalanceSheets(advancedData)" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-gray-900">Financial Data</h2>
-                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-                  Balance Sheets
-                </span>
-              </div>
+            <!-- Key People & Management -->
+            <CompanyPeople 
+              :data="advancedData" 
+              data-type="advanced" 
+            />
 
-              <!-- Latest Balance Sheet -->
-              <div v-if="advancedData.balanceSheets.last" class="mb-8">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Latest Balance Sheet ({{ advancedData.balanceSheets.last.year }})</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500">Turnover</dt>
-                    <dd class="text-lg font-semibold text-gray-900">{{ formatCurrency(advancedData.balanceSheets.last.turnover) }}</dd>
-                  </div>
-                  <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500">Net Worth</dt>
-                    <dd class="text-lg font-semibold text-gray-900">{{ formatCurrency(advancedData.balanceSheets.last.netWorth) }}</dd>
-                  </div>
-                  <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500">Employees</dt>
-                    <dd class="text-lg font-semibold text-gray-900">{{ advancedData.balanceSheets.last.employees || 'N/A' }}</dd>
-                  </div>
-                  <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500">Total Assets</dt>
-                    <dd class="text-lg font-semibold text-gray-900">{{ formatCurrency(advancedData.balanceSheets.last.totalAssets) }}</dd>
-                  </div>
-                </div>
-              </div>
+            <!-- Contact Information -->
+            <CompanyContacts 
+              :data="advancedData" 
+              data-type="advanced" 
+            />
 
-              <!-- Historical Balance Sheets -->
-              <div v-if="advancedData.balanceSheets.all && advancedData.balanceSheets.all.length > 0">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Historical Balance Sheets</h3>
-                <div class="overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                      <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turnover</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Net Worth</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employees</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Share Capital</th>
-                      </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                      <tr v-for="sheet in advancedData.balanceSheets.all" :key="sheet.year" class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ sheet.year }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatCurrency(sheet.turnover) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatCurrency(sheet.netWorth) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ sheet.employees || 'N/A' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatCurrency(sheet.shareCapital) }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+            <!-- Corporate Structure -->
+            <CompanyStructure 
+              :data="advancedData" 
+              data-type="advanced" 
+            />
 
-            <!-- Shareholders Section -->
-            <div v-if="hasShareHolders(advancedData)" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-gray-900">Ownership Structure</h2>
-                <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">
-                  Shareholders
-                </span>
-              </div>
-
-              <div class="space-y-4">
-                <div v-for="(holder, index) in advancedData.shareHolders" :key="index" class="border border-gray-200 rounded-lg p-4">
-                  <div class="flex items-center justify-between">
-                    <div class="flex-1">
-                      <h4 class="font-medium text-gray-900">
-                        {{ holder.companyName || `${holder.name} ${holder.surname}`.trim() }}
-                      </h4>
-                      <p class="text-sm text-gray-500">Tax Code: {{ holder.taxCode }}</p>
-                    </div>
-                    <div class="text-right">
-                      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                        {{ formatPercentage(holder.percentShare) }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Raw Data Toggle -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <button
-                @click="showAdvancedRawData = !showAdvancedRawData"
-                class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                {{ showAdvancedRawData ? 'Hide' : 'Show' }} Raw Data
-              </button>
-              
-              <pre v-if="showAdvancedRawData" class="mt-4 bg-gray-50 rounded-lg p-4 text-xs overflow-auto">{{ JSON.stringify(advancedData, null, 2) }}</pre>
-            </div>
+            <!-- Raw Data -->
+            <CompanyRawData 
+              :data="advancedData" 
+              data-type="advanced" 
+            />
           </div>
         </div>
 
@@ -210,126 +129,47 @@
 
           <!-- Full Data Display -->
           <div v-if="fullData" class="space-y-6">
-            <!-- Basic Company Information -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-gray-900">Full Company Report</h2>
-                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-                  Full Report
-                </span>
-              </div>
+            <!-- Company Overview -->
+            <CompanyOverview 
+              :data="fullData" 
+              data-type="full" 
+            />
 
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div v-for="(value, key) in flattenedFullData" :key="key" class="space-y-1">
-                  <dt class="text-sm font-medium text-gray-500 capitalize">{{ formatKey(key) }}</dt>
-                  <dd class="text-sm text-gray-900">{{ formatValue(value) }}</dd>
-                </div>
-              </div>
-            </div>
+            <!-- Enhanced Financial Information for Full Data -->
+            <CompanyFinancialsEnhanced 
+              :data="fullData" 
+              data-type="full" 
+            />
 
-            <!-- Balance Sheets Section -->
-            <div v-if="hasBalanceSheets(fullData)" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-gray-900">Financial Data</h2>
-                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-                  Balance Sheets
-                </span>
-              </div>
+            <!-- Key People & Management -->
+            <CompanyPeople 
+              :data="fullData" 
+              data-type="full" 
+            />
 
-              <!-- Latest Balance Sheet -->
-              <div v-if="fullData.balanceSheets.last" class="mb-8">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Latest Balance Sheet ({{ fullData.balanceSheets.last.year }})</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500">Turnover</dt>
-                    <dd class="text-lg font-semibold text-gray-900">{{ formatCurrency(fullData.balanceSheets.last.turnover) }}</dd>
-                  </div>
-                  <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500">Net Worth</dt>
-                    <dd class="text-lg font-semibold text-gray-900">{{ formatCurrency(fullData.balanceSheets.last.netWorth) }}</dd>
-                  </div>
-                  <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500">Employees</dt>
-                    <dd class="text-lg font-semibold text-gray-900">{{ fullData.balanceSheets.last.employees || 'N/A' }}</dd>
-                  </div>
-                  <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500">Total Assets</dt>
-                    <dd class="text-lg font-semibold text-gray-900">{{ formatCurrency(fullData.balanceSheets.last.totalAssets) }}</dd>
-                  </div>
-                </div>
-              </div>
+            <!-- Contact Information -->
+            <CompanyContacts 
+              :data="fullData" 
+              data-type="full" 
+            />
 
-              <!-- Historical Balance Sheets -->
-              <div v-if="fullData.balanceSheets.all && fullData.balanceSheets.all.length > 0">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Historical Balance Sheets</h3>
-                <div class="overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                      <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turnover</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Net Worth</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employees</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Share Capital</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Assets</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Cost</th>
-                      </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                      <tr v-for="sheet in fullData.balanceSheets.all" :key="sheet.year" class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ sheet.year }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatCurrency(sheet.turnover) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatCurrency(sheet.netWorth) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ sheet.employees || 'N/A' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatCurrency(sheet.shareCapital) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatCurrency(sheet.totalAssets) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatCurrency(sheet.totalStaffCost) }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+            <!-- Corporate Structure -->
+            <CompanyStructure 
+              :data="fullData" 
+              data-type="full" 
+            />
 
-            <!-- Shareholders Section -->
-            <div v-if="hasShareHolders(fullData)" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-gray-900">Ownership Structure</h2>
-                <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">
-                  Shareholders
-                </span>
-              </div>
+            <!-- Additional Data (Legal, Certifications, etc.) -->
+            <CompanyAdditionalData 
+              :data="fullData" 
+              data-type="full" 
+            />
 
-              <div class="space-y-4">
-                <div v-for="(holder, index) in fullData.shareHolders" :key="index" class="border border-gray-200 rounded-lg p-4">
-                  <div class="flex items-center justify-between">
-                    <div class="flex-1">
-                      <h4 class="font-medium text-gray-900">
-                        {{ holder.companyName || `${holder.name} ${holder.surname}`.trim() }}
-                      </h4>
-                      <p class="text-sm text-gray-500">Tax Code: {{ holder.taxCode }}</p>
-                    </div>
-                    <div class="text-right">
-                      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                        {{ formatPercentage(holder.percentShare) }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Raw Data Toggle -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <button
-                @click="showFullRawData = !showFullRawData"
-                class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                {{ showFullRawData ? 'Hide' : 'Show' }} Raw Data
-              </button>
-              
-              <pre v-if="showFullRawData" class="mt-4 bg-gray-50 rounded-lg p-4 text-xs overflow-auto">{{ JSON.stringify(fullData, null, 2) }}</pre>
-            </div>
+            <!-- Raw Data -->
+            <CompanyRawData 
+              :data="fullData" 
+              data-type="full" 
+            />
           </div>
         </div>
 
@@ -442,6 +282,16 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useCompanyStore } from '@/stores/company'
+import {
+  CompanyOverview,
+  CompanyFinancials,
+  CompanyPeople,
+  CompanyContacts,
+  CompanyStructure,
+  CompanyRawData,
+  CompanyFinancialsEnhanced,
+  CompanyAdditionalData
+} from '@/components/company'
 
 const companyStore = useCompanyStore()
 
@@ -455,11 +305,9 @@ const batchLoading = ref(false)
 const advancedData = ref(null)
 const fullData = ref(null)
 const statusData = ref(null)
-const batchResults = ref([])
 
 // UI state
-const showAdvancedRawData = ref(false)
-const showFullRawData = ref(false)
+const batchResults = ref([])
 
 // Tab configuration
 const tabs = [
@@ -536,68 +384,7 @@ const checkBatchStatus = async () => {
   batchLoading.value = false
 }
 
-// Computed properties
-const flattenedAdvancedData = computed(() => {
-  if (!advancedData.value) return {}
-  return flattenObject(advancedData.value)
-})
-
-const flattenedFullData = computed(() => {
-  if (!fullData.value) return {}
-  return flattenObject(fullData.value)
-})
-
-// Utility functions
-const flattenObject = (obj, prefix = '') => {
-  let result = {}
-  for (const key in obj) {
-    // Skip complex structures that need special handling
-    if (key === 'balanceSheets' || key === 'shareHolders') {
-      continue
-    }
-    
-    if (obj[key] !== null && typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
-      result = { ...result, ...flattenObject(obj[key], prefix + key + '.') }
-    } else {
-      result[prefix + key] = obj[key]
-    }
-  }
-  return result
-}
-
-const hasBalanceSheets = (data) => {
-  return data && data.balanceSheets && (data.balanceSheets.last || (data.balanceSheets.all && data.balanceSheets.all.length > 0))
-}
-
-const hasShareHolders = (data) => {
-  return data && data.shareHolders && data.shareHolders.length > 0
-}
-
-const formatCurrency = (value) => {
-  if (value === null || value === undefined) return 'N/A'
-  return new Intl.NumberFormat('it-IT', {
-    style: 'currency',
-    currency: 'EUR'
-  }).format(value)
-}
-
-const formatPercentage = (value) => {
-  if (value === null || value === undefined) return 'N/A'
-  return `${value}%`
-}
-
-const formatKey = (key) => {
-  return key.replace(/[._]/g, ' ').replace(/([A-Z])/g, ' $1').trim()
-}
-
-const formatValue = (value) => {
-  if (value === null || value === undefined) return 'N/A'
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
-  if (typeof value === 'number') return value.toLocaleString()
-  if (Array.isArray(value)) return value.map(formatValue).join(', ')
-  return String(value)
-}
-
+// Utility functions for status display
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   try {

@@ -25,49 +25,6 @@ router.get('/credit', checkPermission('get_credit'), (req, res) => {
         .catch(error => res.json(error.message));
 });
 
-router.get('/search', 
-    checkPermission('search'),
-    logActivity({type:'search', action:'company_search', getDescription:getSearchDescription, getMetadata:getSearchMetadata}),
-    async (req, res) => {
-        try {
-            const {
-                q = '', // general search query
-                provincia,
-                codice_ateco,
-                fatturato_min,
-                fatturato_max,
-                dipendenti_min,
-                dipendenti_max,
-                from = 0,
-                size = 10
-            } = req.query;
-
-            const searchParams = {
-                q,
-                provincia,
-                codice_ateco,
-                fatturato_min,
-                fatturato_max,
-                dipendenti_min,
-                dipendenti_max,
-                from: parseInt(from),
-                size: parseInt(size)
-            };
-
-            const results = await searchCompanies(searchParams);
-            res.json(results);
-        } catch (error) {
-            res.status(500).json(error.message);
-        }
-    }
-);
-
-router.get('/company/:piva',
-    checkPermission('company_details'),
-    checkCache('company', ['advanced', 'full']),
-    logActivity({type:'company_basic', action:'get_basic_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
-);
-
 // get advanced company data by piva
 router.get('/IT-advanced/:piva', 
     checkPermission('advanced_search'),

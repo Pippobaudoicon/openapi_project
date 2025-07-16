@@ -4,11 +4,26 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import User from '../../models/User.js';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../../utils/emailService.js';
+import { 
+    logActivity,
+    getLoginMetadata,
+    getLoginDescription,
+    getLogoutMetadata,
+    getLogoutDescription,
+    getRegisterMetadata,
+    getRegisterDescription,
+    getChangePasswordMetadata,
+    getChangePasswordDescription,
+    getForgotPasswordMetadata,
+    getForgotPasswordDescription,
+    getResetPasswordMetadata,
+    getResetPasswordDescription
+ } from '../../middleware/activityLogger.js';
 
 const router = express.Router();
 
 // Login route
-router.post('/login', (req, res, next) => {
+router.post('/login', logActivity({type:'login', action:'login', getDescription:getLoginDescription, getMetadata:getLoginMetadata}), (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
         if (err) return next(err);
         if (!user) {
@@ -22,7 +37,7 @@ router.post('/login', (req, res, next) => {
 });
 
 // Register route
-router.post('/register', async (req, res) => {
+router.post('/register', logActivity({type:'register', action:'register', getDescription:getRegisterDescription, getMetadata:getRegisterMetadata}), async (req, res) => {
     try {
         const { email, password } = req.body;
         
@@ -73,7 +88,7 @@ router.get('/verify/:token', async (req, res) => {
 });
 
 // Change password route
-router.post('/change-password', async (req, res) => {
+router.post('/change-password', logActivity({type:'change-password', action:'change-password', getDescription:getChangePasswordDescription, getMetadata:getChangePasswordMetadata}), async (req, res) => {
     if (!req.isAuthenticated()) {
         return res.status(401).json({ message: 'You must be logged in' });
     }
@@ -99,7 +114,7 @@ router.post('/change-password', async (req, res) => {
 });
 
 // Forgot password - request reset
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', logActivity({type:'forgot-password', action:'forgot-password', getDescription:getForgotPasswordDescription, getMetadata:getForgotPasswordMetadata}), async (req, res) => {
     try {
         const { email } = req.body;
         const user = await User.findOne({ email });
@@ -125,7 +140,7 @@ router.post('/forgot-password', async (req, res) => {
 });
 
 // Reset password with token
-router.post('/reset-password/:token', async (req, res) => {
+router.post('/reset-password/:token', logActivity({type:'reset-password', action:'reset-password', getDescription:getResetPasswordDescription, getMetadata:getResetPasswordMetadata}), async (req, res) => {
     try {
         const { password } = req.body;
         const { token } = req.params;
@@ -154,7 +169,7 @@ router.post('/reset-password/:token', async (req, res) => {
 });
 
 // Logout route
-router.post('/logout', (req, res) => {
+router.post('/logout', logActivity({type:'logout', action:'logout', getDescription:getLogoutDescription, getMetadata:getLogoutMetadata}), (req, res) => {
     req.logout((err) => {
         if (err) return res.status(500).json({ message: 'Error logging out' });
         res.json({ message: 'Logged out successfully' });

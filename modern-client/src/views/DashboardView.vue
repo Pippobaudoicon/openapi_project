@@ -34,7 +34,7 @@
     <!-- Stats Overview -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" v-motion-slide-visible-once-left>
       <div class="lg:col-span-2">
-        <StatsCard :stats="stats" :loading="isLoading" />
+        <StatsCard :stats="activityStore.stats" :loading="isLoading || activityStore.isLoading" />
       </div>
       <div>
         <CreditCard :credit="creditInfo" :loading="isLoading" />
@@ -43,9 +43,19 @@
 
     <!-- Recent Activity & Quick Search -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" v-motion-fade-visible-once>
-      <RecentActivityCard :activities="recentActivities" />
+      <RecentActivityCard 
+        :activities="recentActivities" 
+        :loading="activityStore.isLoading || isLoading"
+        @view-all="showActivityHistory = true"
+      />
       <QuickSearchCard @search="handleQuickSearch" />
     </div>
+
+    <!-- Activity History Modal -->
+    <ActivityHistoryModal 
+      :is-open="showActivityHistory"
+      @close="showActivityHistory = false"
+    />
   </div>
 </template>
 
@@ -54,41 +64,25 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useCompanyStore } from '@/stores/company'
+import { useActivityStore } from '@/stores/activity'
 import QuickActionCard from '@/components/dashboard/QuickActionCard.vue'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import CreditCard from '@/components/dashboard/CreditCard.vue'
 import RecentActivityCard from '@/components/dashboard/RecentActivityCard.vue'
 import QuickSearchCard from '@/components/dashboard/QuickSearchCard.vue'
+import ActivityHistoryModal from '@/components/dashboard/ActivityHistoryModal.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const companyStore = useCompanyStore()
+const activityStore = useActivityStore()
 
 const isLoading = ref(true)
 const creditInfo = ref(null)
-const stats = ref({
-  totalSearches: 0,
-  companiesFound: 0,
-  reportsGenerated: 0,
-  averageSearchTime: '0.5s'
-})
+const showActivityHistory = ref(false)
 
-const recentActivities = ref([
-  {
-    id: 1,
-    type: 'search',
-    description: 'Searched for companies in Milano',
-    timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-    icon: 'search'
-  },
-  {
-    id: 2,
-    type: 'report',
-    description: 'Generated full report for company 12345678901',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-    icon: 'document'
-  }
-])
+// Use computed properties to get real-time data from activity store
+const recentActivities = ref([])
 
 const quickActions = [
   {
@@ -151,15 +145,15 @@ onMounted(async () => {
     // Fetch credit info
     creditInfo.value = await companyStore.getCredit()
     
-    // Simulate loading stats (replace with real API calls)
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Fetch real activity data
+    await Promise.all([
+      activityStore.getRecentActivities(5),
+      activityStore.getActivityStats()
+    ])
     
-    stats.value = {
-      totalSearches: 127,
-      companiesFound: 1543,
-      reportsGenerated: 89,
-      averageSearchTime: '0.8s'
-    }
+    // Use raw activities - RecentActivityCard will format them
+    recentActivities.value = activityStore.activities
+    
   } catch (error) {
     console.error('Failed to load dashboard data:', error)
   } finally {

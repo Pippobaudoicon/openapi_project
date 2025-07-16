@@ -5,6 +5,16 @@ import { axiosCompanyService, axiosOauthService, axiosVisureCameraliService } fr
 import CompanySearch from '../../models/CompanySearch.js';
 import VisureSearch from '../../models/VisureSearch.js';
 import { searchCompanies } from '../../utils/meilisearch.js';
+import { 
+    logActivity, 
+    getSearchDescription, 
+    getCompanyDescription, 
+    getVisureDescription,
+    getBilancioDescription,
+    getSearchMetadata,
+    getCompanyMetadata,
+    getVisureMetadata
+} from '../../middleware/activityLogger.js';
 
 const router = express.Router();
 
@@ -15,9 +25,9 @@ router.get('/credit', checkPermission('get_credit'), (req, res) => {
         .catch(error => res.json(error.message));
 });
 
-// Add this new route before the existing routes
 router.get('/search', 
     checkPermission('search'),
+    logActivity({type:'search', action:'company_search', getDescription:getSearchDescription, getMetadata:getSearchMetadata}),
     async (req, res) => {
         try {
             const {
@@ -56,6 +66,7 @@ router.get('/search',
 router.get('/IT-advanced/:piva', 
     checkPermission('advanced_search'),
     checkCache('company', 'advanced'),
+    logActivity({type:'company_advanced', action:'get_advanced_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
     async (req, res) => {
         try {   
             const response = await axiosCompanyService.get(`/IT-advanced/${req.params.piva}`);
@@ -90,6 +101,7 @@ router.get('/IT-advanced/:piva',
 router.get('/IT-full/:piva', 
     checkPermission('full_search'),
     checkCache('company', 'full'),
+    logActivity({type:'company_full', action:'get_full_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
     async (req, res) => {
         try {
             const response = await axiosCompanyService.get(`/IT-full/${req.params.piva}`);
@@ -123,6 +135,7 @@ router.get('/IT-full/:piva',
 router.get('/IT-closed/:piva', 
     checkRole(['admin']),
     checkCache('company', 'closed'),
+    logActivity({type:'company_status', action:'check_company_status', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
     async (req, res) => {
         try {
             const response = await axiosCompanyService.get(`/IT-closed/${req.params.piva}`);
@@ -397,6 +410,7 @@ router.get('/bilancio-ottico/:id/allegati',
 
 
 import visureCallbacks from './callbacks/visure.js';
+import { get } from 'mongoose';
 router.use('/callback', visureCallbacks);
 
 export default router;

@@ -19,46 +19,46 @@
 
     <div v-else class="grid grid-cols-2 gap-6">
       <div class="text-center">
-        <div class="text-2xl font-bold text-gray-900 mb-1">{{ stats.totalSearches }}</div>
+        <div class="text-2xl font-bold text-gray-900 mb-1">{{ stats.searchCount || 0 }}</div>
         <div class="text-sm text-gray-600">Total Searches</div>
         <div class="flex items-center justify-center mt-2">
           <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <span class="text-xs text-green-600">+12%</span>
+          <span class="text-xs text-gray-500">All time</span>
         </div>
       </div>
 
       <div class="text-center">
-        <div class="text-2xl font-bold text-gray-900 mb-1">{{ stats.companiesFound }}</div>
-        <div class="text-sm text-gray-600">Companies Found</div>
-        <div class="flex items-center justify-center mt-2">
-          <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-          </svg>
-          <span class="text-xs text-green-600">+8%</span>
-        </div>
-      </div>
-
-      <div class="text-center">
-        <div class="text-2xl font-bold text-gray-900 mb-1">{{ stats.reportsGenerated }}</div>
-        <div class="text-sm text-gray-600">Reports Generated</div>
+        <div class="text-2xl font-bold text-gray-900 mb-1">{{ stats.companyReportsCount || 0 }}</div>
+        <div class="text-sm text-gray-600">Company Reports</div>
         <div class="flex items-center justify-center mt-2">
           <svg class="w-4 h-4 text-blue-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <span class="text-xs text-blue-600">+5%</span>
+          <span class="text-xs text-gray-500">Generated</span>
         </div>
       </div>
 
       <div class="text-center">
-        <div class="text-2xl font-bold text-gray-900 mb-1">{{ stats.averageSearchTime }}</div>
-        <div class="text-sm text-gray-600">Avg Search Time</div>
+        <div class="text-2xl font-bold text-gray-900 mb-1">{{ stats.visureCount || 0 }}</div>
+        <div class="text-sm text-gray-600">Visure Requests</div>
+        <div class="flex items-center justify-center mt-2">
+          <svg class="w-4 h-4 text-purple-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span class="text-xs text-gray-500">All time</span>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <div class="text-2xl font-bold text-gray-900 mb-1">{{ stats.averagePerDay || 0 }}</div>
+        <div class="text-sm text-gray-600">Daily Average</div>
         <div class="flex items-center justify-center mt-2">
           <svg class="w-4 h-4 text-orange-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span class="text-xs text-orange-600">-15%</span>
+          <span class="text-xs text-gray-500">Last 30 days</span>
         </div>
       </div>
     </div>

@@ -2,23 +2,38 @@
   <div class="card">
     <div class="flex items-center justify-between mb-6">
       <h3 class="text-lg font-semibold text-gray-900">Recent Activity</h3>
-      <button class="text-sm text-primary-600 hover:text-primary-500 font-medium">
+      <button 
+        @click="$emit('view-all')"
+        class="text-sm text-primary-600 hover:text-primary-500 font-medium transition-colors"
+      >
         View all →
       </button>
     </div>
 
-    <div class="space-y-4">
+    <!-- Loading State -->
+    <div v-if="loading" class="space-y-4">
+      <div v-for="n in 3" :key="n" class="animate-pulse flex items-start space-x-3 p-3">
+        <div class="w-8 h-8 bg-gray-200 rounded-lg"></div>
+        <div class="flex-1 space-y-2">
+          <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+          <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activities List -->
+    <div v-else-if="formattedActivities.length > 0" class="space-y-4">
       <div
-        v-for="activity in activities"
-        :key="activity.id"
+        v-for="activity in formattedActivities"
+        :key="activity._id"
         class="flex items-start space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200"
       >
         <div :class="[
           'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
-          getActivityColor(activity.type)
+          getActivityColorClass(activity.color)
         ]">
           <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="getActivityIcon(activity.type)" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="activity.icon" />
           </svg>
         </div>
         
@@ -27,20 +42,21 @@
             {{ activity.description }}
           </p>
           <p class="text-xs text-gray-500 mt-1">
-            {{ formatTime(activity.timestamp) }}
+            {{ activity.timeAgo }}
           </p>
         </div>
         
         <div class="flex-shrink-0">
           <div :class="[
             'w-2 h-2 rounded-full',
-            isRecent(activity.timestamp) ? 'bg-green-500' : 'bg-gray-300'
+            isRecent(activity.createdAt) ? 'bg-green-500' : 'bg-gray-300'
           ]"></div>
         </div>
       </div>
     </div>
 
-    <div v-if="activities.length === 0" class="text-center py-8">
+    <!-- Empty State -->
+    <div v-else class="text-center py-8">
       <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
       </svg>
@@ -50,43 +66,42 @@
 </template>
 
 <script setup>
-import { formatDistanceToNow } from 'date-fns'
+import { computed } from 'vue'
+import { useActivityStore } from '@/stores/activity'
 
-defineProps({
+const props = defineProps({
   activities: {
     type: Array,
     default: () => []
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 
-const getActivityIcon = (type) => {
-  switch (type) {
-    case 'search':
-      return 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
-    case 'report':
-      return 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-    case 'download':
-      return 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4'
-    default:
-      return 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-  }
-}
+const emit = defineEmits(['view-all'])
 
-const getActivityColor = (type) => {
-  switch (type) {
-    case 'search':
-      return 'bg-primary-600'
-    case 'report':
-      return 'bg-green-600'
-    case 'download':
-      return 'bg-orange-600'
-    default:
-      return 'bg-gray-600'
-  }
-}
+const activityStore = useActivityStore()
 
-const formatTime = (timestamp) => {
-  return formatDistanceToNow(new Date(timestamp), { addSuffix: true })
+// Format activities using the store's formatActivity method
+const formattedActivities = computed(() => {
+  return props.activities.map(activity => activityStore.formatActivity(activity))
+})
+
+const getActivityColorClass = (color) => {
+  const colorMap = {
+    blue: 'bg-blue-600',
+    green: 'bg-green-600',
+    purple: 'bg-purple-600',
+    yellow: 'bg-yellow-600',
+    indigo: 'bg-indigo-600',
+    pink: 'bg-pink-600',
+    gray: 'bg-gray-600',
+    emerald: 'bg-emerald-600',
+    red: 'bg-red-600'
+  }
+  return colorMap[color] || 'bg-gray-600'
 }
 
 const isRecent = (timestamp) => {

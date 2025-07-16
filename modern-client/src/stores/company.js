@@ -71,6 +71,30 @@ export const useCompanyStore = defineStore('company', () => {
     }
   }
 
+  const getCompanyDetails = async (piva) => {
+    isLoading.value = true
+    error.value = null
+    try {
+      const response = await api.get(`/company/${piva}`)
+      currentCompany.value = response.data.data
+
+      // Log the activity
+      // await logActivity(
+      //   'view',
+      //   'company_view',
+      //   `Viewed company details for PIVA: ${piva}`,
+      //   { piva }
+      // )
+      
+      return response.data
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Failed to fetch company details'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   const getCompanyAdvanced = async (piva) => {
     isLoading.value = true
     error.value = null
@@ -353,6 +377,7 @@ export const useCompanyStore = defineStore('company', () => {
     hasResults,
     totalResults,
     searchCompanies,
+    getCompanyDetails,
     getCompanyAdvanced,
     getCompanyFull,
     getCompanyClosed,

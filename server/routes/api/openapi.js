@@ -62,6 +62,12 @@ router.get('/search',
     }
 );
 
+router.get('/company/:piva',
+    checkPermission('company_details'),
+    checkCache('company', ['advanced', 'full']),
+    logActivity({type:'company_basic', action:'get_basic_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
+);
+
 // get advanced company data by piva
 router.get('/IT-advanced/:piva', 
     checkPermission('advanced_search'),
@@ -89,7 +95,9 @@ router.get('/IT-advanced/:piva',
             res.json({
                 source: 'api',
                 timestamp: new Date(),
-                data: companyData
+                data: companyData,
+                piva: req.params.piva,
+                searchType: 'advanced'
             });
         } catch (error) {
             res.status(500).json(error.message);
@@ -123,7 +131,9 @@ router.get('/IT-full/:piva',
             res.json({
                 source: 'api',
                 timestamp: new Date(),
-                data: companyData
+                data: companyData,
+                piva: req.params.piva,
+                searchType: 'full'
             });
         } catch (error) {
             res.status(500).json(error.message);
@@ -410,7 +420,6 @@ router.get('/bilancio-ottico/:id/allegati',
 
 
 import visureCallbacks from './callbacks/visure.js';
-import { get } from 'mongoose';
 router.use('/callback', visureCallbacks);
 
 export default router;

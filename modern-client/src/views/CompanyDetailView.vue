@@ -145,6 +145,18 @@ const props = defineProps({
 const route = useRoute()
 const companyStore = useCompanyStore()
 
+const getCompanyDetails = async () => {
+  try {
+    await companyStore.getCompanyDetails(props.piva)
+    if (!companyStore.currentCompany) {
+      console.error('Company not found')
+      return
+    }
+  } catch (error) {
+    console.error('Failed to load company details:', error)
+  }
+}
+
 const getAdvancedReport = async () => {
   try {
     await companyStore.getCompanyAdvanced(props.piva)
@@ -201,10 +213,6 @@ const formatStatus = (status) => {
 }
 
 onMounted(async () => {
-  try {
-    await companyStore.getCompanyAdvanced(props.piva)
-  } catch (error) {
-    console.error('Failed to load company details:', error)
-  }
+  await getCompanyDetails()
 })
 </script>

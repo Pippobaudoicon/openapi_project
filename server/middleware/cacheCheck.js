@@ -36,8 +36,9 @@ export const checkCache = (modelSearch, searchType = null, searchStatus = null) 
         const Model = await loadModel(strategy.model);
         const query = buildQuery(strategy, req);
         
-        // Add searchType to query if provided
-        if (searchType) {
+        if (searchType && Array.isArray(searchType)) {
+            query.searchType = { $in: searchType };
+        } else if (searchType) {
             query.searchType = searchType;
         }
 
@@ -47,12 +48,13 @@ export const checkCache = (modelSearch, searchType = null, searchStatus = null) 
 
         const existingSearch = await Model.findOne(query)
             .sort({ createdAt: -1 });
-
         if (existingSearch && validationFunctions[strategy.validationFn](existingSearch)) {
             return res.json({
                 source: 'cache',
                 timestamp: existingSearch.createdAt,
-                data: existingSearch.data
+                data: existingSearch.data,
+                searchType: existingSearch.searchType,
+                piva: existingSearch.piva,
             });
         }
     } catch (error) {

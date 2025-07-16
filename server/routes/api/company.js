@@ -2,7 +2,7 @@ import express from 'express';
 import { checkRole, checkPermission } from '../../middleware/roleAuth.js';
 import { checkCache } from '../../middleware/cacheCheck.js';
 import { searchCompanies } from '../../utils/meilisearch.js';
-import { getLLMOverview } from '../../services/gpt.js';
+import { getLLMOverview, stripCompanyData } from '../../services/openaiService.js';
 import { 
     logActivity, 
     getSearchDescription, 
@@ -70,11 +70,11 @@ router.get('/llm-overview/:piva',
             if (!companyRecord) {
                 return res.status(404).json({ error: 'Company data not found in database.' });
             }
+            console.log('Fetched company record:', companyRecord);
+            const slimCompanyRecord = stripCompanyData(companyRecord.data);
+            console.log('Slimmed company record:', slimCompanyRecord);
+            const overview = await getLLMOverview(slimCompanyRecord);
 
-            // Send data to LLM and get the overview
-            const overview = await getLLMOverview(companyRecord.data);
-
-            // Return the overview
             res.json({ overview });
         } catch (error) {
             console.error('Error fetching LLM overview:', error);

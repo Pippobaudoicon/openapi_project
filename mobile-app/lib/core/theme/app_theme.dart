@@ -43,12 +43,10 @@ class AppTheme {
         secondaryContainer: gray100,
         surface: surface,
         surfaceContainerHighest: surfaceVariant,
-        background: background,
         error: error,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onSurface: gray900,
-        onBackground: gray900,
         onError: Colors.white,
       ),
 

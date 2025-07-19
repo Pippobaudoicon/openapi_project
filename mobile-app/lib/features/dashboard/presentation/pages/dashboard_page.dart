@@ -6,7 +6,7 @@ import '../../../../shared/widgets/stats_card.dart';
 import '../../../../shared/widgets/recent_activity_card.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({Key? key}) : super(key: key);
+  const DashboardPage({super.key});
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();

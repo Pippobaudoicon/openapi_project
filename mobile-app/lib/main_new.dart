@@ -12,7 +12,7 @@ void main() {
 }
 
 class OpenAPIMobileApp extends ConsumerWidget {
-  const OpenAPIMobileApp({Key? key}) : super(key: key);
+  const OpenAPIMobileApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

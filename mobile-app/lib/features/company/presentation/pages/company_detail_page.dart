@@ -4,9 +4,9 @@ class CompanyDetailPage extends StatefulWidget {
   final String companyId;
 
   const CompanyDetailPage({
-    Key? key,
+    super.key,
     required this.companyId,
-  }) : super(key: key);
+  });
 
   @override
   State<CompanyDetailPage> createState() => _CompanyDetailPageState();

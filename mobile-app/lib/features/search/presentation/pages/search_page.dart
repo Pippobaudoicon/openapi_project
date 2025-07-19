@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/routing/app_router.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
+  const SearchPage({super.key});
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -188,7 +188,7 @@ class _SearchPageState extends State<SearchPage> {
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: () {
-          context.go('${AppRoutes.companyDetail.replaceAll(':id', company.id)}');
+          context.go(AppRoutes.companyDetail.replaceAll(':id', company.id));
         },
         borderRadius: BorderRadius.circular(16),
         child: Padding(

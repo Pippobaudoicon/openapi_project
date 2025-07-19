@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RecentActivityCard extends StatelessWidget {
-  const RecentActivityCard({Key? key}) : super(key: key);
+  const RecentActivityCard({super.key});
 
   @override
   Widget build(BuildContext context) {

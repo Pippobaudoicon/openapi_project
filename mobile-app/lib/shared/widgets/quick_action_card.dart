@@ -20,9 +20,9 @@ class QuickActionCard extends StatelessWidget {
   final QuickAction action;
 
   const QuickActionCard({
-    Key? key,
+    super.key,
     required this.action,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

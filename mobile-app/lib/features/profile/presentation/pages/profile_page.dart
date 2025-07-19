@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/routing/app_router.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();

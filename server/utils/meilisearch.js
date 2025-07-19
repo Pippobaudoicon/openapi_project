@@ -13,18 +13,26 @@ const initializeIndex = async () => {
         searchableAttributes: [
             'denominazione',
             'indirizzo',
-            'comune'
+            'comune',
+            'provincia',
+            'piva',
+            'codice_ateco'
         ],
         filterableAttributes: [
             'provincia',
             'codice_ateco',
             'fatturato',
-            'dipendenti'
+            'dipendenti',
+            'createdAt',
+            'searchType',
+            'taxCode'
         ],
         sortableAttributes: [
             'fatturato',
             'dipendenti',
-            'createdAt'
+            'createdAt',
+            'searchType',
+            'taxCode'
         ]
     });
 };

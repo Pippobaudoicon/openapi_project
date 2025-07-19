@@ -37,15 +37,71 @@ const CompanySearchSchema = new mongoose.Schema({
     }
 });
 
+//TODO SAVE FOR searchType 'full' different response payload
 // Middleware to handle indexing after save
 CompanySearchSchema.post('save', async function(doc) {
-    if (doc.data && (doc.searchType === 'advanced' || doc.searchType === 'full')) {
+    if (doc.data && (doc.searchType === 'advanced')) {
         try {
             const index = meilisearch.index('companies');
-            await index.addDocuments([{
+
+            let companyData = doc.data;
+            if (companyData.data) {
+                companyData = Array.isArray(companyData.data) ? companyData.data[0] : companyData.data;
+            }
+
+            //TODO Improve this mapping to handle different structures
+            const document = {
                 id: doc._id.toString(),
-                ...doc.data
-            }]);
+                piva: doc.piva,
+                denominazione: companyData.companyName ||
+                    companyData.denominazione ||
+                    companyData.ragione_sociale ||
+                    companyData.nome ||
+                    'Unknown',
+                provincia: companyData.address?.registeredOffice?.province ||
+                    companyData.provincia ||
+                    companyData.province ||
+                    '',
+                comune: companyData.address?.registeredOffice?.town ||
+                    companyData.comune ||
+                    companyData.city ||
+                    '',
+                codice_ateco: companyData.atecoClassification?.ateco?.code ||
+                    companyData.codice_ateco ||
+                    companyData.atecoCode ||
+                    '',
+                descrizione_ateco: companyData.atecoClassification?.ateco?.description || '',
+                fatturato: companyData.balanceSheets?.last?.turnover ||
+                    companyData.fatturato ||
+                    companyData.revenue ||
+                    0,
+                dipendenti: companyData.balanceSheets?.last?.employees ||
+                    companyData.dipendenti ||
+                    companyData.employees ||
+                    0,
+                indirizzo: companyData.address?.registeredOffice?.streetName ||
+                    companyData.indirizzo ||
+                    companyData.address ||
+                    '',
+                cap: companyData.address?.registeredOffice?.zipCode || '',
+                stato_attivita: companyData.activityStatus ||
+                    companyData.stato_attivita ||
+                    companyData.stato ||
+                    'Unknown',
+                data_registrazione: companyData.registrationDate ||
+                    companyData.data_registrazione ||
+                    '',
+                data_inizio: companyData.startDate || '',
+                pec: companyData.pec || '',
+                codice_fiscale: companyData.taxCode || '',
+                forma_giuridica: companyData.detailedLegalForm?.description || '',
+                capitale_sociale: companyData.balanceSheets?.last?.shareCapital || 0,
+                patrimonio_netto: companyData.balanceSheets?.last?.netWorth || 0,
+                searchType: doc.searchType,
+                createdAt: doc.createdAt.toISOString()
+            };
+
+            await index.addDocuments([document]);
         } catch (error) {
             console.error('Error indexing company:', error);
         }
@@ -53,17 +109,20 @@ CompanySearchSchema.post('save', async function(doc) {
 });
 
 // Middleware to handle indexing after update
-CompanySearchSchema.post('updateOne', async function(doc) {
-    if (doc.data && (doc.searchType === 'advanced' || doc.searchType === 'full')) {
-        try {
+CompanySearchSchema.post('updateOne', async function() {
+    try {
+        const query = this.getQuery();
+        const doc = await this.model.findOne(query);
+
+        if (doc && doc.data && (doc.searchType === 'advanced' || doc.searchType === 'full')) {
             const index = meilisearch.index('companies');
             await index.addDocuments([{
                 id: doc._id.toString(),
                 ...doc.data
             }]);
-        } catch (error) {
-            console.error('Error indexing company:', error);
         }
+    } catch (error) {
+        console.error('Error indexing company after update:', error);
     }
 });
 

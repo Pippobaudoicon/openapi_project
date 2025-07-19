@@ -4,7 +4,6 @@ import { checkCache } from '../../middleware/cacheCheck.js';
 import { axiosCompanyService, axiosOauthService, axiosVisureCameraliService } from '../../utils/axiosOpenapi.js';
 import CompanySearch from '../../models/CompanySearch.js';
 import VisureSearch from '../../models/VisureSearch.js';
-import { searchCompanies } from '../../utils/meilisearch.js';
 import { 
     logActivity, 
     getITSearchDescription, 

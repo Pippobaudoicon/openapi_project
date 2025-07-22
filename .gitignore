@@ -2,3 +2,6 @@
 .DS_Store
 
 deploy-dev.sh
+
+# to keep only in main branch for now
+mobile-app

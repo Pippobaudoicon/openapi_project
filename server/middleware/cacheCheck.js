@@ -26,7 +26,9 @@ const buildQuery = (strategy, req) => {
  */
 export const checkCache = (modelSearch, searchType = null, searchStatus = null) => async (req, res, next) => {
     const force = req.query.force === 'true';
+    const type = req.query.type;
     if (force) return next();
+    if (type) searchType = type;
 
     const strategyKey = Object.keys(cacheStrategies)
         .find(key => modelSearch.includes(key)) || 'company';
@@ -36,8 +38,8 @@ export const checkCache = (modelSearch, searchType = null, searchStatus = null) 
         const Model = await loadModel(strategy.model);
         const query = buildQuery(strategy, req);
         
-        if (searchType && Array.isArray(searchType)) {
-            query.searchType = { $in: searchType };
+        if (Array.isArray(searchType)) {
+            query.searchType = searchType.find(type => type) || null;
         } else if (searchType) {
             query.searchType = searchType;
         }
@@ -55,6 +57,7 @@ export const checkCache = (modelSearch, searchType = null, searchStatus = null) 
                 data: existingSearch.data,
                 searchType: existingSearch.searchType,
                 piva: existingSearch.piva,
+                llmOverview: existingSearch.llmOverview
             });
         }
     } catch (error) {

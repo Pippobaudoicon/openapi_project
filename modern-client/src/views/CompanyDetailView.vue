@@ -117,6 +117,25 @@
           </div>
         </div>
       </div>
+
+      
+      <!-- LLM Overview Section -->
+      <div class="lg:col-span-3 space-y-6">
+        <div class="card">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">LLM Overview</h3>
+          <div v-if="companyStore.currentCompany.llmOverview">
+            <div class="space-y-2">
+              <div class="text-sm font-medium text-gray-500">Description</div>
+              <div v-if="formattedLLMOverview" v-html="formattedLLMOverview" class="prose max-w-full overflow-auto"></div>
+            </div>
+          </div>
+          <div v-else>
+            <button @click="fetchLLMOverview" :disabled="companyStore.isLoading" class="btn-primary">
+              Fetch LLM Overview
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Error State -->
@@ -131,9 +150,10 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCompanyStore } from '@/stores/company'
+import { marked } from 'marked';
 
 const props = defineProps({
   piva: {
@@ -144,6 +164,25 @@ const props = defineProps({
 
 const route = useRoute()
 const companyStore = useCompanyStore()
+
+const llmOverview = computed(() => companyStore.currentCompany?.llmOverview) || llmOverview.value[props.piva]
+
+const formattedLLMOverview = computed(() => {
+  if (companyStore.currentCompany?.llmOverview) {
+    return marked(companyStore.currentCompany.llmOverview);
+  }
+  return null;
+});
+
+const fetchLLMOverview = async () => {
+  try {
+    if (!llmOverview.value) {
+      await companyStore.getLLMOverview(props.piva)
+    }
+  } catch (error) {
+    console.error('Failed to fetch LLM overview:', error)
+  }
+}
 
 const getCompanyDetails = async () => {
   try {
@@ -192,18 +231,9 @@ const formatCurrency = (amount) => {
 }
 
 const getStatusColor = (status) => {
-  switch (status?.toLowerCase()) {
-    case 'active':
-    case 'attiva':
-      return 'bg-green-500'
-    case 'inactive':
-    case 'inattiva':
-      return 'bg-red-500'
-    case 'suspended':
-    case 'sospesa':
-      return 'bg-yellow-500'
-    default:
-      return 'bg-gray-500'
+  if (!status) return 'bg-gray-300'
+  if (status === 'closed'){
+    return 'bg-green-500'
   }
 }
 
@@ -214,5 +244,6 @@ const formatStatus = (status) => {
 
 onMounted(async () => {
   await getCompanyDetails()
+  console.log('Company details loaded:', companyStore.currentCompany.llmOverview)
 })
 </script>

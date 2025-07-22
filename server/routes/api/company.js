@@ -55,12 +55,13 @@ router.get('/search',
 
 router.get('/:piva',
     checkPermission('company_details'),
-    checkCache('company', ['advanced', 'full']),
+    checkCache('company', ['full', 'advanced', 'closed']),
     logActivity({type:'company_basic', action:'get_basic_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
 );
 
 router.get('/llm-overview/:piva',
     checkPermission('company_llm_overview'),
+    checkCache('company', 'overview'),
     logActivity({type:'company_overview', action:'get_overview_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
     async (req, res) => {
         try {
@@ -70,10 +71,13 @@ router.get('/llm-overview/:piva',
             if (!companyRecord) {
                 return res.status(404).json({ error: 'Company data not found in database.' });
             }
-            console.log('Fetched company record:', companyRecord);
+            
             const slimCompanyRecord = stripCompanyData(companyRecord.data);
-            console.log('Slimmed company record:', slimCompanyRecord);
             const overview = await getLLMOverview(slimCompanyRecord);
+
+            // Save the LLM overview to the database
+            companyRecord.llmOverview = overview;
+            await companyRecord.save();
 
             res.json({ overview });
         } catch (error) {

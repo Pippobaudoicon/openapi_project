@@ -19,6 +19,7 @@ export const useCompanyStore = defineStore('company', () => {
     from: 0,
     size: 10
   })
+  const llmOverview = ref({})
 
   const hasResults = computed(() => searchResults.value.length > 0)
   const totalResults = computed(() => searchResults.value.length)
@@ -77,6 +78,8 @@ export const useCompanyStore = defineStore('company', () => {
     try {
       const response = await api.get(`/company/${piva}`)
       currentCompany.value = response.data.data
+      currentCompany.value.llmOverview = response.data.llmOverview || {}
+      currentCompany.value.piva = piva
 
       // Log the activity
       // await logActivity(
@@ -367,6 +370,25 @@ export const useCompanyStore = defineStore('company', () => {
     error.value = null
   }
 
+  const getLLMOverview = async (piva) => {
+    if (llmOverview.value[piva]) {
+      return llmOverview.value[piva] // Return cached data
+    }
+
+    isLoading.value = true
+    error.value = null
+    try {
+      const response = await api.get(`/company/llm-overview/${piva}?type=full`)
+      llmOverview.value[piva] = response.data.overview // Cache the data
+      return response.data.overview
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Failed to fetch LLM overview'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     companies,
     currentCompany,
@@ -391,6 +413,7 @@ export const useCompanyStore = defineStore('company', () => {
     getCredit,
     updateSearchParams,
     clearSearch,
-    clearError
+    clearError,
+    getLLMOverview
   }
 })

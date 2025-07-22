@@ -4,6 +4,7 @@ const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
+//TODO make this configurable
 const outputLanguage = 'italian';
 //REVIEW better prompt using least amount of tokens
 const promptFinancialOverview = `Sei un Chief Financial Officer (CFO) senior: analizza e fornisci una sintesi strutturata, concisa e facilmente comprensibile dei dati aziendali e delle performance pubbliche forniti (inclusi dati finanziari, indici, gestione, assetto proprietario, operatività). La review deve essere accessibile sia ad addetti ai lavori che al pubblico generico, non solo agli esperti, e spiegare il significato dei dati in modo chiaro.

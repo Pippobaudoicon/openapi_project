@@ -40,7 +40,7 @@
       
       <!-- Raw data display -->
       <div class="relative">
-        <pre class="bg-gray-50 rounded-lg p-4 text-xs overflow-auto max-h-96 font-mono">{{ formattedData }}</pre>
+        <pre class="bg-gray-50 rounded-lg p-4 text-xs overflow-auto max-h-96 font-mono" v-html="formattedData"></pre>
         
         <!-- Copy success notification -->
         <div v-if="showCopySuccess" 
@@ -98,17 +98,81 @@ const toggleExpanded = () => {
   isExpanded.value = !isExpanded.value
 }
 
+// Update the filterObjectBySearchTerm function to ensure it works correctly
+const filterObjectBySearchTerm = (obj, searchTerm) => {
+  if (!obj || typeof obj !== 'object') return obj;
+
+  const result = Array.isArray(obj) ? [] : {};
+  let hasMatches = false;
+
+  for (const [key, value] of Object.entries(obj)) {
+    const keyMatches = key.toLowerCase().includes(searchTerm);
+    const valueMatches =
+      typeof value === 'string' && value.toLowerCase().includes(searchTerm);
+
+    if (keyMatches || valueMatches) {
+      result[key] = value;
+      hasMatches = true;
+    } else if (typeof value === 'object' && value !== null) {
+      const filteredValue = filterObjectBySearchTerm(value, searchTerm);
+      if (Array.isArray(value)) {
+        const filteredArray = value.filter((item) =>
+          typeof item === 'object'
+            ? Object.keys(filterObjectBySearchTerm(item, searchTerm)).length > 0
+            : String(item).toLowerCase().includes(searchTerm)
+        );
+        if (filteredArray.length > 0) {
+          result[key] = filteredArray;
+          hasMatches = true;
+        }
+      } else if (Object.keys(filteredValue).length > 0) {
+        result[key] = filteredValue;
+        hasMatches = true;
+      }
+    }
+  }
+
+  return hasMatches ? result : {};
+};
+
+// Add a function to highlight the search term in the raw data
+const highlightSearchTerm = (data, searchTerm) => {
+  if (!searchTerm.trim()) return data;
+
+  const term = searchTerm.toLowerCase();
+  const highlight = (text) =>
+    text.replace(new RegExp(`(${term})`, 'gi'), '<mark>$1</mark>');
+
+  const traverseAndHighlight = (obj) => {
+    if (typeof obj === 'string') {
+      return highlight(obj);
+    } else if (Array.isArray(obj)) {
+      return obj.map(traverseAndHighlight);
+    } else if (typeof obj === 'object' && obj !== null) {
+      return Object.fromEntries(
+        Object.entries(obj).map(([key, value]) => [
+          highlight(key),
+          traverseAndHighlight(value),
+        ])
+      );
+    }
+    return obj;
+  };
+
+  return traverseAndHighlight(data);
+};
+
 // Format and filter data based on search term
 const formattedData = computed(() => {
-  let dataToShow = props.data
-  
-  // If there's a search term, try to filter the data
+  let dataToShow = props.data;
+
   if (searchTerm.value.trim()) {
-    const term = searchTerm.value.toLowerCase()
-    dataToShow = filterObjectBySearchTerm(props.data, term)
+    const term = searchTerm.value.toLowerCase();
+    dataToShow = filterObjectBySearchTerm(props.data, term);
+    dataToShow = highlightSearchTerm(dataToShow, term);
   }
-  
-  return JSON.stringify(dataToShow, null, 2)
+
+  return JSON.stringify(dataToShow, null, 2).replace(/\"<mark>(.*?)<\/mark>\"/g, '<mark>$1</mark>');
 })
 
 // Calculate data statistics
@@ -184,40 +248,5 @@ const countArrays = (obj, count = 0) => {
     }
   }
   return count
-}
-
-const filterObjectBySearchTerm = (obj, searchTerm) => {
-  if (!obj || typeof obj !== 'object') return obj
-  
-  const result = {}
-  let hasMatches = false
-  
-  for (const [key, value] of Object.entries(obj)) {
-    const keyMatches = key.toLowerCase().includes(searchTerm)
-    const valueMatches = typeof value === 'string' && value.toLowerCase().includes(searchTerm)
-    
-    if (keyMatches || valueMatches) {
-      result[key] = value
-      hasMatches = true
-    } else if (typeof value === 'object' && value !== null) {
-      const filteredValue = filterObjectBySearchTerm(value, searchTerm)
-      if (Array.isArray(value)) {
-        const filteredArray = value.filter(item => 
-          typeof item === 'object' ? 
-          Object.keys(filterObjectBySearchTerm(item, searchTerm)).length > 0 :
-          String(item).toLowerCase().includes(searchTerm)
-        )
-        if (filteredArray.length > 0) {
-          result[key] = filteredArray
-          hasMatches = true
-        }
-      } else if (Object.keys(filteredValue).length > 0) {
-        result[key] = filteredValue
-        hasMatches = true
-      }
-    }
-  }
-  
-  return hasMatches ? result : obj
 }
 </script>

@@ -77,18 +77,19 @@ export const useCompanyStore = defineStore('company', () => {
     error.value = null
     try {
       const response = await api.get(`/company/${piva}`)
+
       currentCompany.value = response.data.data
       currentCompany.value.llmOverview = response.data.llmOverview || {}
       currentCompany.value.piva = piva
 
-      // Log the activity
-      // await logActivity(
-      //   'view',
-      //   'company_view',
-      //   `Viewed company details for PIVA: ${piva}`,
-      //   { piva }
-      // )
-      
+      currentCompany.value.isClosed = false
+      if (response.data.searchType === 'full' && response.data.data.companyStatus.activityStatus.code != 'A') {
+        currentCompany.value.isClosed = true
+      }
+      if (response.data.searchType === 'advanced' && response.data.data.activityStatus != 'ATTIVA') {
+        currentCompany.value.isClosed = true
+      }
+
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch company details'
@@ -154,14 +155,6 @@ export const useCompanyStore = defineStore('company', () => {
     
     try {
       const response = await api.get(`/IT-closed/${piva}`)
-      
-      // // Log the activity
-      // await logActivity(
-      //   'check',
-      //   'company_status_check',
-      //   `Checked status for company with PIVA: ${piva}`,
-      //   { piva }
-      // )
       
       return response.data
     } catch (err) {

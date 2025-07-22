@@ -57,7 +57,7 @@ export const checkCache = (modelSearch, searchType = null, searchStatus = null) 
                 data: existingSearch.data,
                 searchType: existingSearch.searchType,
                 piva: existingSearch.piva,
-                llmOverview: existingSearch.llmOverview
+                llmOverview: existingSearch.llmOverview // only if searchType is full
             });
         }
     } catch (error) {

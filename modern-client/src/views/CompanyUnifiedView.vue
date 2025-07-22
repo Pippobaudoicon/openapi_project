@@ -280,8 +280,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useCompanyStore } from '@/stores/company'
+import { onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { useCompanyStore } from '@/stores/company';
 import {
   CompanyOverview,
   CompanyFinancials,
@@ -293,11 +294,14 @@ import {
   CompanyAdditionalData
 } from '@/components/company'
 
-const companyStore = useCompanyStore()
+const route = useRoute();
+const companyStore = useCompanyStore();
+const pivaInput = ref(route.query.search || '');
+const reportType = ref(route.query.type || 'advanced');
+const activeTab = ref(reportType.value);
+const reportData = ref(null);
 
 // Reactive data
-const activeTab = ref('advanced')
-const pivaInput = ref('')
 const batchPivas = ref('')
 const batchLoading = ref(false)
 
@@ -383,6 +387,44 @@ const checkBatchStatus = async () => {
   
   batchLoading.value = false
 }
+
+const fetchReportData = async () => {
+  try {
+    if (reportType.value === 'advanced') {
+      reportData.value = await companyStore.getCompanyAdvanced(pivaInput.value);
+    } else if (reportType.value === 'full') {
+      reportData.value = await companyStore.getCompanyFull(pivaInput.value);
+    }
+  } catch (error) {
+    console.error(`Failed to fetch ${reportType.value} data:`, error);
+  }
+};
+
+// Watch for changes in the route query and update the active tab and data accordingly
+watch(
+  () => [route.query.search, route.query.type],
+  ([newSearch, newType]) => {
+    if (newSearch && newType) {
+      pivaInput.value = newSearch;
+      reportType.value = newType;
+      activeTab.value = newType;
+      fetchReportData();
+    }
+  },
+  { immediate: true }
+);
+
+const run = ref(route.query.run === 'true');
+
+onMounted(() => {
+  if (run.value) {
+    if (reportType.value === 'advanced') {
+      fetchAdvancedData();
+    } else if (reportType.value === 'full') {
+      fetchFullData();
+    }
+  }
+});
 
 // Utility functions for status display
 const formatDate = (dateString) => {

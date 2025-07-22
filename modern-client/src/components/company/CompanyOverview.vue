@@ -14,7 +14,16 @@
       <div class="space-y-4">
         <div v-if="companyName">
           <dt class="text-sm font-medium text-gray-500">Company Name</dt>
-          <dd class="text-lg font-semibold text-gray-900">{{ companyName }}</dd>
+          <dd class="text-lg font-semibold text-gray-900">
+            <router-link 
+              v-if="taxCode" 
+              :to="`/company/${taxCode}`" 
+              class="text-primary-600 hover:underline"
+            >
+              {{ companyName }}
+            </router-link>
+            <span v-else>{{ companyName }}</span>
+          </dd>
         </div>
         
         <div v-if="taxCode">
@@ -109,7 +118,7 @@ const companyName = computed(() => {
 
 // Tax code extraction
 const taxCode = computed(() => {
-  const piva = props.data?.piva || props.data?.taxCode
+  const piva = props.data?.piva || props.data?.taxCode || props.data.companyDetails?.taxCode
   const codFisc = props.data?.codice_fiscale
   
   if (piva && codFisc && piva !== codFisc) {

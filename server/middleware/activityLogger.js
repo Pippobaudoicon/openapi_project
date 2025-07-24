@@ -37,6 +37,27 @@ export const getSearchDescription = (req) => {
   return desc;
 };
 
+// Description helpers
+export const getITSearchDescription = (req) => {
+  const validParams = [
+    'dryRun', 'dataEnrichment',
+    'lat', 'long', 'radius',
+    'companyName', 'autocomplete', 'province', 'townCode', 'atecoCode',
+    'cciaa', 'reaCode', 'minTurnover', 'maxTurnover', 'minEmployees', 'maxEmployees',
+    'sdiCode', 'legalFormCode', 'shareHolderTaxCode', 'activityStatus', 'pec',
+    'creationTimestamp', 'lastUpdateTimestamp', 'skip', 'limit'
+  ];
+
+  const queryParams = Object.entries(req.query)
+    .filter(([key]) => validParams.includes(key))
+    .map(([key, value]) => `${key}: ${value}`)
+    .join(', ');
+
+  return queryParams
+    ? `Performed company search with parameters: ${queryParams}`
+    : 'Performed company search with no specific parameters';
+};
+
 export const getCompanyDescription = (req) => `Retrieved company data for P.IVA ${req.params.piva}`;
 export const getVisureDescription = (req) => `Requested visure for P.IVA ${req.params.piva || req.body.piva}`;
 export const getBilancioDescription = (req) => `Requested bilancio ottico for P.IVA ${req.params.piva || req.body.piva}`;

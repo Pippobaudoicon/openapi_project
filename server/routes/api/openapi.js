@@ -7,7 +7,7 @@ import VisureSearch from '../../models/VisureSearch.js';
 import { searchCompanies } from '../../utils/meilisearch.js';
 import { 
     logActivity, 
-    getSearchDescription, 
+    getITSearchDescription, 
     getCompanyDescription, 
     getVisureDescription,
     getBilancioDescription,
@@ -17,6 +17,8 @@ import {
 } from '../../middleware/activityLogger.js';
 
 const router = express.Router();
+
+// COMPANY ROUTES
 
 //get credit api
 router.get('/credit', checkPermission('get_credit'), (req, res) => {
@@ -131,6 +133,79 @@ router.get('/IT-closed/:piva',
         }
     }
 );
+
+router.get('/IT-search',
+    checkPermission('search_companies'),
+    //TODO add cache check for search using searchKey
+    logActivity({type:'company_search', action:'search_companies', getDescription:getITSearchDescription, getMetadata:getSearchMetadata}),
+    async (req, res) => {
+        try {
+            const queryParams = {};
+            /**
+             * @property {string} dryRun - If true, the operation returns only the number of results without actual data and the cost.
+             * @property {string} dataEnrichment - Data enrichment for the response, if it is not set the call will return only the ids (default:'name') ['start', 'advanced', 'pec', 'address', 'shareholders', 'name'].
+             * @property {string} lat - Latitude coordinate for location-based queries.
+             * @property {string} long - Longitude coordinate for location-based queries.
+             * @property {string} radius - Radius (in kilometers) for location-based queries.
+             * @property {string} companyName - Filters results by the name of the company only full words.
+             * @property {string} autocomplete - is used to search for strings that begin with the specified query
+             */
+            const validParams = [
+                'dryRun', 'dataEnrichment',
+                'lat', 'long', 'radius',
+                'companyName', 'autocomplete', 'province', 'townCode', 'atecoCode',
+                'cciaa', 'reaCode', 'minTurnover', 'maxTurnover', 'minEmployees', 'maxEmployees',
+                'sdiCode', 'legalFormCode', 'shareHolderTaxCode', 'activityStatus', 'pec',
+                'creationTimestamp', 'lastUpdateTimestamp', 'skip', 'limit'
+            ];
+
+            if (!req.query.dataEnrichment) {
+                queryParams.dataEnrichment = 'name';
+            }
+
+            // Only include provided parameters
+            validParams.forEach(param => {
+                if (req.query[param] !== undefined) {
+                    queryParams[param] = req.query[param];
+                }
+            });
+
+            // Make API call with query parameters
+            const response = await axiosCompanyService.get('/IT-search', {
+                params: queryParams
+            });
+
+            // Generate a unique key for this search based on parameters
+            const searchKey = JSON.stringify(queryParams);
+
+            // Store the search results
+            await CompanySearch.updateOne(
+                {
+                    searchKey,
+                    searchType: 'search'
+                },
+                {
+                    $set: {
+                        parameters: queryParams,
+                        data: response.data.data,
+                        createdAt: new Date()
+                    }
+                },
+                { upsert: true }
+            );
+
+            res.json({
+                source: 'api',
+                timestamp: new Date(),
+                data: response.data.data
+            });
+        } catch (error) {
+            res.status(500).json(error.message);
+        }
+    }
+);
+
+// VISURE CAMERALI ROUTES
 
 // get impresa data by piva
 router.get('/impresa/:piva',

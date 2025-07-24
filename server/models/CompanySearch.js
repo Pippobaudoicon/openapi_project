@@ -9,12 +9,22 @@ const CompanySearchSchema = new mongoose.Schema({
     },
     searchType: {
         type: String,
-        enum: ['advanced', 'full', 'closed'],
+        enum: ['advanced', 'full', 'closed', 'search'],
         required: true
     },
     data: {
         type: mongoose.Schema.Types.Mixed,
         required: true
+    },
+    // For search-type caching
+    searchKey: {
+        type: String,
+        index: true,
+        required: function() { return this.searchType === 'search'; }
+    },
+    parameters: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
     },
     llmOverview: {
         type: mongoose.Schema.Types.Mixed,
@@ -61,17 +71,6 @@ CompanySearchSchema.post('updateOne', async function(doc) {
 CompanySearchSchema.statics.fetchByPivaFull = async function(piva) {
     try {
         const record = await this.findOne({ piva, searchType: 'full' });
-        return record;
-    } catch (error) {
-        console.error('Error fetching company record by PIVA:', error);
-        throw new Error('Failed to fetch company record.');
-    }
-};
-
-// Static method to fetch an advanced record, cached by PIVA
-CompanySearchSchema.statics.fetchByPivaAdvanced = async function(piva) {
-    try {
-        const record = await this.findOne({ piva, searchType: 'advanced' });
         return record;
     } catch (error) {
         console.error('Error fetching company record by PIVA:', error);

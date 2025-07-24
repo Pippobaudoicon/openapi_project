@@ -13,20 +13,16 @@
         <div class="flex items-start justify-between">
           <div class="flex-1 min-w-0">
             <h3 class="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors duration-200 truncate">
-              {{ company.denominazione || company.company_name || 'Unknown Company' }}
+              {{ company.companyName || company.company_name }}
             </h3>
             
             <div class="mt-1 space-y-1">
-              <p v-if="company.piva || company.vat_number" class="text-sm text-gray-600">
-                <span class="font-medium">VAT:</span> {{ company.piva || company.vat_number }}
+              <p v-if="company.vatCode || company.taxCode" class="text-sm text-gray-600">
+                <span class="font-medium">VAT:</span> {{ company.vatCode || company.taxCode }}
               </p>
               
-              <p v-if="company.provincia || company.province" class="text-sm text-gray-600">
-                <span class="font-medium">Province:</span> {{ company.provincia || company.province }}
-              </p>
-              
-              <p v-if="company.comune || company.city" class="text-sm text-gray-600">
-                <span class="font-medium">City:</span> {{ company.comune || company.city }}
+              <p v-if="company.address?.registeredOffice?.town" class="text-sm text-gray-600">
+                <span class="font-medium">City:</span> {{ company.address.registeredOffice.town }}
               </p>
             </div>
           </div>

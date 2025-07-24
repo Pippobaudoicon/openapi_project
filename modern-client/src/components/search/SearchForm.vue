@@ -8,9 +8,9 @@
             Company name or keywords
           </label>
           <input
-            v-model="searchForm.q"
+            v-model="searchForm.companyName"
             type="text"
-            placeholder="Enter company name, VAT number, or keywords..."
+            placeholder="Enter company name or keywords..."
             class="input-field"
             :disabled="loading"
           />
@@ -20,10 +20,20 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Province
           </label>
-          <select v-model="searchForm.provincia" class="input-field" :disabled="loading">
+          <select v-model="searchForm.province" class="input-field" :disabled="loading">
             <option value="">All provinces</option>
             <option v-for="province in provinces" :key="province" :value="province">
               {{ province }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Data Enrichment
+          </label>
+          <select v-model="searchForm.dataEnrichment" class="input-field" :disabled="loading">
+            <option v-for="(label, key) in enrichmentOptions" :key="key" :value="key">
+              {{ label }}
             </option>
           </select>
         </div>
@@ -48,7 +58,7 @@
               ATECO Code
             </label>
             <input
-              v-model="searchForm.codice_ateco"
+              v-model="searchForm.atecoCode"
               type="text"
               placeholder="e.g., 62.01"
               class="input-field"
@@ -62,14 +72,14 @@
             </label>
             <div class="grid grid-cols-2 gap-2">
               <input
-                v-model="searchForm.fatturato_min"
+                v-model="searchForm.minTurnover"
                 type="number"
                 placeholder="Min"
                 class="input-field"
                 :disabled="loading"
               />
               <input
-                v-model="searchForm.fatturato_max"
+                v-model="searchForm.maxTurnover"
                 type="number"
                 placeholder="Max"
                 class="input-field"
@@ -84,14 +94,14 @@
             </label>
             <div class="grid grid-cols-2 gap-2">
               <input
-                v-model="searchForm.dipendenti_min"
+                v-model="searchForm.minEmployees"
                 type="number"
                 placeholder="Min"
                 class="input-field"
                 :disabled="loading"
               />
               <input
-                v-model="searchForm.dipendenti_max"
+                v-model="searchForm.maxEmployees"
                 type="number"
                 placeholder="Max"
                 class="input-field"
@@ -126,7 +136,7 @@
         <div class="flex items-center space-x-4">
           <button
             type="submit"
-            :disabled="loading || !searchForm.q.trim()"
+            :disabled="loading || !searchForm.companyName.trim()"
             class="btn-primary flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg v-if="loading" class="spinner mr-3" />
@@ -169,13 +179,14 @@ const emit = defineEmits(['search'])
 const showAdvanced = ref(false)
 
 const searchForm = reactive({
-  q: '',
-  provincia: '',
-  codice_ateco: '',
-  fatturato_min: '',
-  fatturato_max: '',
-  dipendenti_min: '',
-  dipendenti_max: ''
+  companyName: '',
+  province: '',
+  dataEnrichment: 'name',
+  atecoCode: '',
+  minTurnover: '',
+  maxTurnover: '',
+  minEmployees: '',
+  maxEmployees: ''
 })
 
 const provinces = [
@@ -183,18 +194,27 @@ const provinces = [
   'Palermo', 'Catania', 'Verona', 'Venezia', 'Trieste', 'Brescia', 'Padova'
 ]
 
+const enrichmentOptions = {
+  start: 'Basic informations',
+  advanced: 'Comprehensive Data',
+  pec: 'Certified E-mail',
+  address: 'Address Info',
+  shareholders: 'Shareholders',
+  name: 'Name Only'
+}
+
 const quickFilters = [
   {
     label: 'Tech Companies',
-    params: { q: 'technology software', codice_ateco: '62' }
+    params: { companyName: 'technology software', atecoCode: '62' }
   },
   {
     label: 'Large Companies',
-    params: { dipendenti_min: 100 }
+    params: { minEmployees: 100 }
   },
   {
     label: 'High Revenue',
-    params: { fatturato_min: 1000000 }
+    params: { minTurnover: 1000000 }
   },
   {
     label: 'Milano Area',
@@ -202,12 +222,12 @@ const quickFilters = [
   },
   {
     label: 'SMEs',
-    params: { dipendenti_min: 10, dipendenti_max: 249 }
+    params: { minEmployees: 10, maxEmployees: 249 }
   }
 ]
 
 const performSearch = () => {
-  if (!searchForm.q.trim()) return
+  if (!searchForm.companyName.trim()) return
   
   const searchParams = { ...searchForm }
   
@@ -223,7 +243,7 @@ const performSearch = () => {
 
 const applyQuickFilter = (filter) => {
   Object.assign(searchForm, filter.params)
-  if (!searchForm.q && filter.params.q) {
+  if (!searchForm.companyName && filter.params.companyName) {
     performSearch()
   }
 }

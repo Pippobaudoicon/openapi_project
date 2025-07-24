@@ -9,15 +9,31 @@ export const useCompanyStore = defineStore('company', () => {
   const isLoading = ref(false)
   const error = ref(null)
   const searchParams = ref({
-    q: '',
-    provincia: '',
-    codice_ateco: '',
-    fatturato_min: '',
-    fatturato_max: '',
-    dipendenti_min: '',
-    dipendenti_max: '',
-    from: 0,
-    size: 10
+    dryRun: 0,
+    dataEnrichment: 'name',
+    lat: '',
+    long: '',
+    radius: '',
+    companyName: '',
+    autocomplete: '',
+    province: '',
+    townCode: '',
+    atecoCode: '',
+    cciaa: '',
+    reaCode: '',
+    minTurnover: '',
+    maxTurnover: '',
+    minEmployees: '',
+    maxEmployees: '',
+    sdiCode: '',
+    legalFormCode: '',
+    shareHolderTaxCode: '',
+    activityStatus: '',
+    pec: '',
+    creationTimestamp: '',
+    lastUpdateTimestamp: '',
+    skip: 0,
+    limit: 10
   })
   const llmOverview = ref({})
 
@@ -45,8 +61,12 @@ export const useCompanyStore = defineStore('company', () => {
     
     try {
       const searchQuery = { ...searchParams.value, ...params }
-      const response = await api.get('/search', { params: searchQuery })
-      searchResults.value = response.data.hits || response.data.companies || []
+      // remove empty or null values
+      const filteredQuery = Object.fromEntries(
+        Object.entries(searchQuery).filter(([_, v]) => v !== '' && v != null)
+      )
+      const response = await api.get('/IT-search', { params: filteredQuery })
+      searchResults.value = response.data.data || []
       
       // Log the search activity with metadata
       const searchMetadata = {
@@ -347,15 +367,31 @@ export const useCompanyStore = defineStore('company', () => {
   const clearSearch = () => {
     searchResults.value = []
     searchParams.value = {
-      q: '',
-      provincia: '',
-      codice_ateco: '',
-      fatturato_min: '',
-      fatturato_max: '',
-      dipendenti_min: '',
-      dipendenti_max: '',
-      from: 0,
-      size: 10
+      dryRun: 0,
+      dataEnrichment: 'name',
+      lat: '',
+      long: '',
+      radius: '',
+      companyName: '',
+      autocomplete: '',
+      province: '',
+      townCode: '',
+      atecoCode: '',
+      cciaa: '',
+      reaCode: '',
+      minTurnover: '',
+      maxTurnover: '',
+      minEmployees: '',
+      maxEmployees: '',
+      sdiCode: '',
+      legalFormCode: '',
+      shareHolderTaxCode: '',
+      activityStatus: '',
+      pec: '',
+      creationTimestamp: '',
+      lastUpdateTimestamp: '',
+      skip: 0,
+      limit: 10
     }
   }
 

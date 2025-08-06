@@ -13,3 +13,4 @@ improve quick search and search
 /add mobile version using flutter
 do the cache search (research only company already searched, showing them in cards as list)
 adjust credit functionality
+implement visure and files for visure/exports

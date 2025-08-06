@@ -48,7 +48,6 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
           <input
-            v-model="profileForm.email"
             type="email"
             class="input-field"
             readonly

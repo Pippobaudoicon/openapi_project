@@ -41,3 +41,7 @@ To check container status:
 ```bash
 docker compose ps
 ```
+
+login info 
+admin@test.com
+test

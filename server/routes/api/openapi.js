@@ -71,6 +71,22 @@ router.get('/IT-full/:piva',
     async (req, res) => {
         try {
             const response = await axiosCompanyService.get(`/IT-full/${req.params.piva}`);
+            
+            // If the response is not ready, poll until it is
+            // This is to handle cases where the API returns a 302 redirect for pending requests
+            if (response.status === 302) {
+                const id = response.data.data.id
+                let pollResponse
+
+                // keep polling every 3 seconds until it's not a 302
+                do {
+                    await new Promise(resolve => setTimeout(resolve, 3000))
+                    pollResponse = await axiosCompanyService.get(`/IT-check_id/${id}`)
+                } while (pollResponse.status === 302)
+
+                response = pollResponse
+            }
+            
             const companyData = response.data.data;
             await CompanySearch.updateOne(
                 { 

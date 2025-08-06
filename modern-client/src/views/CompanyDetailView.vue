@@ -98,6 +98,9 @@
             <button @click="getVisureReport" :disabled="companyStore.isLoading" class="w-full btn-secondary">
               Get Visure Report
             </button>
+            <button @click="fetchLLMOverview" :disabled="companyStore.isLoading" class="w-full btn-secondary">
+              Get LLM Overview
+            </button>
           </div>
         </div>
 
@@ -116,19 +119,12 @@
 
       
       <!-- LLM Overview Section -->
-      <div class="lg:col-span-3 space-y-6">
+      <div v-if="llmOverview && formattedLLMOverview" class="lg:col-span-3 space-y-6">
         <div class="card">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">LLM Overview</h3>
-          <div v-if="companyStore.currentCompany.llmOverview">
-            <div class="space-y-2">
-              <div class="text-sm font-medium text-gray-500">Description</div>
-              <div v-if="formattedLLMOverview" v-html="formattedLLMOverview" class="prose prose-xl max-w-full overflow-auto [&_h3]:!text-xl [&_h3]:!font-bold"></div>
-            </div>
-          </div>
-          <div v-else>
-            <button @click="fetchLLMOverview" :disabled="companyStore.isLoading" class="btn-primary">
-              Fetch LLM Overview
-            </button>
+          <div class="space-y-2">
+            <div class="text-sm font-medium text-gray-500">Description</div>
+            <div v-html="formattedLLMOverview" class="prose prose-xl max-w-full overflow-auto [&_h3]:!text-xl [&_h3]:!font-bold"></div>
           </div>
         </div>
       </div>
@@ -165,17 +161,15 @@ const companyStore = useCompanyStore()
 const llmOverview = computed(() => companyStore.currentCompany?.llmOverview) || llmOverview.value[props.piva]
 
 const formattedLLMOverview = computed(() => {
-  if (companyStore.currentCompany?.llmOverview) {
-    return marked(companyStore.currentCompany.llmOverview);
+  if (llmOverview && llmOverview.value?.length > 0) {
+    return marked(llmOverview.value);
   }
   return null;
 });
 
 const fetchLLMOverview = async () => {
   try {
-    if (!llmOverview.value) {
       await companyStore.getLLMOverview(props.piva)
-    }
   } catch (error) {
     console.error('Failed to fetch LLM overview:', error)
   }

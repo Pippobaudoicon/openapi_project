@@ -409,6 +409,7 @@ export const useCompanyStore = defineStore('company', () => {
     try {
       const response = await api.get(`/company/llm-overview/${piva}?type=full`)
       llmOverview.value[piva] = response.data.overview // Cache the data
+      currentCompany.value.llmOverview = response.data.overview // Update current company overview
       return response.data.overview
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch LLM overview'

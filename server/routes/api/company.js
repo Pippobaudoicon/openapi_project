@@ -61,7 +61,6 @@ router.get('/:piva',
 
 router.get('/llm-overview/:piva',
     checkPermission('company_llm_overview'),
-    checkCache('company', 'overview'),
     logActivity({type:'company_overview', action:'get_overview_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
     async (req, res) => {
         try {
@@ -71,7 +70,9 @@ router.get('/llm-overview/:piva',
             if (!companyRecord) {
                 return res.status(404).json({ error: 'Company data not found in database.' });
             }
-            
+            if (companyRecord.llmOverview) {
+                return res.json({ overview: companyRecord.llmOverview });
+            }
             const slimCompanyRecord = stripCompanyData(companyRecord.data);
             const overview = await getLLMOverview(slimCompanyRecord);
 

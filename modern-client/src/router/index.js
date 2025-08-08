@@ -60,6 +60,11 @@ const router = createRouter({
           name: 'CompanyUnified',
           component: () => import('@/views/CompanyUnifiedView.vue')
         },
+        {
+          path: 'stored',
+          name: 'Stored',
+          component: () => import('@/views/StoredView.vue')
+        },
         // {
         //   path: 'company-advanced',
         //   name: 'CompanyAdvanced',

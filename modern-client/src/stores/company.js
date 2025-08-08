@@ -5,6 +5,7 @@ import api from '@/services/api'
 export const useCompanyStore = defineStore('company', () => {
   const companies = ref([])
   const currentCompany = ref(null)
+  const storedCompanies = ref([])
   const searchResults = ref([])
   const isLoading = ref(false)
   const error = ref(null)
@@ -86,6 +87,22 @@ export const useCompanyStore = defineStore('company', () => {
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Search failed'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  // Fetch companies already searched and stored in MongoDB
+  const fetchStoredCompanies = async () => {
+    isLoading.value = true
+    error.value = null
+    try {
+      const response = await api.get('/company/stored')
+      console.log(response.data.data)
+      storedCompanies.value = response.data.data || []
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Failed to fetch stored companies'
       throw err
     } finally {
       isLoading.value = false
@@ -422,6 +439,8 @@ export const useCompanyStore = defineStore('company', () => {
   return {
     companies,
     currentCompany,
+    storedCompanies,
+    fetchStoredCompanies,
     searchResults,
     searchParams,
     isLoading,

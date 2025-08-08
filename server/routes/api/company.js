@@ -59,6 +59,21 @@ router.get('/:piva',
     logActivity({type:'company_basic', action:'get_basic_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
 );
 
+// Get all stored companies from MongoDB
+router.get('/stored',
+    checkPermission('company_details'),
+    async (req, res) => {
+        try {
+            const records = await CompanySearch.find({
+                searchType: { $in: ["full", "advanced", "closed"] }
+            });
+            res.json({ data: records });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+);
+
 router.get('/llm-overview/:piva',
     checkPermission('company_llm_overview'),
     logActivity({type:'company_overview', action:'get_overview_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),

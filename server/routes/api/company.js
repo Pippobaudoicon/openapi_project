@@ -59,14 +59,44 @@ router.get('/:piva',
     logActivity({type:'company_basic', action:'get_basic_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
 );
 
+//TODO snellire il return se passato parametro get così da non ricevere 100kb di data quando me ne servono solo 2kb ad esempio
 // Get all stored companies from MongoDB
 router.get('/stored',
     checkPermission('company_details'),
     async (req, res) => {
         try {
+            const { format } = req.query;
             const records = await CompanySearch.find({
                 searchType: { $in: ["full", "advanced", "closed"] }
             });
+
+            if (format === 'slim') {
+                const slimRecords = records.map(rec => {
+
+                    return {
+                        searchType: rec.searchType,
+                        piva: rec.piva,
+                        data: {
+                            companyName: rec.data?.companyName
+                                ?? rec.data?.companyDetails?.companyName
+                                ?? rec.piva,
+                            town: rec.data?.address?.registeredOffice?.town
+                                ?? rec.data?.address?.town,
+                            province: rec.data?.address?.registeredOffice?.province
+                                ?? rec.data?.address?.province?.code,
+                            activityStatus: rec.data?.companyStatus?.activityStatus?.code
+                                ?? rec.data?.activityStatus,
+                            registrationDate: (rec.data?.registrationDate
+                                ?? rec.data?.companyDates?.registrationDate)?.split('T')[0],
+                            taxCodeCeased: rec.data?.taxCodeCeased
+                        }
+
+                    };
+                });
+
+                return res.json({ data: slimRecords });
+            }
+
             res.json({ data: records });
         } catch (error) {
             res.status(500).json({ error: error.message });

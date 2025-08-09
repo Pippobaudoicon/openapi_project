@@ -4,7 +4,12 @@ const userSchema = new mongoose.Schema({
     id: {
         type: mongoose.Schema.Types.ObjectId
     },
-    name: {
+    firstName: {
+        type: String,
+        required: false,
+        trim: true
+    },
+    lastName: {
         type: String,
         required: false,
         trim: true
@@ -15,6 +20,16 @@ const userSchema = new mongoose.Schema({
         unique: true,
         trim: true,
         lowercase: true
+    },
+    company: {
+        type: String,
+        required: false,
+        trim: true
+    },
+    phone: {
+        type: String,
+        required: false,
+        trim: true
     },
     password: {
         type: String,

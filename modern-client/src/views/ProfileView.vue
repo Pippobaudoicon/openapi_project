@@ -15,8 +15,8 @@
           </span>
         </div>
         <div>
-          <h3 class="text-lg font-semibold text-gray-900">{{ authStore.user?.email }}</h3>
-          <p class="text-gray-600">{{ authStore.user?.role || 'User' }}</p>
+          <h3 class="text-lg font-semibold text-gray-900">{{ userStore.user?.email }}</h3>
+          <p class="text-gray-600">{{ userStore.user?.role || 'User' }}</p>
           <button class="text-sm text-primary-600 hover:text-primary-500 font-medium mt-1">
             Change Avatar
           </button>
@@ -51,7 +51,7 @@
             type="email"
             class="input-field"
             readonly
-            :value="authStore.user?.email"
+            :value="userStore.user?.email"
           />
           <p class="text-xs text-gray-500 mt-1">Email cannot be changed</p>
         </div>
@@ -187,10 +187,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useAuthStore } from '@/stores/auth'
+import { ref, computed, onMounted } from 'vue'
+import { useUserStore } from '@/stores/user'
 
-const authStore = useAuthStore()
+const userStore = useUserStore()
 
 const profileForm = ref({
   firstName: '',
@@ -213,17 +213,36 @@ const preferences = ref({
 })
 
 const userInitials = computed(() => {
-  const email = authStore.user?.email || ''
+  const email = userStore.user?.email || ''
   return email.charAt(0).toUpperCase()
 })
 
+const fetchUserData = () => {
+  return userStore.fetchUser()
+}
+
 const updateProfile = () => {
-  // Handle profile update
-  console.log('Updating profile:', profileForm.value)
+  userStore.updateUser({
+    firstName: profileForm.value.firstName,
+    lastName: profileForm.value.lastName,
+    company: profileForm.value.company,
+    phone: profileForm.value.phone
+  })
 }
 
 const changePassword = () => {
-  // Handle password change
-  console.log('Changing password')
+  userStore.changePassword({
+    currentPassword: passwordForm.value.currentPassword,
+    newPassword: passwordForm.value.newPassword,
+    confirmPassword: passwordForm.value.confirmPassword
+  })
 }
+onMounted(() => {
+  fetchUserData().then(() => {
+    profileForm.value.firstName = userStore.user?.firstName || ''
+    profileForm.value.lastName = userStore.user?.lastName || ''
+    profileForm.value.company = userStore.user?.company || ''
+    profileForm.value.phone = userStore.user?.phone || ''
+  })
+})
 </script>

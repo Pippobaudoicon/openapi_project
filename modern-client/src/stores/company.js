@@ -69,21 +69,6 @@ export const useCompanyStore = defineStore('company', () => {
       const response = await api.get('/IT-search', { params: filteredQuery })
       searchResults.value = response.data.data || []
       
-      // Log the search activity with metadata
-      const searchMetadata = {
-        searchQuery: Object.fromEntries(
-          Object.entries(searchQuery).filter(([_, value]) => value !== '' && value !== null)
-        ),
-        resultsCount: searchResults.value.length
-      }
-      
-      // await logActivity(
-      //   'search',
-      //   'company_search',
-      //   `Searched for companies${searchQuery.q ? ` with query: "${searchQuery.q}"` : ''}`,
-      //   searchMetadata
-      // )
-      
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Search failed'
@@ -94,12 +79,11 @@ export const useCompanyStore = defineStore('company', () => {
   }
 
   // Fetch companies already searched and stored in MongoDB
-  const fetchStoredCompanies = async () => {
+  const fetchStoredCompanies = async (format) => {
     isLoading.value = true
     error.value = null
     try {
-      const response = await api.get('/company/stored')
-      console.log(response.data.data)
+      const response = await api.get('/company/stored', { params: { format } })
       storedCompanies.value = response.data.data || []
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch stored companies'
@@ -143,8 +127,8 @@ export const useCompanyStore = defineStore('company', () => {
     try {
       const response = await api.get(`/IT-advanced/${piva}`)
       currentCompany.value = response.data.data
-      
-      // // Log the activity
+
+      // // Log the activity (keep for future reference)
       // await logActivity(
       //   'view',
       //   'company_advanced_view',
@@ -168,15 +152,7 @@ export const useCompanyStore = defineStore('company', () => {
     try {
       const response = await api.get(`/IT-full/${piva}`)
       currentCompany.value = response.data.data
-      
-      // // Log the activity
-      // await logActivity(
-      //   'view',
-      //   'company_full_view',
-      //   `Viewed full data for company with PIVA: ${piva}`,
-      //   { piva }
-      // )
-      
+
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch full company data'
@@ -209,14 +185,6 @@ export const useCompanyStore = defineStore('company', () => {
     try {
       const response = await api.get(`/impresa/${piva}`)
       
-      // Log the activity
-      // await logActivity(
-      //   'view',
-      //   'impresa_data_view',
-      //   `Viewed impresa data for PIVA: ${piva}`,
-      //   { piva }
-      // )
-      
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch impresa data'
@@ -232,14 +200,6 @@ export const useCompanyStore = defineStore('company', () => {
     
     try {
       const response = await api.get('/impresa', { params })
-      
-      // Log the activity
-      // await logActivity(
-      //   'search',
-      //   'impresa_search',
-      //   `Searched for imprese`,
-      //   params
-      // )
       
       return response.data
     } catch (err) {
@@ -257,14 +217,6 @@ export const useCompanyStore = defineStore('company', () => {
     try {
       const response = await api.post('/bilancio-ottico', { piva })
       
-      // Log the activity
-      // await logActivity(
-      //   'request',
-      //   'bilancio_ottico_request',
-      //   `Requested bilancio ottico for PIVA: ${piva}`,
-      //   { piva }
-      // )
-      
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to request bilancio ottico'
@@ -281,14 +233,6 @@ export const useCompanyStore = defineStore('company', () => {
     try {
       const response = await api.get(`/bilancio-ottico/${piva}`)
       
-      // Log the activity
-      // await logActivity(
-      //   'check',
-      //   'bilancio_ottico_status_check',
-      //   `Checked bilancio ottico status for PIVA: ${piva}`,
-      //   { piva }
-      // )
-      
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to get bilancio ottico status'
@@ -304,14 +248,6 @@ export const useCompanyStore = defineStore('company', () => {
         responseType: 'blob'
       })
       
-      // Log the activity
-      // await logActivity(
-      //   'download',
-      //   'bilancio_ottico_files_download',
-      //   `Downloaded bilancio ottico files for request ID: ${id}`,
-      //   { id }
-      // )
-      
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to download files'
@@ -325,14 +261,6 @@ export const useCompanyStore = defineStore('company', () => {
     
     try {
       const response = await api.get('/visure')
-      
-      // Log the activity
-      // await logActivity(
-      //   'view',
-      //   'all_visure_view',
-      //   `Viewed all visure data`,
-      //   {}
-      // )
       
       return response.data
     } catch (err) {
@@ -349,14 +277,6 @@ export const useCompanyStore = defineStore('company', () => {
     
     try {
       const response = await api.get('/bilancio-ottico')
-      
-      // Log the activity
-      // await logActivity(
-      //   'view',
-      //   'all_bilancio_ottico_requests_view',
-      //   `Viewed all bilancio ottico requests`,
-      //   {}
-      // )
       
       return response.data
     } catch (err) {

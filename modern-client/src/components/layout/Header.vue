@@ -168,7 +168,7 @@ const breadcrumbs = computed(() => {
 const handleQuickSearch = () => {
   if (quickSearch.value.trim()) {
     router.push({
-      name: 'Search',
+      name: 'Stored',
       query: { q: quickSearch.value.trim() }
     })
   }

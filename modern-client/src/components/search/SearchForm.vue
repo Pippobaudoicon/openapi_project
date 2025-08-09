@@ -165,7 +165,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 const props = defineProps({
   loading: {
@@ -264,4 +267,13 @@ const clearForm = () => {
 watch(searchForm, () => {
   // Could implement debounced search here
 }, { deep: true })
+
+onMounted(() => {
+  const q = Array.isArray(route.query.q)
+    ? route.query.q[0]
+    : route.query.q
+  if (q) {
+    searchForm.companyName = q
+  }
+})
 </script>

@@ -84,45 +84,43 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-defineEmits(['search'])
-
+const router = useRouter()
 const searchQuery = ref('')
 const isLoading = ref(false)
 
 const quickFilters = [
-  { label: 'Tech Companies', query: 'technology software' },
   { label: 'Milano', query: 'provincia:Milano' },
   { label: 'Large Companies', query: 'dipendenti_min:100' },
   { label: 'High Revenue', query: 'fatturato_min:1000000' }
 ]
 
-const recentSearches = ref([
-  'technology companies Milano',
-  'restaurants Roma',
-  'manufacturing Torino'
-])
+const recentSearches = ref([])
 
+// navigate to your Search page with `q`
 const handleSearch = () => {
   if (!searchQuery.value.trim()) return
-  
-  isLoading.value = true
-  
-  // Add to recent searches
+
+  // add to recent searches
   if (!recentSearches.value.includes(searchQuery.value)) {
     recentSearches.value.unshift(searchQuery.value)
-    recentSearches.value = recentSearches.value.slice(0, 5) // Keep only last 5
+    recentSearches.value = recentSearches.value.slice(0, 5)
   }
-  
-  // Emit search event
-  setTimeout(() => {
-    isLoading.value = false
-    // The parent component will handle the actual navigation
-  }, 500)
+
+  handleQuickSearch()
 }
 
 const applyQuickFilter = (filter) => {
   searchQuery.value = filter.query
-  handleSearch()
+  handleSearch()                         // fixed typo & triggers navigation
+}
+const handleQuickSearch = () => {
+  if (searchQuery.value.trim()) {
+    router.push({
+      name: 'Search',
+      query: { q: searchQuery.value.trim() }
+    })
+  }
 }
 </script>

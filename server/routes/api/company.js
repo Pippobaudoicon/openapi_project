@@ -1,6 +1,7 @@
 import express from 'express';
 import { checkRole, checkPermission } from '../../middleware/roleAuth.js';
 import { checkCache } from '../../middleware/cacheCheck.js';
+import { trackOpenAPICredit } from '../../middleware/creditTracker.js';
 import { searchCompanies } from '../../utils/meilisearch.js';
 import { getLLMOverview, stripCompanyData } from '../../services/openaiService.js';
 import { 
@@ -106,7 +107,8 @@ router.get('/stored',
 
 router.get('/llm-overview/:piva',
     checkPermission('company_llm_overview'),
-    logActivity({type:'company_overview', action:'get_overview_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
+    logActivity({type:'llm_overview', action:'generate_financial_overview', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
+    trackOpenAPICredit('llm-overview'),
     async (req, res) => {
         try {
             const { piva } = req.params;
@@ -119,7 +121,9 @@ router.get('/llm-overview/:piva',
                 return res.json({ overview: companyRecord.llmOverview });
             }
             const slimCompanyRecord = stripCompanyData(companyRecord.data);
-            const overview = await getLLMOverview(slimCompanyRecord);
+            const userId = req.user?._id;
+            const activityId = req.activityId;
+            const overview = await getLLMOverview(slimCompanyRecord, userId, activityId);
 
             // Save the LLM overview to the database
             companyRecord.llmOverview = overview;

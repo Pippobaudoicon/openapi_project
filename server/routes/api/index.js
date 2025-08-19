@@ -5,6 +5,7 @@ import authRoutes from './auth.js';
 import activityRoutes from './activities.js';
 import companyRoutes from './company.js';
 import userRoutes from './users.js';
+import creditRoutes from './credits.js';
 
 import { checkPermission, checkRole } from '../../middleware/roleAuth.js';
 import { fileService } from '../../services/fileService.js';
@@ -16,6 +17,7 @@ const router = express.Router();
 router.use('/v1/auth', authRoutes);
 router.use('/v1/users', userRoutes);
 router.use('/v1/activities', activityRoutes);
+router.use('/v1/credits', creditRoutes);
 router.use('/v1', openapiRoutes);
 router.use('/v1/company', companyRoutes);
 

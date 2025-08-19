@@ -76,11 +76,27 @@ router.get('/history',
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 20;
             const type = req.query.type; // Optional filter by type
+            const startDate = req.query.startDate; // Optional start date filter
+            const endDate = req.query.endDate; // Optional end date filter
             const skip = (page - 1) * limit;
             
             const filter = { userId: req.user._id };
             if (type) {
                 filter.type = type;
+            }
+            
+            // Add date range filtering
+            if (startDate || endDate) {
+                filter.createdAt = {};
+                if (startDate) {
+                    filter.createdAt.$gte = new Date(startDate);
+                }
+                if (endDate) {
+                    // Add 1 day and set to end of day to include the entire end date
+                    const endDateTime = new Date(endDate);
+                    endDateTime.setHours(23, 59, 59, 999);
+                    filter.createdAt.$lte = endDateTime;
+                }
             }
             
             const [activities, total] = await Promise.all([

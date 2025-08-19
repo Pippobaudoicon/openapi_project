@@ -9,7 +9,8 @@
     "build": "npm run build --prefix ../modern-client",
     "dev": "npm run build && cross-env NODE_ENV=development concurrently \"npm run server\" \"npm run client\"",
     "start": "npm run build && node app.js",
-    "indexCompanies": "NODE_ENV=development node ./scripts/indexCompanies.js"
+    "indexCompanies": "NODE_ENV=development node ./scripts/indexCompanies.js",
+    "script:credits": "cross-env NODE_ENV=development node ./scripts/creditManager.js"
   },
   "repository": {
     "type": "git",

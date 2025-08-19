@@ -44,6 +44,43 @@ const userSchema = new mongoose.Schema({
         type: Boolean, 
         default: false 
     },
+    creditBalance: {
+        type: Number,
+        default: 100, // Default starting credits
+        min: 0
+    },
+    creditLimit: {
+        type: Number,
+        default: 1000, // Default credit limit
+        min: 0
+    },
+    // Credit system settings
+    creditSettings: {
+        dailyLimit: {
+            type: Number,
+            default: 50, // Daily spending limit
+            min: 0
+        },
+        monthlyLimit: {
+            type: Number,
+            default: 500, // Monthly spending limit
+            min: 0
+        },
+        autoRecharge: {
+            enabled: {
+                type: Boolean,
+                default: false
+            },
+            threshold: {
+                type: Number,
+                default: 10 // Recharge when balance goes below this
+            },
+            amount: {
+                type: Number,
+                default: 100 // Amount to recharge
+            }
+        }
+    },
     verificationToken: String,
     resetPasswordToken: String,
     resetPasswordExpires: Date

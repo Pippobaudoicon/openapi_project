@@ -34,10 +34,20 @@
     <!-- Stats Overview -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" v-motion-slide-visible-once-left>
       <div class="lg:col-span-2">
-        <StatsCard :stats="activityStore.stats" :loading="isLoading || activityStore.isLoading" />
+        <StatsCard 
+          :stats="activityStore.stats" 
+          :loading="isLoading || activityStore.isLoading"
+          @view-activity-details="handleViewActivityDetails"
+        />
       </div>
       <div>
-        <CreditCard :credit="creditInfo" :loading="isLoading" />
+        <CreditCard 
+          :creditInfo="creditInfo" 
+          :loading="isLoading"
+          @view-details="handleViewCreditDetails"
+          @refresh="handleRefreshCredits"
+          @retry="handleRefreshCredits"
+        />
       </div>
     </div>
 
@@ -67,7 +77,7 @@ import { useCompanyStore } from '@/stores/company'
 import { useActivityStore } from '@/stores/activity'
 import QuickActionCard from '@/components/dashboard/QuickActionCard.vue'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
-import CreditCard from '@/components/dashboard/CreditCard.vue'
+import CreditCard from '@/components/dashboard/CreditCardEnhanced.vue'
 import RecentActivityCard from '@/components/dashboard/RecentActivityCard.vue'
 import QuickSearchCard from '@/components/dashboard/QuickSearchCard.vue'
 import ActivityHistoryModal from '@/components/dashboard/ActivityHistoryModal.vue'
@@ -138,6 +148,26 @@ const handleQuickSearch = (query) => {
     name: 'Search',
     query: { q: query }
   })
+}
+
+// Credit-related handlers
+const handleViewCreditDetails = () => {
+  router.push('/credits')
+}
+
+const handleViewActivityDetails = () => {
+  router.push('/activity')
+}
+
+const handleRefreshCredits = async () => {
+  try {
+    isLoading.value = true
+    creditInfo.value = await companyStore.getCredit()
+  } catch (error) {
+    console.error('Failed to refresh credit info:', error)
+  } finally {
+    isLoading.value = false
+  }
 }
 
 onMounted(async () => {

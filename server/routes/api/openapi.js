@@ -1,6 +1,7 @@
 import express from 'express';
 import { checkRole, checkPermission } from '../../middleware/roleAuth.js';
 import { checkCache } from '../../middleware/cacheCheck.js';
+import { trackOpenAPICredit, checkCreditBalance } from '../../middleware/creditTracker.js';
 import { axiosCompanyService, axiosOauthService, axiosVisureCameraliService } from '../../utils/axiosOpenapi.js';
 import CompanySearch from '../../models/CompanySearch.js';
 import VisureSearch from '../../models/VisureSearch.js';
@@ -14,6 +15,7 @@ import {
     getCompanyMetadata,
     getVisureMetadata
 } from '../../middleware/activityLogger.js';
+import { getLLMOverview, stripCompanyData } from '../../services/openaiService.js';
 
 const router = express.Router();
 
@@ -21,6 +23,8 @@ const router = express.Router();
 
 //get credit api
 router.get('/credit', checkPermission('get_credit'), (req, res) => {
+    // Skip credit tracking for this endpoint to avoid infinite loops
+    req.skipCreditTracking = true;
     axiosOauthService.get('/credit')
         .then(response => res.json(response.data))
         .catch(error => res.json(error.message));
@@ -29,8 +33,10 @@ router.get('/credit', checkPermission('get_credit'), (req, res) => {
 // get advanced company data by piva
 router.get('/IT-advanced/:piva', 
     checkPermission('advanced_search'),
+    checkCreditBalance('openapi', 'IT-advanced'),
     checkCache('company', 'advanced'),
     logActivity({type:'company_advanced', action:'get_advanced_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
+    trackOpenAPICredit('IT-advanced'),
     async (req, res) => {
         try {   
             const response = await axiosCompanyService.get(`/IT-advanced/${req.params.piva}`);
@@ -66,12 +72,18 @@ router.get('/IT-advanced/:piva',
 // get full company data by piva
 router.get('/IT-full/:piva', 
     checkPermission('full_search'),
+    checkCreditBalance('openapi', 'IT-full'),
     checkCache('company', 'full'),
     logActivity({type:'company_full', action:'get_full_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
+    trackOpenAPICredit('IT-full'),
     async (req, res) => {
         try {
             const response = await axiosCompanyService.get(`/IT-full/${req.params.piva}`);
-            
+            console.log(response);
+            if (response.status === 204) {
+                // No content, handle accordingly
+                return res.status(204).send();
+            }
             // If the response is not ready, poll until it is
             // This is to handle cases where the API returns a 302 redirect for pending requests
             if (response.status === 302) {
@@ -86,7 +98,6 @@ router.get('/IT-full/:piva',
 
                 response = pollResponse
             }
-            
             const companyData = response.data.data;
             await CompanySearch.updateOne(
                 { 
@@ -118,8 +129,10 @@ router.get('/IT-full/:piva',
 // get boolean if company is closed by piva
 router.get('/IT-closed/:piva', 
     checkRole(['admin']),
+    checkCreditBalance('openapi', 'IT-closed'),
     checkCache('company', 'closed'),
     logActivity({type:'company_status', action:'check_company_status', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
+    trackOpenAPICredit('IT-closed'),
     async (req, res) => {
         try {
             const response = await axiosCompanyService.get(`/IT-closed/${req.params.piva}`);
@@ -151,8 +164,10 @@ router.get('/IT-closed/:piva',
 
 router.get('/IT-search',
     checkPermission('search_companies'),
+    // Credit check will be done dynamically based on result count
     //TODO add cache check for search using searchKey
     logActivity({type:'company_search', action:'search_companies', getDescription:getITSearchDescription, getMetadata:getSearchMetadata}),
+    trackOpenAPICredit('IT-search'), // This will calculate cost based on result count
     async (req, res) => {
         try {
             const queryParams = {};
@@ -465,6 +480,7 @@ router.get('/bilancio-ottico/:id/allegati',
 
 // elasticsearch search
 
+// CREDIT MANAGEMENT ROUTES
 
 import visureCallbacks from './callbacks/visure.js';
 router.use('/callback', visureCallbacks);

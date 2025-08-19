@@ -112,13 +112,50 @@ export function stripCompanyData(fullDoc) {
     return slim;
 }
 
-export async function getLLMOverview(companyData) {
+export async function getLLMOverview(companyData, userId = null, relatedActivityId = null) {
     try {
-        const response = await client.responses.create({
+        const response = await client.chat.completions.create({
             model: "gpt-4.1-nano-2025-04-14",
-            input: `${promptFinancialOverview} : ${JSON.stringify(companyData)}`,
+            messages: [
+                {
+                    role: "system",
+                    content: promptFinancialOverview
+                },
+                {
+                    role: "user", 
+                    content: JSON.stringify(companyData)
+                }
+            ],
+            temperature: 0.7,
+            max_tokens: 2000
         });
-        return response.output_text;
+        
+        const result = response.choices[0]?.message?.content;
+        const usage = response.usage;
+        
+        // Track OpenAI credits if user ID is provided
+        if (userId && usage) {
+            try {
+                const { trackOpenAICredit } = await import('../middleware/creditTracker.js');
+                await trackOpenAICredit({
+                    userId,
+                    model: "gpt-4.1-nano-2025-04-14",
+                    promptTokens: usage.prompt_tokens || 0,
+                    completionTokens: usage.completion_tokens || 0,
+                    description: `Financial overview generation for company data`,
+                    metadata: {
+                        companyName: companyData.companyName || 'Unknown',
+                        dataSize: JSON.stringify(companyData).length
+                    },
+                    relatedActivityId
+                });
+            } catch (creditError) {
+                console.error('Failed to track OpenAI credits:', creditError);
+                // Don't throw here as we still want to return the LLM result
+            }
+        }
+        
+        return result;
     } catch (error) {
         console.error('Error communicating with LLM:', error);
         throw new Error('Failed to get LLM overview.');

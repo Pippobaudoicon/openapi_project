@@ -15,7 +15,6 @@ import {
     getCompanyMetadata,
     getVisureMetadata
 } from '../../middleware/activityLogger.js';
-import { getLLMOverview, stripCompanyData } from '../../services/openaiService.js';
 
 const router = express.Router();
 

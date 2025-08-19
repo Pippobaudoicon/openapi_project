@@ -1,7 +1,7 @@
 import express from 'express';
 import { checkRole, checkPermission } from '../../middleware/roleAuth.js';
 import { checkCache } from '../../middleware/cacheCheck.js';
-import { trackOpenAPICredit } from '../../middleware/creditTracker.js';
+import { checkCreditBalance, trackOpenAPICredit } from '../../middleware/creditTracker.js';
 import { searchCompanies } from '../../utils/meilisearch.js';
 import { getLLMOverview, stripCompanyData } from '../../services/openaiService.js';
 import { 
@@ -107,6 +107,7 @@ router.get('/stored',
 
 router.get('/llm-overview/:piva',
     checkPermission('company_llm_overview'),
+    checkCreditBalance('openapi', 'llm-overview'),
     logActivity({type:'llm_overview', action:'generate_financial_overview', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
     trackOpenAPICredit('llm-overview'),
     async (req, res) => {

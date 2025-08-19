@@ -51,7 +51,7 @@ export const OPENAPI_COSTS = {
     
     // LLM/AI Analysis costs
     'llm-overview': {
-        cost: 0.1, // Base cost for LLM overview generation (additional OpenAI token costs apply)
+        cost: 0.05, // Base cost for LLM overview generation (additional OpenAI token costs apply)
         description: 'AI-generated financial overview and analysis'
     }
 };

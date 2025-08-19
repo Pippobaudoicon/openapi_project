@@ -18,7 +18,7 @@
     <div v-else-if="credit">
       <div class="text-center mb-6">
         <div class="text-3xl font-bold text-gray-900 mb-2">
-          {{ credit.remaining || 0 }}
+          {{ formatCredits(credit.remaining || 0) }}
         </div>
         <div class="text-sm text-gray-600">Credits remaining</div>
       </div>
@@ -100,4 +100,9 @@ const usagePercentage = computed(() => {
   if (total.value === 0) return 0
   return Math.min((used.value / total.value) * 100, 100)
 })
+
+const formatCredits = (credits) => {
+  if (typeof credits !== 'number') return '0.00'
+  return credits.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
 </script>

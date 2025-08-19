@@ -52,13 +52,15 @@ export const useActivityStore = defineStore('activity', () => {
   }
 
   // Get activity history with pagination
-  const getActivityHistory = async (page = 1, limit = 20, type = null) => {
+  const getActivityHistory = async (page = 1, limit = 20, type = null, startDate = null, endDate = null) => {
     isLoading.value = true
     error.value = null
     
     try {
       const params = { page, limit }
       if (type) params.type = type
+      if (startDate) params.startDate = startDate
+      if (endDate) params.endDate = endDate
       
       const response = await api.get('/activities/history', { params })
       return response.data.data

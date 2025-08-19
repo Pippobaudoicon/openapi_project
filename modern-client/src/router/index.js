@@ -94,6 +94,16 @@ const router = createRouter({
           path: 'files',
           name: 'Files',
           component: () => import('@/views/FilesView.vue')
+        },
+        {
+          path: 'credits',
+          name: 'Credits',
+          component: () => import('@/views/CreditHistoryView.vue')
+        },
+        {
+          path: 'activity',
+          name: 'ActivityHistory',
+          component: () => import('@/views/ActivityHistoryView.vue')
         }
       ]
     },

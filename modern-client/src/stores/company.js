@@ -37,6 +37,10 @@ export const useCompanyStore = defineStore('company', () => {
     limit: 10
   })
   const llmOverview = ref({})
+  
+  // Credit information state
+  const creditInfo = ref(null)
+  const creditLoading = ref(false)
 
   const hasResults = computed(() => searchResults.value.length > 0)
   const totalResults = computed(() => searchResults.value.length)
@@ -68,6 +72,9 @@ export const useCompanyStore = defineStore('company', () => {
       )
       const response = await api.get('/IT-search', { params: filteredQuery })
       searchResults.value = response.data.data || []
+      
+      // Refresh credit balance after consuming credits
+      refreshCredit()
       
       return response.data
     } catch (err) {
@@ -136,6 +143,9 @@ export const useCompanyStore = defineStore('company', () => {
       //   { piva }
       // )
       
+      // Refresh credit balance after consuming credits
+      refreshCredit()
+      
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch company data'
@@ -153,6 +163,9 @@ export const useCompanyStore = defineStore('company', () => {
       const response = await api.get(`/IT-full/${piva}`)
       currentCompany.value = response.data.data
 
+      // Refresh credit balance after consuming credits
+      refreshCredit()
+
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch full company data'
@@ -168,6 +181,9 @@ export const useCompanyStore = defineStore('company', () => {
     
     try {
       const response = await api.get(`/IT-closed/${piva}`)
+      
+      // Refresh credit balance after consuming credits
+      refreshCredit()
       
       return response.data
     } catch (err) {
@@ -185,6 +201,9 @@ export const useCompanyStore = defineStore('company', () => {
     try {
       const response = await api.get(`/impresa/${piva}`)
       
+      // Refresh credit balance after consuming credits
+      refreshCredit()
+      
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch impresa data'
@@ -200,6 +219,9 @@ export const useCompanyStore = defineStore('company', () => {
     
     try {
       const response = await api.get('/impresa', { params })
+      
+      // Refresh credit balance after consuming credits
+      refreshCredit()
       
       return response.data
     } catch (err) {
@@ -217,6 +239,9 @@ export const useCompanyStore = defineStore('company', () => {
     try {
       const response = await api.post('/bilancio-ottico', { piva })
       
+      // Refresh credit balance after consuming credits (high cost operation)
+      refreshCredit()
+      
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to request bilancio ottico'
@@ -233,6 +258,9 @@ export const useCompanyStore = defineStore('company', () => {
     try {
       const response = await api.get(`/bilancio-ottico/${piva}`)
       
+      // Refresh credit balance after consuming credits
+      refreshCredit()
+      
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to get bilancio ottico status'
@@ -247,6 +275,9 @@ export const useCompanyStore = defineStore('company', () => {
       const response = await api.get(`/bilancio-ottico/${id}/allegati`, {
         responseType: 'blob'
       })
+      
+      // Refresh credit balance after consuming credits
+      refreshCredit()
       
       return response.data
     } catch (err) {
@@ -288,11 +319,51 @@ export const useCompanyStore = defineStore('company', () => {
   }
 
   const getCredit = async () => {
+    creditLoading.value = true
     try {
-      const response = await api.get('/credit')
-      return response.data
+      const response = await api.get('/credits/balance')
+      // The new API returns data wrapped in success, so we extract the actual credit data
+      let data
+      if (response.data.success) {
+        // Remove the success wrapper and return the credit data
+        const { success, ...creditData } = response.data
+        data = creditData
+      } else {
+        // Fallback for older API format
+        data = response.data
+      }
+      
+      // Update the reactive credit state
+      creditInfo.value = data
+      return data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch credit info'
+      throw err
+    } finally {
+      creditLoading.value = false
+    }
+  }
+  
+  // Function to refresh credit information
+  const refreshCredit = async () => {
+    try {
+      await getCredit()
+    } catch (error) {
+      console.error('Failed to refresh credit info:', error)
+    }
+  }
+
+  const getCreditTransactions = async (page = 1, limit = 20, type = null, startDate = null, endDate = null) => {
+    try {
+      const params = { page, limit }
+      if (type) params.type = type
+      if (startDate) params.startDate = startDate
+      if (endDate) params.endDate = endDate
+      
+      const response = await api.get('/credits/transactions', { params })
+      return response.data
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Failed to fetch credit transactions'
       throw err
     }
   }
@@ -347,6 +418,10 @@ export const useCompanyStore = defineStore('company', () => {
       const response = await api.get(`/company/llm-overview/${piva}?type=full`)
       llmOverview.value[piva] = response.data.overview // Cache the data
       currentCompany.value.llmOverview = response.data.overview // Update current company overview
+      
+      // Refresh credit balance after consuming OpenAI credits
+      refreshCredit()
+      
       return response.data.overview
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch LLM overview'
@@ -367,6 +442,10 @@ export const useCompanyStore = defineStore('company', () => {
     error,
     hasResults,
     totalResults,
+    // Credit state
+    creditInfo,
+    creditLoading,
+    // Functions
     searchCompanies,
     getCompanyDetails,
     getCompanyAdvanced,
@@ -380,6 +459,8 @@ export const useCompanyStore = defineStore('company', () => {
     getAllVisure,
     getAllBilancioOtticoRequests,
     getCredit,
+    refreshCredit,
+    getCreditTransactions,
     updateSearchParams,
     clearSearch,
     clearError,

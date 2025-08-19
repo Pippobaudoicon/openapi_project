@@ -65,26 +65,53 @@
 
     <!-- Mini Chart Area -->
     <div class="mt-6 pt-6 border-t border-gray-200">
-      <div class="flex items-center justify-between text-sm">
-        <span class="text-gray-600">Search activity</span>
-        <span class="text-primary-600 font-medium">View details →</span>
+      <div class="flex items-center justify-between text-sm mb-4">
+        <span class="text-gray-600">Daily activity (Last 30 days)</span>
+        <button @click="$emit('view-activity-details')" class="text-primary-600 hover:text-primary-500 font-medium transition-colors">
+          View details →
+        </button>
       </div>
-      <div class="mt-3 h-16 flex items-end space-x-1">
-        <div
-          v-for="(height, index) in chartData"
-          :key="index"
-          :class="['bg-primary-500 rounded-t transition-all duration-1000 delay-' + (index * 100)]"
-          :style="{ height: height + '%', width: '8px' }"
-        ></div>
+      <div class="w-full">
+        <div class="flex items-end space-x-0.5 h-24 justify-between">
+          <div
+            v-for="(item, index) in chartData"
+            :key="index"
+            class="flex flex-col items-center flex-1"
+            :class="['transition-all duration-1000 delay-' + (index * 50)]"
+          >
+            <!-- Bar -->
+            <div
+              class="rounded-t transition-all duration-1000 mb-2 mx-auto cursor-help"
+              :class="[
+                item.value === 0 ? 'bg-gray-200 opacity-40' : 'bg-primary-500 opacity-100'
+              ]"
+              :style="{ 
+                height: (item.value === 0 ? 2 : Math.max(2, item.height)) + 'px', 
+                width: 'calc(100% - 1px)',
+                maxWidth: '20px'
+              }"
+              :title="`${item.value} activities on day ${item.day}`"
+            ></div>
+            <!-- Day label -->
+            <span class="text-xs text-gray-500 font-mono text-center">
+              {{ String(item.day).padStart(2, '0') }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-between items-center mt-2 text-xs text-gray-400">
+        <span>{{ getStartDate() }}</span>
+        <span>Today</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { useActivityStore } from '@/stores/activity'
 
-defineProps({
+const props = defineProps({
   stats: {
     type: Object,
     required: true
@@ -95,10 +122,133 @@ defineProps({
   }
 })
 
+defineEmits(['view-activity-details'])
+
+const activityStore = useActivityStore()
 const chartData = ref([])
 
+const generateChartData = async () => {
+  try {
+    // Get actual activity history for the last 30 days
+    const response = await activityStore.getActivityHistory(1, 1000) // Get enough data to cover 30 days
+    const activities = response.activities || []
+    
+    // Create a map to count activities by day
+    const today = new Date()
+    const activityCountByDay = new Map()
+    
+    // Initialize all days in the last 30 days with 0 activities
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(today)
+      date.setDate(date.getDate() - i)
+      const dayKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+      activityCountByDay.set(dayKey, 0)
+    }
+    
+    // Count actual activities by day
+    activities.forEach(activity => {
+      const activityDate = new Date(activity.createdAt)
+      const dayKey = `${activityDate.getFullYear()}-${String(activityDate.getMonth() + 1).padStart(2, '0')}-${String(activityDate.getDate()).padStart(2, '0')}`
+      
+      // Only count activities from the last 30 days
+      if (activityCountByDay.has(dayKey)) {
+        activityCountByDay.set(dayKey, activityCountByDay.get(dayKey) + 1)
+      }
+    })
+    
+    // Convert to chart data
+    const data = []
+    let maxValue = 0
+    const rawData = []
+    
+    // Generate data for each of the last 30 days
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(today)
+      date.setDate(date.getDate() - i)
+      const dayKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+      
+      const value = activityCountByDay.get(dayKey) || 0
+      const isWeekend = date.getDay() === 0 || date.getDay() === 6
+      
+      rawData.push({
+        day: date.getDate(),
+        value: value,
+        isToday: i === 0,
+        isWeekend: isWeekend
+      })
+      
+      maxValue = Math.max(maxValue, value)
+    }
+    
+    // Calculate heights based on actual data
+    const maxHeight = 60
+    const minHeight = 2
+    
+    rawData.forEach(item => {
+      let height
+      if (item.value === 0) {
+        height = 0 // Zero activity = no visible bar
+      } else if (maxValue === 0) {
+        height = minHeight // If all values are 0, show minimum height
+      } else {
+        // Calculate proportional height, ensuring minimum visibility for any activity > 0
+        height = Math.max(minHeight, (item.value / maxValue) * maxHeight)
+      }
+      
+      data.push({
+        ...item,
+        height: height
+      })
+    })
+    
+    chartData.value = data
+    
+  } catch (error) {
+    console.error('Failed to load activity data for chart:', error)
+    // Fallback to empty chart if API fails
+    generateFallbackChart()
+  }
+}
+
+const generateFallbackChart = () => {
+  // Fallback chart with empty data if API fails
+  const today = new Date()
+  const data = []
+  
+  for (let i = 29; i >= 0; i--) {
+    const date = new Date(today)
+    date.setDate(date.getDate() - i)
+    
+    data.push({
+      day: date.getDate(),
+      value: 0,
+      height: 0,
+      isToday: i === 0,
+      isWeekend: date.getDay() === 0 || date.getDay() === 6
+    })
+  }
+  
+  chartData.value = data
+}
+
+const getCurrentMonth = () => {
+  return new Date().getMonth() + 1
+}
+
+const getStartDate = () => {
+  const today = new Date()
+  const startDate = new Date(today)
+  startDate.setDate(startDate.getDate() - 29)
+  return startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+watch(() => props.stats, () => {
+  if (props.stats && !props.loading) {
+    generateChartData()
+  }
+}, { immediate: true })
+
 onMounted(() => {
-  // Generate sample chart data
-  chartData.value = Array.from({ length: 20 }, () => Math.floor(Math.random() * 100) + 20)
+  generateChartData()
 })
 </script>

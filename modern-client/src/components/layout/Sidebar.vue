@@ -50,7 +50,7 @@
             </div>
             <div>
               <p class="text-sm font-medium text-primary-900">Credit</p>
-              <p class="text-xs text-primary-700">{{ creditInfo.remaining || 0 }} remaining</p>
+              <p class="text-xs text-primary-700">{{ formatCredits(creditInfo?.currentBalance || 0) }} remaining</p>
             </div>
           </div>
         </div>
@@ -84,9 +84,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { useCompanyStore } from '@/stores/company'
+import { useCredits } from '@/composables/useCredits'
 import SidebarItem from './SidebarItem.vue'
 
 defineProps({
@@ -99,8 +99,7 @@ defineProps({
 defineEmits(['close'])
 
 const authStore = useAuthStore()
-const companyStore = useCompanyStore()
-const creditInfo = ref(null)
+const { creditInfo, formatCredits, refreshCredit } = useCredits()
 
 const navigationItems = [
   {
@@ -133,16 +132,22 @@ const navigationItems = [
     to: '/files',
     icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
   },
+  // {
+  //   name: 'Profile',
+  //   to: '/profile',
+  //   icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
+  // }
   {
-    name: 'Profile',
-    to: '/profile',
-    icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
+    name: 'Activities',
+    to: '/activity',
+    icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
   }
 ]
 
 onMounted(async () => {
+  // Load initial credit information
   try {
-    creditInfo.value = await companyStore.getCredit()
+    await refreshCredit()
   } catch (error) {
     console.error('Failed to fetch credit info:', error)
   }

@@ -88,7 +88,30 @@
     <div class="card" v-motion-slide-visible-once-right>
       <h3 class="text-lg font-semibold text-gray-900 mb-4">Change Password</h3>
       
-      <form @submit.prevent="changePassword" class="space-y-4">
+      <!-- Status Message -->
+      <div v-if="passwordState.message" 
+           class="mb-4 p-3 rounded-lg text-sm font-medium"
+           :class="{
+             'bg-green-100 text-green-800 border border-green-200': passwordState.messageType === 'success',
+             'bg-red-100 text-red-800 border border-red-200': passwordState.messageType === 'error',
+             'bg-blue-100 text-blue-800 border border-blue-200': passwordState.messageType === 'info'
+           }">
+        <div class="flex items-center">
+          <svg v-if="passwordState.messageType === 'success'" class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <svg v-if="passwordState.messageType === 'error'" class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          </svg>
+          <svg v-if="passwordState.messageType === 'info'" class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ passwordState.message }}
+        </div>
+      </div>
+      
+      <form @submit.prevent="showPasswordConfirmation" class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
           <input
@@ -96,6 +119,7 @@
             type="password"
             class="input-field"
             placeholder="Enter current password"
+            :disabled="passwordState.isLoading"
           />
         </div>
 
@@ -106,7 +130,26 @@
             type="password"
             class="input-field"
             placeholder="Enter new password"
+            :disabled="passwordState.isLoading"
           />
+          <div v-if="passwordForm.newPassword" class="mt-2 space-y-1">
+            <div class="flex items-center text-xs"
+                 :class="passwordForm.newPassword.length >= 8 ? 'text-green-600' : 'text-red-600'">
+              <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path v-if="passwordForm.newPassword.length >= 8" fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                <path v-else fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+              At least 8 characters
+            </div>
+            <div class="flex items-center text-xs"
+                 :class="/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(passwordForm.newPassword) ? 'text-green-600' : 'text-red-600'">
+              <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path v-if="/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(passwordForm.newPassword)" fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                <path v-else fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+              Contains uppercase, lowercase, and number
+            </div>
+          </div>
         </div>
 
         <div>
@@ -116,15 +159,75 @@
             type="password"
             class="input-field"
             placeholder="Confirm new password"
+            :disabled="passwordState.isLoading"
+            :class="{
+              'border-red-300 focus:border-red-500': passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword,
+              'border-green-300 focus:border-green-500': passwordForm.confirmPassword && passwordForm.newPassword === passwordForm.confirmPassword
+            }"
           />
+          <p v-if="passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword" 
+             class="text-xs text-red-600 mt-1">
+            Passwords do not match
+          </p>
+        </div>
+
+        <!-- Validation Errors -->
+        <div v-if="passwordValidation.errors.length > 0" class="bg-red-50 border border-red-200 rounded-lg p-3">
+          <p class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</p>
+          <ul class="text-sm text-red-700 space-y-1">
+            <li v-for="error in passwordValidation.errors" :key="error" class="flex items-start">
+              <span class="text-red-500 mr-1">•</span>
+              {{ error }}
+            </li>
+          </ul>
         </div>
 
         <div class="pt-4 border-t border-gray-200">
-          <button type="submit" class="btn-primary">
-            Update Password
+          <button 
+            type="submit" 
+            class="btn-primary"
+            :disabled="!canSubmitPassword"
+            :class="{ 'opacity-50 cursor-not-allowed': !canSubmitPassword }"
+          >
+            <svg v-if="passwordState.isLoading" class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ passwordState.isLoading ? 'Updating...' : 'Update Password' }}
           </button>
         </div>
       </form>
+    </div>
+
+    <!-- Confirmation Dialog -->
+    <div v-if="passwordState.showConfirmDialog" 
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirm Password Change</h3>
+        <p class="text-gray-600 mb-6">
+          Are you sure you want to change your password? This action cannot be undone and you'll need to use your new password for future logins.
+        </p>
+        <div class="flex justify-end space-x-3">
+          <button 
+            @click="cancelPasswordChange"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            :disabled="passwordState.isLoading"
+          >
+            Cancel
+          </button>
+          <button 
+            @click="changePassword"
+            class="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors"
+            :disabled="passwordState.isLoading"
+          >
+            <svg v-if="passwordState.isLoading" class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ passwordState.isLoading ? 'Changing...' : 'Change Password' }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Preferences -->
@@ -212,6 +315,45 @@ const preferences = ref({
   darkMode: false
 })
 
+// Password change state management
+const passwordState = ref({
+  isLoading: false,
+  message: '',
+  messageType: '', // 'success', 'error', 'info'
+  showConfirmDialog: false
+})
+
+const passwordValidation = computed(() => {
+  const errors = []
+  const form = passwordForm.value
+  
+  if (form.newPassword && form.newPassword.length < 8) {
+    errors.push('Password must be at least 8 characters long')
+  }
+  
+  if (form.newPassword && form.confirmPassword && form.newPassword !== form.confirmPassword) {
+    errors.push('Passwords do not match')
+  }
+  
+  if (form.newPassword && !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(form.newPassword)) {
+    errors.push('Password must contain at least one uppercase letter, one lowercase letter, and one number')
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  }
+})
+
+const canSubmitPassword = computed(() => {
+  const form = passwordForm.value
+  return form.currentPassword && 
+         form.newPassword && 
+         form.confirmPassword && 
+         passwordValidation.value.isValid &&
+         !passwordState.value.isLoading
+})
+
 const userInitials = computed(() => {
   const email = userStore.user?.email || ''
   return email.charAt(0).toUpperCase()
@@ -230,12 +372,50 @@ const updateProfile = () => {
   })
 }
 
-const changePassword = () => {
-  userStore.changePassword({
-    currentPassword: passwordForm.value.currentPassword,
-    newPassword: passwordForm.value.newPassword,
-    confirmPassword: passwordForm.value.confirmPassword
-  })
+const showPasswordConfirmation = () => {
+  if (!canSubmitPassword.value) return
+  passwordState.value.showConfirmDialog = true
+}
+
+const changePassword = async () => {
+  passwordState.value.isLoading = true
+  passwordState.value.message = 'Updating password...'
+  passwordState.value.messageType = 'info'
+  
+  try {
+    await userStore.changePassword({
+      currentPassword: passwordForm.value.currentPassword,
+      newPassword: passwordForm.value.newPassword,
+      confirmPassword: passwordForm.value.confirmPassword
+    })
+    
+    // Success
+    passwordState.value.message = 'Password updated successfully!'
+    passwordState.value.messageType = 'success'
+    
+    // Clear the form
+    passwordForm.value = {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    }
+    
+    // Clear success message after 5 seconds
+    setTimeout(() => {
+      passwordState.value.message = ''
+    }, 5000)
+    
+  } catch (error) {
+    passwordState.value.message = error.message || 'Failed to update password. Please try again.'
+    passwordState.value.messageType = 'error'
+  } finally {
+    passwordState.value.isLoading = false
+    passwordState.value.showConfirmDialog = false
+  }
+}
+
+const cancelPasswordChange = () => {
+  passwordState.value.showConfirmDialog = false
 }
 onMounted(() => {
   fetchUserData().then(() => {

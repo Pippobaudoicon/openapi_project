@@ -94,10 +94,10 @@ router.post('/change-password', logActivity({type:'change-password', action:'cha
     }
 
     try {
-        const { oldPassword, newPassword } = req.body;
+        const { currentPassword, newPassword } = req.body;
         const user = await User.findById(req.user._id);
 
-        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Current password is incorrect' });
         }

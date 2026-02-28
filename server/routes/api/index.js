@@ -6,8 +6,9 @@ import activityRoutes from './activities.js';
 import companyRoutes from './company.js';
 import userRoutes from './users.js';
 import creditRoutes from './credits.js';
+import aiRoutes from './ai.js';
 
-import { checkPermission, checkRole } from '../../middleware/roleAuth.js';
+import { checkRole } from '../../middleware/roleAuth.js';
 import { fileService } from '../../services/fileService.js';
 import { path, dataCompaniesDir, companiesDir } from '../../utils/paths.js';
 
@@ -20,6 +21,7 @@ router.use('/v1/activities', activityRoutes);
 router.use('/v1/credits', creditRoutes);
 router.use('/v1', openapiRoutes);
 router.use('/v1/company', companyRoutes);
+router.use('/v1/ai', aiRoutes);
 
 //Convert base64 to zip file and saves it to disk
 router.post('/v1/base64tozip', express.json({ limit: '10mb' }), (req, res) => {
@@ -48,11 +50,5 @@ router.get('/v1/download/*', checkRole('admin'), async (req, res) => {
     }
 });
 
-//DEBUGGING purposes only
-router.get('/v1/test/:test', (req, res) => {
-    const test = req.params.test;
-    const test2 = `Basic ${Buffer.from(`${'info@interjob.it'}:${'4d8875edeb2554e01f3ccc083938cbb6'}`).toString('base64')}`;
-    res.json({ test: test, test2: test2 });
-});
 
 export default router;

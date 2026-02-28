@@ -1,0 +1,1 @@
+- make it dark mode and use frontend-design skill to make it look better

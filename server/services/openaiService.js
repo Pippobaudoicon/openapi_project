@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import crypto from "crypto";
 
 const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -96,6 +97,112 @@ const pick = (obj, keys) =>
 
 const compactArray = (arr, props) =>
     Array.isArray(arr) ? arr.map(el => pick(el, props)) : [];
+
+// Allowed parameters for IT-search — LLM output is restricted to these
+const ALLOWED_SEARCH_PARAMS = [
+    'province', 'atecoCode', 'companyName', 'minTurnover', 'maxTurnover',
+    'minEmployees', 'maxEmployees', 'activityStatus', 'townCode'
+];
+
+const parseQueryPrompt = `You are a search query parser for an Italian company database API.
+Convert natural language queries (Italian or English) into structured API search parameters.
+
+Available parameters:
+- province: Italian province abbreviation (e.g. "MI" for Milano, "RM" for Roma, "TO" for Torino, "NA" for Napoli)
+- atecoCode: ATECO economic activity code (e.g. "62" for software, "46" for wholesale, "41" for construction)
+- companyName: Company name to search for (full words only)
+- minTurnover / maxTurnover: Revenue range in euros (integer)
+- minEmployees / maxEmployees: Employee count range (integer)
+- activityStatus: Company status — "active", "inactive", "suspended"
+- townCode: ISTAT town code (6 digits)
+
+Rules:
+- Only output parameters you are confident about from the query
+- For Italian city/region names, map to the correct province code
+- For sectors/industries, map to the closest ATECO code prefix
+- Revenue values should be in euros (e.g. "1 milione" = 1000000)
+- Always include an "interpretation" field describing what you understood in Italian
+- If the query is too vague, return minimal params with a helpful interpretation`;
+
+const parseQuerySchema = {
+    type: "object",
+    properties: {
+        params: {
+            type: "object",
+            properties: {
+                province: { type: "string", description: "Italian province code (2 letters)" },
+                atecoCode: { type: "string", description: "ATECO code prefix" },
+                companyName: { type: "string", description: "Company name keyword" },
+                minTurnover: { type: "integer", description: "Minimum revenue in euros" },
+                maxTurnover: { type: "integer", description: "Maximum revenue in euros" },
+                minEmployees: { type: "integer", description: "Minimum employee count" },
+                maxEmployees: { type: "integer", description: "Maximum employee count" },
+                activityStatus: { type: "string", enum: ["active", "inactive", "suspended"] },
+                townCode: { type: "string", description: "ISTAT town code" }
+            },
+            additionalProperties: false
+        },
+        interpretation: { type: "string", description: "Human-readable description of what was parsed, in Italian" }
+    },
+    required: ["params", "interpretation"],
+    additionalProperties: false
+};
+
+export async function parseNaturalLanguageQuery(query) {
+    const queryHash = crypto.createHash('sha256').update(query.toLowerCase().trim()).digest('hex');
+
+    // Check cache
+    const { default: CompanySearch } = await import('../models/CompanySearch.js');
+    const cached = await CompanySearch.findOne({
+        searchKey: `parse:${queryHash}`,
+        searchType: 'search'
+    });
+    if (cached?.data) {
+        return { ...cached.data, cached: true };
+    }
+
+    const response = await client.chat.completions.create({
+        model: "gpt-4.1-nano-2025-04-14",
+        messages: [
+            { role: "system", content: parseQueryPrompt },
+            { role: "user", content: query }
+        ],
+        response_format: {
+            type: "json_schema",
+            json_schema: {
+                name: "search_params",
+                strict: true,
+                schema: parseQuerySchema
+            }
+        },
+        temperature: 0.3,
+        max_tokens: 500
+    });
+
+    const parsed = JSON.parse(response.choices[0].message.content);
+
+    // Whitelist validation — strip any params not in allowed list
+    const cleanParams = {};
+    for (const [key, value] of Object.entries(parsed.params || {})) {
+        if (ALLOWED_SEARCH_PARAMS.includes(key) && value !== null && value !== undefined && value !== '') {
+            cleanParams[key] = value;
+        }
+    }
+
+    const result = {
+        params: cleanParams,
+        interpretation: parsed.interpretation || ''
+    };
+
+    // Cache the parse result
+    await CompanySearch.updateOne(
+        { searchKey: `parse:${queryHash}`, searchType: 'search' },
+        { $set: { data: result, parameters: { query }, createdAt: new Date() } },
+        { upsert: true }
+    );
+
+    return result;
+}
 
 export function stripCompanyData(fullDoc) {
     const slim = {};

@@ -14,16 +14,18 @@ const label = computed(() => (isActive.value ? 'Attiva' : 'Cessata'))
 
 <template>
   <span
-    class="inline-flex items-center gap-1 rounded-full font-medium"
+    class="inline-flex items-center gap-1.5 rounded-full font-500"
     :class="[
-      isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600',
-      size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-sm',
+      isActive
+        ? 'bg-emerald-400/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400'
+        : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
+      size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-3 py-1 text-sm',
     ]"
   >
     <span
       class="inline-block rounded-full"
       :class="[
-        isActive ? 'bg-green-500' : 'bg-gray-400',
+        isActive ? 'bg-emerald-500 dark:bg-emerald-400' : 'bg-zinc-400 dark:bg-zinc-500',
         size === 'sm' ? 'h-1.5 w-1.5' : 'h-2 w-2',
       ]"
     />

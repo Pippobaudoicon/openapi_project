@@ -52,29 +52,41 @@ defineExpose({ addQuery, show, hide })
 </script>
 
 <template>
-  <div v-if="visible && history.length" class="absolute left-0 right-0 top-full z-10 mt-1 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
-    <div class="flex items-center justify-between px-3 py-1.5">
-      <span class="text-xs font-medium text-gray-400">Ricerche recenti</span>
-    </div>
-    <button
-      v-for="(q, i) in history"
-      :key="i"
-      class="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
-      @mousedown.prevent="select(q)"
+  <Transition
+    enter-active-class="transition duration-200 ease-out"
+    enter-from-class="opacity-0 -translate-y-1"
+    enter-to-class="opacity-100 translate-y-0"
+    leave-active-class="transition duration-150 ease-in"
+    leave-from-class="opacity-100 translate-y-0"
+    leave-to-class="opacity-0 -translate-y-1"
+  >
+    <div
+      v-if="visible && history.length"
+      class="absolute left-0 right-0 top-full z-20 mt-2 overflow-hidden rounded-xl border border-zinc-200 bg-white/95 py-1 shadow-xl backdrop-blur-xl dark:border-white/[0.08] dark:bg-zinc-900/95"
     >
-      <span class="flex items-center gap-2 truncate">
-        <svg class="h-3.5 w-3.5 shrink-0 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        {{ q }}
-      </span>
-      <svg
-        class="h-3.5 w-3.5 shrink-0 text-gray-300 hover:text-gray-500"
-        fill="none" viewBox="0 0 24 24" stroke="currentColor"
-        @mousedown.prevent.stop="remove(i)"
+      <div class="flex items-center justify-between px-3 py-2">
+        <span class="text-[11px] font-600 uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Recenti</span>
+      </div>
+      <button
+        v-for="(q, i) in history"
+        :key="i"
+        class="group flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-zinc-100 dark:hover:bg-white/[0.04]"
+        @mousedown.prevent="select(q)"
       >
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-  </div>
+        <span class="flex items-center gap-2.5 truncate text-zinc-600 dark:text-zinc-300">
+          <svg class="h-3.5 w-3.5 shrink-0 text-zinc-300 dark:text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {{ q }}
+        </span>
+        <svg
+          class="h-3.5 w-3.5 shrink-0 text-zinc-300 opacity-0 transition-all hover:text-zinc-500 group-hover:opacity-100 dark:text-zinc-600 dark:hover:text-zinc-400"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+          @mousedown.prevent.stop="remove(i)"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </Transition>
 </template>

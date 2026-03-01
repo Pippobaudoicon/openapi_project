@@ -6,9 +6,9 @@ defineProps<{
 </script>
 
 <template>
-  <div class="text-sm text-gray-600">
-    <span class="font-medium text-gray-900">{{ count }}</span>
+  <div class="text-sm text-zinc-500 dark:text-zinc-400">
+    <span class="font-600 text-zinc-900 dark:text-zinc-100">{{ count }}</span>
     {{ count === 1 ? 'risultato trovato' : 'risultati trovati' }}
-    <span v-if="interpretation" class="ml-2 text-gray-400">&mdash; {{ interpretation }}</span>
+    <span v-if="interpretation" class="ml-1 text-zinc-400 dark:text-zinc-500">&mdash; {{ interpretation }}</span>
   </div>
 </template>

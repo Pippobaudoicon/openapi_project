@@ -51,7 +51,7 @@ async function indexAllCompanies() {
 
         console.log(`Found ${companies.length} companies to index`);
 
-        //TODO da mappare tutti i campi (profare gpt)
+        //TODO da mappare tutti i campi necessari
         const documents = companies.map((company, index) => {
             try {
                 // Handle different data structures

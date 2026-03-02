@@ -1,0 +1,23 @@
+meta {
+  name: Save Search
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{websiteBaseUrl}}/ai/save-search
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "query": "aziende di software a Milano",
+    "parsedParams": {
+      "province": "MI",
+      "atecoCode": "62"
+    },
+    "interpretation": "Ricerca aziende software a Milano",
+    "results": []
+  }
+}

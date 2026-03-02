@@ -3,6 +3,7 @@
 ## What This Is
 
 B2B SaaS platform for Italian company data aggregation. Combines OpenAPI (Altravia) company registry, Visure Camerali, and OpenAI-powered analysis with a credit-based billing system.
+Always auto-update this document with any architectural changes, new routes, or tech stack updates. This is the single source of truth for how the system works.
 
 ## Project Structure
 

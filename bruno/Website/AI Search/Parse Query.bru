@@ -1,0 +1,17 @@
+meta {
+  name: Parse Query
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{websiteBaseUrl}}/ai/parse-query
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "query": "aziende di software a Milano con fatturato sopra 1 milione"
+  }
+}

@@ -183,7 +183,7 @@ const metrics = computed(() => [
               :overview="overview"
               :loading="overviewLoading"
               :error="overviewError"
-              @load="fetchOverview"
+              @load="(force?: boolean) => fetchOverview(force)"
             />
           </div>
 

@@ -25,13 +25,14 @@ export function useCompany(piva: Ref<string> | string) {
   const overviewLoading = ref(false)
   const overviewError = ref<string | null>(null)
 
-  async function fetchOverview() {
-    if (overview.value) return
+  async function fetchOverview(force = false) {
+    if (overview.value && !force) return
     overviewLoading.value = true
     overviewError.value = null
     try {
       const headers = import.meta.server ? useRequestHeaders(['cookie']) : {}
-      const res = await $fetch<LLMOverviewResponse>(`/_api/company/${pivaRef.value}/overview`, {
+      const query = force ? '?force=true' : ''
+      const res = await $fetch<LLMOverviewResponse>(`/_api/company/${pivaRef.value}/overview${query}`, {
         headers,
       })
       overview.value = res.overview

@@ -5,91 +5,75 @@ const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-//TODO make this configurable
-const outputLanguage = 'italian';
-//REVIEW better prompt using least amount of tokens
-const promptFinancialOverview = `Sei un Chief Financial Officer (CFO) senior: analizza e fornisci una sintesi strutturata, concisa e facilmente comprensibile dei dati aziendali e delle performance pubbliche forniti (inclusi dati finanziari, indici, gestione, assetto proprietario, operatività). La review deve essere accessibile sia ad addetti ai lavori che al pubblico generico, non solo agli esperti, e spiegare il significato dei dati in modo chiaro.
-    Scrivi la review seguendo questa struttura (in italiano semplice, chiaro e diretto):
-    - Incipit iniziale che parla dell'azienda
-    - Per ogni sezione, inizia con un ragionamento basato sui dati e sul contesto (benchmark di settore, trend, eventi particolari, ecc.), specificando perché i dati sono rilevanti o degni di nota.
-    - Dopo il ragionamento, fornisci un riassunto conciso in linguaggio accessibile a tutti, che chiarisca cosa significano quei dati per lo stato attuale dell’azienda.
-    - Includi tutte le sezioni seguenti (usa i titoli riportati in markdown, come da esempio):
-        - Performance (EBITDA, flusso di cassa, leva finanziaria/indebitamento)
-        - Redditività (ROE, ROI, ROS)
-        - Liquidità
-        - Efficienza
-        - Posizionamento Strategico
-    - Dopo queste, fornisci una “Sintesi SWOT” (Strengths, Weaknesses, Opportunities, Threats), scritta in punti elenco chiari e brevi (1–2 per area).
-    - Termina la review con una frase riassuntiva e rassicurante che riassuma lo stato generale o l’outlook della società.
-    - Se per una sezione mancano dati, segnalalo e riassumi solo le aree disponibili, mantenendo chiarezza e semplicità.
-    - Non fornire commenti meta, istruzioni interne, né note fuori dal testo della review.
+const promptFinancialOverview = `Sei un analista aziendale senior. Analizza i dati forniti e produci una panoramica completa dell’azienda in italiano, strutturata in markdown.
 
-    # Output Format
+# Istruzioni
 
-    - IMPORTANTE: Scrivi in ${outputLanguage}
-    - Fornisci la risposta come testo markdown, usando i seguenti titoli: "Performance", "Redditività", "Liquidità", "Efficienza", "Posizionamento Strategico", "Sintesi SWOT" e una frase finale conclusiva.
-    - Ogni sezione: 1–2 frasi di ragionamento/interpretazione dati + 1 frase riassuntiva semplice.
-    - SWOT sintetica: 1–2 bullet per “Punti di forza”, “Debolezze”, “Opportunità”, “Minacce”.
-    - Frase finale: massima chiarezza e brevità.
-    - Lunghezza totale: 250–400 parole.
-    - Nessun commento aggiuntivo o nota fuori dal testo richiesto.
+- Scrivi SEMPRE in italiano, chiaro e accessibile sia a professionisti che al pubblico generale.
+- Cita sempre i valori numerici reali dai dati (es. “fatturato di €2,3M”, “ROE del 12,4%”, “47 dipendenti”). Non usare mai descrizioni vaghe quando hai numeri concreti.
+- Quando disponibili dati di anni diversi (bilanci precedenti), evidenzia trend e variazioni anno su anno con percentuali di crescita/calo.
+- Se mancano dati per una sezione, omettila silenziosamente. Non scrivere “dati non disponibili”.
+- Nessun commento meta, istruzione interna o nota fuori dal testo della review.
 
-    # Esempio
+# Struttura (usa esattamente questi titoli markdown ##)
 
-    Performance  
-    Analizzando indicatori come EBITDA, flussi di cassa e livello di indebitamento, si nota una tendenza positiva, supportata da vendite stabili e una gestione attenta dei costi. I dati mostrano che il debito resta gestibile rispetto agli standard di settore.  
-    In sintesi, la società mantiene risultati operativi affidabili e una posizione finanziaria solida.
+## Profilo Aziendale
+Presenta l’azienda: nome, forma giuridica, settore ATECO (codice e descrizione), sede (città e provincia), anno di costituzione, dimensione aziendale. Se fa parte di un gruppo societario, menzionalo. Se è esportatrice, indica i mercati. 2-3 frasi dense di informazioni.
 
-    Redditività  
-    Gli indici ROE, ROI e ROS, confrontati con le medie di settore, risultano in crescita grazie a politiche di investimento mirate e a una buona efficienza interna. Questo suggerisce che l’azienda sta riuscendo a valorizzare il capitale investito.  
-    In conclusione, la redditività rimane soddisfacente e competitiva per il contesto di mercato.
+## Struttura Societaria
+Descrivi brevemente l’assetto proprietario (soci principali e relative quote %) e il management (ruoli chiave). Se la compagine è concentrata o frammentata, commentalo. 1-2 frasi.
 
-    Liquidità  
-    I dati indicano una posizione di liquidità equilibrata, con disponibilità adeguata a coprire obbligazioni e spese correnti. Eventuali oscillazioni sono dovute a operazioni straordinarie pianificate.  
-    Nel complesso, l’azienda può far fronte regolarmente alle sue necessità finanziarie.
+## Performance Operativa
+Analizza fatturato (valore e trend), EBITDA, EBIT, cash flow. Se disponibili dati di più anni, calcola e riporta la crescita %. Commenta il rapporto tra indebitamento e capacità di generare cassa (PFN/EBITDA). 2-3 frasi con numeri concreti.
 
-    Efficienza  
-    La gestione delle risorse appare efficiente: i tempi di incasso e pagamento sono allineati alle best practice del settore, e i costi operativi sotto controllo. L’azienda evita sprechi e riduce rischi di inefficienza.  
-    Pertanto, l’impresa dimostra agilità e attenzione nella gestione quotidiana.
+## Redditività
+Analizza ROE, ROI, ROS e ROA. Contestualizza rispetto a benchmark di settore tipici italiani. Segnala se i rendimenti sono in miglioramento o peggioramento. 2 frasi con valori specifici.
 
-    Posizionamento Strategico  
-    L’espansione sui mercati e l’innovazione di prodotto rafforzano la posizione rispetto ai concorrenti. Vengono costantemente monitorate opportunità di crescita e possibili minacce esterne.  
-    In breve, l’azienda mostra una visione strategica e flessibilità.
+## Solidità e Liquidità
+Current ratio, acid test, copertura del capitale circolante, debt ratio. Spiega cosa significano per la capacità dell’azienda di far fronte ai propri impegni. 2 frasi.
 
-    Sintesi SWOT  
-    - **Punti di forza:** Gestione solida della liquidità; efficienza elevata  
-    - **Debolezze:** Dipendenza da un segmento di clientela  
-    - **Opportunità:** Diversificazione dei mercati; digitalizzazione dei processi  
-    - **Minacce:** Pressioni competitive crescenti; incertezza economica globale
+## Efficienza Operativa
+Rotazione magazzino, durata crediti e debiti commerciali, ciclo finanziario. Commenta se l’azienda incassa prima o dopo di pagare. 1-2 frasi.
 
-    Nel complesso, l’azienda si dimostra resiliente e pronta ad affrontare le sfide future.
+## Sintesi SWOT
+Basata SOLO sui dati reali forniti, non su ipotesi generiche:
+- **Punti di forza:** 2-3 bullet concreti
+- **Debolezze:** 1-2 bullet concreti
+- **Opportunità:** 1-2 bullet
+- **Rischi:** 1-2 bullet
 
-    # Note
+## Valutazione Complessiva
+Una frase finale che sintetizzi lo stato di salute generale e l’outlook dell’azienda.
 
-    - Assicurati che ogni sezione inizi sempre dal ragionamento sui dati, seguito dalla sintesi chiara.
-    - Adatta il linguaggio perché sia comprensibile sia ad addetti ai lavori sia al pubblico generale, evitando tecnicismi inutili.
-    - Se mancano dati, segnalalo e concentrati sulle sezioni disponibili, mantenendo coerenza e chiarezza del testo.
-    - Nessuna aggiunta al di fuori delle sezioni richieste.
-    `;
+# Formato Output
+- Markdown puro con titoli ##, **grassetto** per enfasi, elenchi puntati per SWOT
+- Lunghezza: 400-600 parole
+- Nessuna aggiunta fuori dalle sezioni richieste`;
 
 const SCHEMA = {
-    companyDetails:    ['companyName', 'vatCode', 'leiCode'],
-    ecofin:            ['turnover', 'turnoverTrend', 'netWorth', 'shareCapital', 'enterpriseSize'],
-    operatingResults:  ['ebitda', 'ebit', 'cashFlow'],
-    profitability:     ['roe', 'roi', 'ros', 'roaMonetary'],
-    liquidityRatios:   ['currentRatio', 'acidTest', 'cashTotalShortTermDebt'],
-    financialStability:['workingCapitalCoverage'],
-    leverageRatios:    ['pfnEbitda', 'ebitdaNetLeverage', 'debtRatio'],
-    efficiency:        ['inventoryRotation', 'accountsReceivableRotation', 'turnoverIndex'],
-    financialCycle:    ['accountsReceivableDuration', 'stockDuration'],
-    structureRatios:   ['netFinancialDebtEquityNetWorth'],
-    employees:         ['employee', 'employeeTrend'],
-    branches:          ['numberOfBranches'],
-    foreignTrade:      ['isExporter', 'exportCountries'],
-    atecoClassification: ['ateco', 'secondaryAteco'],
-    corporateGroups:   ['groupName', 'holdingCompanyName'],
-    managers:          'compactArray:name,surname,roles',
-    shareholders:      'compactArray:companyName,percentShare'
+    companyDetails:      ['companyName', 'vatCode', 'leiCode'],
+    legalForm:           ['description'],
+    companyStatus:       ['activityStatus'],
+    companyDates:        ['registrationDate', 'startDate'],
+    address:             ['registeredOffice'],
+    digitalAddress:      ['digitalAddress'],
+    ecofin:              ['turnover', 'turnoverTrend', 'netWorth', 'shareCapital', 'enterpriseSize'],
+    operatingResults:    ['ebitda', 'ebit', 'cashFlow'],
+    profitability:       ['roe', 'roi', 'ros', 'roaMonetary'],
+    liquidityRatios:     ['currentRatio', 'acidTest', 'cashTotalShortTermDebt'],
+    financialStability:  ['workingCapitalCoverage'],
+    leverageRatios:      ['pfnEbitda', 'ebitdaNetLeverage', 'debtRatio'],
+    efficiency:          ['inventoryRotation', 'accountsReceivableRotation', 'turnoverIndex'],
+    financialCycle:      ['accountsReceivableDuration', 'stockDuration'],
+    structureRatios:     ['netFinancialDebtEquityNetWorth'],
+    employees:           ['employee', 'employeeTrend'],
+    branches:            ['numberOfBranches'],
+    foreignTrade:        ['isExporter', 'exportCountries'],
+    atecoClassification: 'deep',
+    corporateGroups:     ['groupName', 'holdingCompanyName'],
+    managers:            'compactArray:name,surname,roles',
+    shareholders:        'compactArray:companyName,name,surname,percentShare',
+    balanceSheets:       'deep',
 };
 
 const pick = (obj, keys) =>
@@ -210,7 +194,9 @@ export function stripCompanyData(fullDoc) {
     for (const [section, rule] of Object.entries(SCHEMA)) {
         if (!fullDoc?.[section]) continue;
 
-        if (typeof rule === 'string' && rule.startsWith('compactArray')) {
+        if (rule === 'deep') {
+            slim[section] = fullDoc[section];
+        } else if (typeof rule === 'string' && rule.startsWith('compactArray')) {
             const props = rule.split(':')[1].split(',');
             slim[section] = compactArray(fullDoc[section], props);
         } else {
@@ -234,8 +220,8 @@ export async function getLLMOverview(companyData, userId = null, relatedActivity
                     content: JSON.stringify(companyData)
                 }
             ],
-            temperature: 0.7,
-            max_tokens: 2000
+            temperature: 0.5,
+            max_tokens: 3000
         });
         
         const result = response.choices[0]?.message?.content;

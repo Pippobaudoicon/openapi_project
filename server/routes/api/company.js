@@ -107,12 +107,13 @@ router.get('/llm-overview/:piva',
     async (req, res) => {
         try {
             const { piva } = req.params;
+            const force = req.query.force === 'true';
 
             const companyRecord = await CompanySearch.fetchByPivaFull(piva);
             if (!companyRecord) {
                 return res.status(404).json({ error: 'Company data not found in database.' });
             }
-            if (companyRecord.llmOverview) {
+            if (companyRecord.llmOverview && !force) {
                 return res.json({ overview: companyRecord.llmOverview });
             }
             const slimCompanyRecord = stripCompanyData(companyRecord.data);

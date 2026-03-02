@@ -62,7 +62,7 @@ export const useSearchStore = defineStore('search', {
 
       try {
         // Step 1: Parse natural language query via LLM
-        const parsed = await $fetch<ParseResult>('/api/v1/ai/parse-query', {
+        const parsed = await $fetch<ParseResult>('/search/parse', {
           method: 'POST',
           body: { query },
         })
@@ -78,7 +78,7 @@ export const useSearchStore = defineStore('search', {
         }
 
         const response = await $fetch<SearchResponse>(
-          `/api/v1/IT-search?${searchParams.toString()}`
+          `/search/results?${searchParams.toString()}`
         )
 
         this.results = response.data || []

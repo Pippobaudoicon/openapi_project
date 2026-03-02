@@ -130,16 +130,17 @@ const parseQuerySchema = {
         params: {
             type: "object",
             properties: {
-                province: { type: "string", description: "Italian province code (2 letters)" },
-                atecoCode: { type: "string", description: "ATECO code prefix" },
-                companyName: { type: "string", description: "Company name keyword" },
-                minTurnover: { type: "integer", description: "Minimum revenue in euros" },
-                maxTurnover: { type: "integer", description: "Maximum revenue in euros" },
-                minEmployees: { type: "integer", description: "Minimum employee count" },
-                maxEmployees: { type: "integer", description: "Maximum employee count" },
-                activityStatus: { type: "string", enum: ["active", "inactive", "suspended"] },
-                townCode: { type: "string", description: "ISTAT town code" }
+                province: { type: ["string", "null"], description: "Italian province code (2 letters)" },
+                atecoCode: { type: ["string", "null"], description: "ATECO code prefix" },
+                companyName: { type: ["string", "null"], description: "Company name keyword" },
+                minTurnover: { type: ["integer", "null"], description: "Minimum revenue in euros" },
+                maxTurnover: { type: ["integer", "null"], description: "Maximum revenue in euros" },
+                minEmployees: { type: ["integer", "null"], description: "Minimum employee count" },
+                maxEmployees: { type: ["integer", "null"], description: "Maximum employee count" },
+                activityStatus: { type: ["string", "null"], enum: ["active", "inactive", "suspended", null] },
+                townCode: { type: ["string", "null"], description: "ISTAT town code" }
             },
+            required: ["province", "atecoCode", "companyName", "minTurnover", "maxTurnover", "minEmployees", "maxEmployees", "activityStatus", "townCode"],
             additionalProperties: false
         },
         interpretation: { type: "string", description: "Human-readable description of what was parsed, in Italian" }

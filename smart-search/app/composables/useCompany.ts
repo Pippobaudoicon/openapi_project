@@ -17,7 +17,7 @@ export function useCompany(piva: Ref<string> | string) {
     `company-${pivaRef.value}`,
     () => {
       const headers = import.meta.server ? useRequestHeaders(['cookie']) : {}
-      return $fetch<CompanyData>(`/company/${pivaRef.value}`, { headers })
+      return $fetch<CompanyData>(`/_api/company/${pivaRef.value}`, { headers })
     },
   )
 
@@ -31,7 +31,7 @@ export function useCompany(piva: Ref<string> | string) {
     overviewError.value = null
     try {
       const headers = import.meta.server ? useRequestHeaders(['cookie']) : {}
-      const res = await $fetch<LLMOverviewResponse>(`/company/${pivaRef.value}/overview`, {
+      const res = await $fetch<LLMOverviewResponse>(`/_api/company/${pivaRef.value}/overview`, {
         headers,
       })
       overview.value = res.overview

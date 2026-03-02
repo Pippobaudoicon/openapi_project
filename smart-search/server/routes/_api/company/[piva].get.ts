@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   } catch {
     // If not cached, fetch advanced data from OpenAPI
     try {
-      const data = await $fetch(`http://localhost:3000/api/v1/openapi/IT-advanced/${piva}`, {
+      const data = await $fetch(`http://localhost:3000/api/v1/IT-advanced/${piva}`, {
         headers: cookie ? { cookie } : {},
       })
       return data

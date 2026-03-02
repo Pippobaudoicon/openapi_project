@@ -1,1 +1,3 @@
-- make it dark mode and use frontend-design skill to make it look better
+-save past searches with results and timestamp so that the ai doesnt have to interpret the same query multiple times for an amout of time so results are not stale, but at the same time we make it snappier on past searches and spend less credits on the ai
+-fix the company page with appropriate data and charts based on the results of the api from openapi, and make it look good. also the llm-overview is an md, so show it as such with proper formatting and styling
+-improve the llm-overview overall, with more context, better prompting and more relevant data, so that it gives a better overview of the company and its situation

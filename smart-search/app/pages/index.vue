@@ -74,7 +74,7 @@ watch(queryFromUrl, (newQ, oldQ) => {
       </p>
 
       <!-- Search Bar -->
-      <div class="w-full max-w-xl animate-slide-up opacity-0" style="animation-delay: 200ms">
+      <div class="relative z-10 w-full max-w-xl animate-slide-up opacity-0" style="animation-delay: 200ms">
         <SearchBar @submit="handleSearch" />
       </div>
 

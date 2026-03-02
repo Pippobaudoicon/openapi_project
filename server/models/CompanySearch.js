@@ -129,7 +129,7 @@ CompanySearchSchema.post('updateOne', async function() {
 // Static method to fetch a full record, cached by PIVA
 CompanySearchSchema.statics.fetchByPivaFull = async function(piva) {
     try {
-        const record = await this.findOne({ piva, searchType: 'full' });
+        const record = await this.findOne({ piva, searchType: { $in: ['full', 'advanced'] } }).sort({ createdAt: -1 });
         return record;
     } catch (error) {
         console.error('Error fetching company record by PIVA:', error);

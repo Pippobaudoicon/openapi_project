@@ -54,35 +54,6 @@ router.get('/search',
 );
 
 
-router.get('/:piva',
-    checkPermission('company_details'),
-    checkCache('company', ['full', 'advanced', 'closed']),
-    logActivity({type:'company_basic', action:'get_basic_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
-    async (req, res) => {
-        try {
-            const { piva } = req.params;
-            const record = await CompanySearch.findOne({
-                piva,
-                searchType: { $in: ['full', 'advanced', 'closed'] }
-            }).sort({ createdAt: -1 });
-
-            if (record) {
-                return res.json({
-                    source: 'database',
-                    timestamp: record.createdAt,
-                    data: record.data,
-                    piva: record.piva,
-                    searchType: record.searchType
-                });
-            }
-
-            res.status(404).json({ error: 'Company not found. Try fetching via IT-advanced or IT-full first.' });
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    }
-);
-
 //TODO snellire il return se passato parametro get così da non ricevere 100kb di data quando me ne servono solo 2kb ad esempio
 // Get all stored companies from MongoDB
 router.get('/stored',
@@ -157,6 +128,36 @@ router.get('/llm-overview/:piva',
         } catch (error) {
             console.error('Error fetching LLM overview:', error);
             res.status(500).json({ error: 'Failed to fetch LLM overview.' });
+        }
+    }
+);
+
+// Must be last — wildcard catches any /:piva after all specific routes
+router.get('/:piva',
+    checkPermission('company_details'),
+    checkCache('company', ['full', 'advanced', 'closed']),
+    logActivity({type:'company_basic', action:'get_basic_data', getDescription:getCompanyDescription, getMetadata:getCompanyMetadata}),
+    async (req, res) => {
+        try {
+            const { piva } = req.params;
+            const record = await CompanySearch.findOne({
+                piva,
+                searchType: { $in: ['full', 'advanced', 'closed'] }
+            }).sort({ createdAt: -1 });
+
+            if (record) {
+                return res.json({
+                    source: 'database',
+                    timestamp: record.createdAt,
+                    data: record.data,
+                    piva: record.piva,
+                    searchType: record.searchType
+                });
+            }
+
+            res.status(404).json({ error: 'Company not found. Try fetching via IT-advanced or IT-full first.' });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
         }
     }
 );

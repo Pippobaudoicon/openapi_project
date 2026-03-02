@@ -137,10 +137,10 @@ export const trackOpenAICredit = async ({
         const totalTokens = promptTokens + completionTokens;
         const creditCost = calculateOpenAICost(model, promptTokens, completionTokens);
         
-        const debitMethod = skipLimitCheck ? 
-            CreditTransaction.createDebit : 
-            CreditTransaction.createDebitWithLimits;
-        
+        const debitMethod = skipLimitCheck ?
+            CreditTransaction.createDebit.bind(CreditTransaction) :
+            CreditTransaction.createDebitWithLimits.bind(CreditTransaction);
+
         await debitMethod({
             userId,
             serviceType: 'openai',

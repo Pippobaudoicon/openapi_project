@@ -28,7 +28,10 @@ export interface CompanySearchResult {
 interface ParseResult {
   params: Record<string, string | number>
   interpretation: string
+  results?: CompanySearchResult[]
+  resultCount?: number
   cached?: boolean
+  timestamp?: string
 }
 
 interface SearchResponse {
@@ -46,6 +49,7 @@ export const useSearchStore = defineStore('search', {
     loading: false,
     error: null as string | null,
     hasSearched: false,
+    cachedResult: false,
   }),
 
   getters: {
@@ -59,9 +63,10 @@ export const useSearchStore = defineStore('search', {
       this.loading = true
       this.error = null
       this.hasSearched = true
+      this.cachedResult = false
 
       try {
-        // Step 1: Parse natural language query via LLM
+        // Step 1: Parse natural language query via LLM (may return cached full results)
         const parsed = await $fetch<ParseResult>('/search/parse', {
           method: 'POST',
           body: { query },
@@ -70,7 +75,14 @@ export const useSearchStore = defineStore('search', {
         this.interpretation = parsed.interpretation
         this.parsedParams = parsed.params || {}
 
-        // Step 2: Execute search with parsed params
+        // If full cached results were returned, skip the IT-search call
+        if (parsed.results) {
+          this.results = parsed.results
+          this.cachedResult = true
+          return
+        }
+
+        // Step 2: No cache — execute search with parsed params
         const searchParams = new URLSearchParams()
         searchParams.set('dataEnrichment', 'advanced')
         for (const [key, value] of Object.entries(parsed.params)) {
@@ -82,6 +94,17 @@ export const useSearchStore = defineStore('search', {
         )
 
         this.results = response.data || []
+
+        // Step 3: Save to search history for next time (fire-and-forget)
+        $fetch('/search/save', {
+          method: 'POST',
+          body: {
+            query,
+            parsedParams: parsed.params,
+            interpretation: parsed.interpretation,
+            results: this.results,
+          },
+        }).catch(() => {})
       } catch (err: any) {
         this.error = err?.data?.error || err?.message || 'Search failed. Please try again.'
         this.results = []
@@ -98,6 +121,7 @@ export const useSearchStore = defineStore('search', {
       this.loading = false
       this.error = null
       this.hasSearched = false
+      this.cachedResult = false
     },
   },
 })

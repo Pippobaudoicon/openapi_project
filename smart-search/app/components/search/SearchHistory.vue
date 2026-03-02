@@ -3,18 +3,28 @@ const emit = defineEmits<{
   select: [query: string]
 }>()
 
-const STORAGE_KEY = 'smart-search-history'
-const MAX_ITEMS = 8
+interface HistoryEntry {
+  _id: string
+  rawQuery: string
+  interpretation: string
+  resultCount: number
+  createdAt: string
+}
 
-const history = ref<string[]>([])
+const history = ref<HistoryEntry[]>([])
 const visible = ref(false)
+const loaded = ref(false)
 
-onMounted(() => {
+async function fetchHistory() {
+  if (loaded.value) return
   try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) history.value = JSON.parse(stored)
+    const data = await $fetch<HistoryEntry[]>('/search/history')
+    history.value = data
+    loaded.value = true
   } catch { /* ignore */ }
-})
+}
+
+onMounted(fetchHistory)
 
 function show() {
   if (history.value.length) visible.value = true
@@ -29,26 +39,33 @@ function select(query: string) {
   emit('select', query)
 }
 
-function remove(index: number) {
-  history.value.splice(index, 1)
-  save()
-  if (!history.value.length) visible.value = false
-}
-
-function save() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history.value))
-  } catch { /* ignore */ }
-}
-
 function addQuery(query: string) {
   const q = query.trim()
   if (!q) return
-  history.value = [q, ...history.value.filter(h => h !== q)].slice(0, MAX_ITEMS)
-  save()
+  // Optimistically add/move to top of local list
+  history.value = [
+    { _id: '', rawQuery: q, interpretation: '', resultCount: 0, createdAt: new Date().toISOString() },
+    ...history.value.filter(h => h.rawQuery !== q),
+  ].slice(0, 10)
 }
 
-defineExpose({ addQuery, show, hide })
+function refreshHistory() {
+  loaded.value = false
+  fetchHistory()
+}
+
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const minutes = Math.floor(diff / 60000)
+  if (minutes < 1) return 'ora'
+  if (minutes < 60) return `${minutes}m fa`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h fa`
+  const days = Math.floor(hours / 24)
+  return `${days}g fa`
+}
+
+defineExpose({ addQuery, show, hide, refreshHistory })
 </script>
 
 <template>
@@ -68,24 +85,25 @@ defineExpose({ addQuery, show, hide })
         <span class="text-[11px] font-600 uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Recenti</span>
       </div>
       <button
-        v-for="(q, i) in history"
-        :key="i"
+        v-for="entry in history"
+        :key="entry._id || entry.rawQuery"
         class="group flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-zinc-100 dark:hover:bg-white/[0.04]"
-        @mousedown.prevent="select(q)"
+        @mousedown.prevent="select(entry.rawQuery)"
       >
         <span class="flex items-center gap-2.5 truncate text-zinc-600 dark:text-zinc-300">
           <svg class="h-3.5 w-3.5 shrink-0 text-zinc-300 dark:text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          {{ q }}
+          <span class="truncate">{{ entry.rawQuery }}</span>
         </span>
-        <svg
-          class="h-3.5 w-3.5 shrink-0 text-zinc-300 opacity-0 transition-all hover:text-zinc-500 group-hover:opacity-100 dark:text-zinc-600 dark:hover:text-zinc-400"
-          fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-          @mousedown.prevent.stop="remove(i)"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <span class="flex shrink-0 items-center gap-2 ml-3">
+          <span v-if="entry.resultCount" class="text-[11px] text-zinc-400 dark:text-zinc-500">
+            {{ entry.resultCount }} risultati
+          </span>
+          <span class="text-[11px] text-zinc-300 dark:text-zinc-600">
+            {{ timeAgo(entry.createdAt) }}
+          </span>
+        </span>
       </button>
     </div>
   </Transition>

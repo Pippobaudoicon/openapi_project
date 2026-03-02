@@ -1,0 +1,16 @@
+meta {
+  name: Impresa Filter
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{websiteBaseUrl}}/impresa
+  body: none
+  auth: none
+}
+
+params:query {
+  denominazione: ACME
+  provincia: MI
+}

@@ -1,0 +1,15 @@
+meta {
+  name: IMPRESA
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{visureBaseUrl}}/impresa/{{PIVA}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}

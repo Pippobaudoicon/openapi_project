@@ -81,6 +81,19 @@ See `docs/` for detailed reference:
 | `server/routes/api/credits.js` | `/api/v1/credits` | Credit balance, transactions, limits |
 | `server/routes/api/activities.js` | `/api/v1/activities` | Activity history |
 
+## Bruno Collection (`bruno/`)
+
+The `bruno/` folder is the API testing collection for this project. **Whenever you add, remove, or modify a backend route — including changes to URL paths, request params, request body shape, headers, or response structure — you must also update the corresponding `.bru` file in `bruno/`.**
+
+This includes:
+- New routes → create a new `.bru` file in the appropriate subfolder (e.g. `bruno/Website/`)
+- Renamed or moved routes → update the `url` in the `.bru` file
+- Added/removed query params or body fields → update the `params` / `body` block
+- Auth changes (e.g. new header required) → update the `headers` block
+- New environments or base URLs → update `bruno/environments/prod.bru` and `bruno/environments/dev.bru`
+
+Secrets (tokens, passwords) must never be hardcoded in `.bru` files. Declare them in `vars:secret` and store values in `bruno/.env` (gitignored).
+
 ## Common Pitfalls
 
 1. **Smart Search Nitro routes must NOT be under `/api/`** — devProxy intercepts `/api/**` and forwards to Express. Put Nitro routes at `/auth/check`, `/company/:piva`, etc.

@@ -1,0 +1,24 @@
+meta {
+  name: IMPRESA FILTER
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{visureBaseUrl}}/impresa
+  body: none
+  auth: bearer
+}
+
+params:query {
+  fatturato_min: 100000
+  fatturato_max: 1000000
+  limit: 100
+  lat: 13.5478
+  lng: 42.859
+  radius: 10000
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}

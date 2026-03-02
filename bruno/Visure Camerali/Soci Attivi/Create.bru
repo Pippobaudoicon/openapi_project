@@ -1,0 +1,21 @@
+meta {
+  name: SOCI ATTIVI
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{visureBaseUrl}}/soci-attivi
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}
+
+body:json {
+  {
+    "cf_piva_id": "{{PIVA}}"
+  }
+}

@@ -1,0 +1,19 @@
+meta {
+  name: STORICA SOCIETA CAPITALE allegati
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{visureBaseUrl}}/storica-societa-capitale/:id/allegati
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 6769396c0884622b6b49534f
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}

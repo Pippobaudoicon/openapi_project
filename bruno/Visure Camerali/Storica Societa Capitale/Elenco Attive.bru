@@ -1,0 +1,15 @@
+meta {
+  name: STORICA SOCIETA CAPITALE elenco attive
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{visureBaseUrl}}/storica-societa-capitale
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}

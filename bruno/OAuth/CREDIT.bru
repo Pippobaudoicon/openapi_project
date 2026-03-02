@@ -1,0 +1,16 @@
+meta {
+  name: CREDIT
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{oauthBaseUrl}}/credit
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{oauthUsername}}
+  password: {{oauthPassword}}
+}

@@ -1,0 +1,15 @@
+meta {
+  name: SOCI ATTIVI elenco attive
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{visureBaseUrl}}/soci-attivi
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}

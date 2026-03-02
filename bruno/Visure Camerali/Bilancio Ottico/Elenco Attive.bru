@@ -1,0 +1,15 @@
+meta {
+  name: BILANCIO OTTICO elenco attive
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{visureBaseUrl}}/bilancio-ottico
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}

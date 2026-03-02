@@ -1,0 +1,15 @@
+meta {
+  name: IT-FULL
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{companyBaseUrl}}/IT-full/{{PIVA}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{companyToken}}
+}

@@ -1,0 +1,18 @@
+meta {
+  name: Register
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{websiteBaseUrl}}/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "f.longoni@vicsamgroup.it",
+    "password": "Caravaggio2024!"
+  }
+}

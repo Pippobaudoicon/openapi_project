@@ -1,0 +1,15 @@
+meta {
+  name: IT-CLOSED
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{companyBaseUrl}}/IT-closed/{{PIVA}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{companyToken}}
+}

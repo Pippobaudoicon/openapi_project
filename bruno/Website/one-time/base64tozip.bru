@@ -1,0 +1,17 @@
+meta {
+  name: base64tozip
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{websiteBaseUrl}}/base64tozip
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "data": {}
+  }
+}

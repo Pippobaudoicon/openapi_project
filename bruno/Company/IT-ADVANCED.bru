@@ -1,0 +1,15 @@
+meta {
+  name: IT-ADVANCED
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{companyBaseUrl}}/IT-advanced/{{PIVA}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{companyToken}}
+}

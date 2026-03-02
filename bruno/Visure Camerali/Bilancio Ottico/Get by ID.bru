@@ -1,0 +1,19 @@
+meta {
+  name: BILANCIO OTTICO x id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{visureBaseUrl}}/bilancio-ottico/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 67b314b188f4712e5d041fca
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}

@@ -1,0 +1,19 @@
+meta {
+  name: SOCI ATTIVI x id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{visureBaseUrl}}/soci-attivi/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 676938d20884622b6b49534e
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}

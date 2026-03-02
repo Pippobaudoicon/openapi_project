@@ -1,0 +1,17 @@
+meta {
+  name: Bilancio-ottico
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{websiteBaseUrl}}/bilancio-ottico
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "piva": "{{PIVA2}}"
+  }
+}

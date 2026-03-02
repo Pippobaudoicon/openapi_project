@@ -1,0 +1,15 @@
+meta {
+  name: IT-AML
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{companyBaseUrl}}/IT-aml/{{PIVA}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{companyToken}}
+}

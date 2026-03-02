@@ -1,0 +1,19 @@
+meta {
+  name: SOCI ATTIVI allegati
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{visureBaseUrl}}/soci-attivi/:id/allegati
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 676938d20884622b6b49534e
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}

@@ -1,0 +1,21 @@
+meta {
+  name: ORDINARIA SOCIETA CAPITALE
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{visureBaseUrl}}/ordinaria-societa-capitale
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}
+
+body:json {
+  {
+    "cf_piva_id": "{{PIVA}}"
+  }
+}

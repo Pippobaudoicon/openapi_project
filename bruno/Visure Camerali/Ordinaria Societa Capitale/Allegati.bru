@@ -1,0 +1,19 @@
+meta {
+  name: ORDINARIA SOCIETA CAPITALE allegati
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{visureBaseUrl}}/ordinaria-societa-capitale/:id/allegati
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 676939970884622b6b495350
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}

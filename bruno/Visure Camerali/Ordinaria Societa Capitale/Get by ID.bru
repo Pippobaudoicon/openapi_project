@@ -1,0 +1,19 @@
+meta {
+  name: ORDINARIA SOCIETA CAPITALE x id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{visureBaseUrl}}/ordinaria-societa-capitale/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 676939970884622b6b495350
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}

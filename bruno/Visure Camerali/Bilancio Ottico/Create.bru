@@ -1,0 +1,21 @@
+meta {
+  name: BILANCIO OTTICO
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{visureBaseUrl}}/bilancio-ottico
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{visureToken}}
+}
+
+body:json {
+  {
+    "cf_piva_id": "{{PIVA2}}"
+  }
+}

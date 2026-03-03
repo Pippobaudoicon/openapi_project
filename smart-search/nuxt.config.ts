@@ -50,11 +50,13 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    devProxy: {
-      '/api': {
-        target: `${process.env.API_BASE_URL || 'http://localhost:3000'}/api`,
-        changeOrigin: true,
+    ...(process.env.NODE_ENV !== 'production' && {
+      devProxy: {
+        '/api': {
+          target: `${process.env.API_BASE_URL || 'http://localhost:3000'}/api`,
+          changeOrigin: true,
+        },
       },
-    },
+    }),
   },
 })

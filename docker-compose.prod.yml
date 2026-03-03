@@ -1,0 +1,45 @@
+services:
+  server:
+    build: ./server
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - MEILISEARCH_URL=http://meilisearch:7700
+    depends_on:
+      - meilisearch
+    restart: unless-stopped
+
+  smart-search:
+    build: ./smart-search
+    ports:
+      - "3001:3000"
+    environment:
+      - NUXT_API_BASE_URL=http://server:3000
+      - NUXT_PUBLIC_CLIENT_URL=${CLIENT_URL:-http://localhost:5173}
+    depends_on:
+      - server
+    restart: unless-stopped
+
+  modern-client:
+    build: ./modern-client
+    ports:
+      - "5173:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_NO_ANALYTICS=true
+    volumes:
+      - meilisearch_data:/meili_data
+    restart: unless-stopped
+
+volumes:
+  meilisearch_data:

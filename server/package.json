@@ -45,12 +45,12 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "rotating-file-stream": "^3.2.5",
+    "express-error-handler": "^1.1.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "concurrently": "^9.0.1",
-    "cross-env": "^7.0.3",
-    "express-error-handler": "^1.1.0"
+    "cross-env": "^7.0.3"
   },
   "keywords": []
 }

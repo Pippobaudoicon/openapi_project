@@ -1,9 +1,10 @@
 export default defineNuxtRouteMiddleware(async (_to, _from) => {
   const { isAuthenticated, check } = useAuth()
+  const { public: { clientUrl } } = useRuntimeConfig()
 
   await check()
 
   if (!isAuthenticated.value) {
-    return navigateTo('http://localhost:5173/auth/login', { external: true })
+    return navigateTo(`${clientUrl}/auth/login`, { external: true })
   }
 })

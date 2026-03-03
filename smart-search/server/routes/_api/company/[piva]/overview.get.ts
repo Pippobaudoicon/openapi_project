@@ -5,7 +5,8 @@ export default defineEventHandler(async (event) => {
   const queryString = query.force === 'true' ? '?force=true' : ''
 
   try {
-    const data = await $fetch(`http://localhost:3000/api/v1/company/llm-overview/${piva}${queryString}`, {
+    const { apiBaseUrl } = useRuntimeConfig()
+    const data = await $fetch(`${apiBaseUrl}/api/v1/company/llm-overview/${piva}${queryString}`, {
       headers: cookie ? { cookie } : {},
     })
     return data

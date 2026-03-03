@@ -3,7 +3,8 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
 
   try {
-    const data = await $fetch('http://localhost:3000/api/v1/ai/save-search', {
+    const { apiBaseUrl } = useRuntimeConfig()
+    const data = await $fetch(`${apiBaseUrl}/api/v1/ai/save-search`, {
       method: 'POST',
       body,
       headers: cookie ? { cookie } : {},

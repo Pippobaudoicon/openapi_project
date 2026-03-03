@@ -3,7 +3,8 @@ export default defineEventHandler(async (event) => {
   const cookie = getRequestHeader(event, 'cookie')
 
     try {
-      const data = await $fetch(`http://localhost:3000/api/v1/IT-advanced/${piva}`, {
+      const { apiBaseUrl } = useRuntimeConfig()
+      const data = await $fetch(`${apiBaseUrl}/api/v1/IT-advanced/${piva}`, {
         headers: cookie ? { cookie } : {},
       })
       return data

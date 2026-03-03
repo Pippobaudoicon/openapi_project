@@ -10,8 +10,9 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    const { apiBaseUrl } = useRuntimeConfig()
     const data = await $fetch(
-      `http://localhost:3000/api/v1/IT-search?${searchParams.toString()}`,
+      `${apiBaseUrl}/api/v1/IT-search?${searchParams.toString()}`,
       { headers: cookie ? { cookie } : {} }
     )
     return data

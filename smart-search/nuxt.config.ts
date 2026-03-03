@@ -10,6 +10,13 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  runtimeConfig: {
+    apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:3000',
+    public: {
+      clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+    },
+  },
+
   app: {
     head: {
       htmlAttrs: { class: 'dark' },
@@ -45,7 +52,7 @@ export default defineNuxtConfig({
   nitro: {
     devProxy: {
       '/api': {
-        target: 'http://localhost:3000/api',
+        target: `${process.env.API_BASE_URL || 'http://localhost:3000'}/api`,
         changeOrigin: true,
       },
     },

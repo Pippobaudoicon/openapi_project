@@ -53,8 +53,8 @@ const renderedHtml = computed(() => {
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="space-y-2.5">
-      <div v-for="i in 8" :key="i" class="h-3 rounded-md bg-zinc-100 dark:bg-zinc-800 skeleton-shimmer" :class="i % 3 === 0 ? 'w-2/3' : i % 5 === 0 ? 'w-1/2' : 'w-full'" />
+    <div v-if="loading" class="space-y-2.5 animate-pulse">
+      <div v-for="i in 8" :key="i" class="h-3 rounded-md bg-zinc-200 dark:bg-zinc-700" :class="i % 3 === 0 ? 'w-2/3' : i % 5 === 0 ? 'w-1/2' : 'w-full'" />
     </div>
 
     <!-- Error -->

@@ -4,6 +4,7 @@ interface CompanyData {
   data: Record<string, any>
   piva: string
   searchType: string
+  llmOverview?: string
 }
 
 interface LLMOverviewResponse {
@@ -21,9 +22,16 @@ export function useCompany(piva: Ref<string> | string) {
     },
   )
 
-  const overview = ref<string | null>(null)
+  const overview = ref<string | null>(company.value?.llmOverview ?? null)
   const overviewLoading = ref(false)
   const overviewError = ref<string | null>(null)
+
+  // Sync cached overview from company data when it loads
+  watch(company, (val) => {
+    if (val?.llmOverview && !overview.value) {
+      overview.value = val.llmOverview
+    }
+  })
 
   async function fetchOverview(force = false) {
     if (overview.value && !force) return

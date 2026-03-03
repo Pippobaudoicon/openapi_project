@@ -147,13 +147,17 @@ router.get('/:piva',
             }).sort({ createdAt: -1 });
 
             if (record) {
-                return res.json({
+                const response = {
                     source: 'database',
                     timestamp: record.createdAt,
                     data: record.data,
                     piva: record.piva,
                     searchType: record.searchType
-                });
+                };
+                if (record.llmOverview) {
+                    response.llmOverview = record.llmOverview;
+                }
+                return res.json(response);
             }
 
             res.status(404).json({ error: 'Company not found. Try fetching via IT-advanced or IT-full first.' });

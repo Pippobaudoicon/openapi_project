@@ -179,8 +179,13 @@ const metrics = computed(() => [
             </CompanyInfoSection>
           </div>
 
+          <!-- Balance Sheet Chart -->
+          <div v-if="data?.balanceSheets?.all?.length" class="animate-slide-up opacity-0" style="animation-delay: 240ms">
+            <CompanyBalanceSheetChart :balance-sheets="data.balanceSheets.all" />
+          </div>
+
           <!-- LLM Overview -->
-          <div class="animate-slide-up opacity-0" style="animation-delay: 240ms">
+          <div class="animate-slide-up opacity-0" style="animation-delay: 320ms">
             <CompanyLLMOverview
               :piva="piva"
               :overview="overview"
@@ -191,7 +196,7 @@ const metrics = computed(() => [
           </div>
 
           <!-- Raw data toggle -->
-          <div class="animate-slide-up opacity-0" style="animation-delay: 320ms">
+          <div class="animate-slide-up opacity-0" style="animation-delay: 400ms">
             <CompanyRawDataViewer :data="data" />
           </div>
         </div>

@@ -22,16 +22,11 @@ export function useCompany(piva: Ref<string> | string) {
     },
   )
 
-  const overview = ref<string | null>(company.value?.llmOverview ?? null)
+  // User-triggered override (regenerate); falls back to cached company data
+  const overviewOverride = useState<string | null>(`company-overview-${pivaRef.value}`, () => null)
+  const overview = computed(() => overviewOverride.value ?? company.value?.llmOverview ?? null)
   const overviewLoading = ref(false)
   const overviewError = ref<string | null>(null)
-
-  // Sync cached overview from company data when it loads
-  watch(company, (val) => {
-    if (val?.llmOverview && !overview.value) {
-      overview.value = val.llmOverview
-    }
-  })
 
   async function fetchOverview(force = false) {
     if (overview.value && !force) return
@@ -43,7 +38,7 @@ export function useCompany(piva: Ref<string> | string) {
       const res = await $fetch<LLMOverviewResponse>(`/_api/company/${pivaRef.value}/overview${query}`, {
         headers,
       })
-      overview.value = res.overview
+      overviewOverride.value = res.overview
     } catch (err: any) {
       overviewError.value = err?.data?.message || 'Failed to load financial overview'
     } finally {

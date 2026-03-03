@@ -26,8 +26,8 @@ interface MetricDef {
 
 const metrics: MetricDef[] = [
   { key: 'turnover', label: 'Fatturato', color: '#10b981', colorDark: '#34d399', format: formatCurrency },
-  { key: 'totalAssets', label: 'Totale Attivo', color: '#6366f1', colorDark: '#818cf8', format: formatCurrency },
-  { key: 'netWorth', label: 'Patrimonio Netto', color: '#8b5cf6', colorDark: '#a78bfa', format: formatCurrency },
+  { key: 'netWorth', label: 'Utile', color: '#8b5cf6', colorDark: '#a78bfa', format: formatCurrency },
+  { key: 'totalAssets', label: 'Totale Attivo Assets', color: '#6366f1', colorDark: '#818cf8', format: formatCurrency },
   { key: 'totalStaffCost', label: 'Costo Personale', color: '#f59e0b', colorDark: '#fbbf24', format: formatCurrency },
   { key: 'employees', label: 'Dipendenti', color: '#3b82f6', colorDark: '#60a5fa', format: (v) => formatNumber(v) },
 ]
@@ -156,7 +156,7 @@ function compactCurrency(v: number): string {
 </script>
 
 <template>
-  <div class="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-white/[0.06] dark:bg-zinc-900/50">
+  <div class="min-h-[360px] rounded-2xl border border-zinc-200 bg-white p-6 dark:border-white/[0.06] dark:bg-zinc-900/50">
     <h3 class="mb-4 text-[11px] font-600 uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
       Andamento Storico
     </h3>
@@ -182,8 +182,9 @@ function compactCurrency(v: number): string {
     </div>
 
     <!-- Chart -->
-    <div v-if="years.length >= 2" class="relative w-full overflow-x-auto">
-      <svg
+    <ClientOnly>
+      <div v-if="years.length >= 2" class="relative min-h-[240px] w-full overflow-x-auto">
+        <svg
         :viewBox="`0 0 ${chartWidth} ${chartHeight}`"
         class="w-full"
         style="min-width: 400px"
@@ -325,9 +326,19 @@ function compactCurrency(v: number): string {
       </Transition>
     </div>
 
-    <!-- Not enough data -->
-    <div v-else class="py-8 text-center text-sm text-zinc-400 dark:text-zinc-500">
-      Dati storici non disponibili
-    </div>
+      <!-- Not enough data -->
+      <div v-else class="py-8 text-center text-sm text-zinc-400 dark:text-zinc-500">
+        Dati storici non disponibili
+      </div>
+
+      <template #fallback>
+        <div class="flex min-h-[240px] items-center justify-center">
+          <div class="relative h-8 w-8">
+            <div class="absolute inset-0 rounded-full border border-zinc-200 dark:border-white/10" />
+            <div class="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-zinc-900 dark:border-t-white" />
+          </div>
+        </div>
+      </template>
+    </ClientOnly>
   </div>
 </template>

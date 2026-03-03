@@ -14,7 +14,7 @@ This is the server component of the OpenAPI Vicsam project. It is built using No
 1. Clone the repository:
 
 ```sh
-git clone https://bitbucket.org/interjob/openapi_vicsam.git
+git clone https://github.com/Pippobaudoicon/openapi_project.git
 cd openapi_vicsam/server
 ```
 

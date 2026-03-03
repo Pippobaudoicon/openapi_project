@@ -15,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://infoInterjob@bitbucket.org/interjob/openapi_vicsam.git"
+    "url": "git+https://github.com/Pippobaudoicon/openapi_project.git"
   },
   "author": "Tommaso Lo Piparo",
   "license": "ISC",
   "bugs": {
-    "url": "https://bitbucket.org/interjob/openapi_vicsam/issues"
+    "url": "https://github.com/Pippobaudoicon/openapi_project/issues"
   },
-  "homepage": "https://bitbucket.org/interjob/openapi_vicsam#readme",
+  "homepage": "https://github.com/Pippobaudoicon/openapi_project#readme",
   "type": "module",
   "dependencies": {
     "@altravia/openapi": "^1.4.2",

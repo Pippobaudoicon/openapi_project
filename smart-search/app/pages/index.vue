@@ -1,9 +1,4 @@
 <script setup lang="ts">
-// TODO: re-enable after auth testing
-// definePageMeta({
-//   middleware: ['auth'],
-// })
-
 const route = useRoute()
 const router = useRouter()
 const store = useSearchStore()

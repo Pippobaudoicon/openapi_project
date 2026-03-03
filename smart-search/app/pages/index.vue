@@ -5,9 +5,8 @@ const store = useSearchStore()
 
 const queryFromUrl = computed(() => (route.query.q as string) || '')
 
-async function handleSearch(query: string) {
-  await router.push({ query: { q: query } })
-  store.search(query)
+function handleSearch(query: string) {
+  router.push({ query: { q: query } })
 }
 
 function handleRetry() {
@@ -16,14 +15,8 @@ function handleRetry() {
   }
 }
 
-// Auto-search if URL has query param on load
-onMounted(() => {
-  if (queryFromUrl.value && !store.hasSearched) {
-    store.search(queryFromUrl.value)
-  }
-})
-
-// Watch for browser back/forward
+// Single source of truth: only the watcher triggers searches.
+// Covers: handleSearch (URL change), browser back/forward, and initial load with ?q=
 watch(queryFromUrl, (newQ, oldQ) => {
   if (newQ && newQ !== oldQ && newQ !== store.query) {
     store.search(newQ)
@@ -31,7 +24,7 @@ watch(queryFromUrl, (newQ, oldQ) => {
   if (!newQ && oldQ) {
     store.reset()
   }
-})
+}, { immediate: true })
 </script>
 
 <template>

@@ -86,35 +86,35 @@ Mapped during roadmap creation. Maps every v1 requirement to exactly one phase.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PROF-01 | Phase 1 | Pending |
-| PROF-02 | Phase 1 | Pending |
-| PROF-03 | Phase 1 | Pending |
-| CRED-01 | Phase 1 | Pending |
-| CRED-02 | Phase 1 | Pending |
-| CRED-03 | Phase 1 | Pending |
-| CRED-04 | Phase 1 | Pending |
-| SRCH-01 | Existing | Validated ✓ |
-| SRCH-02 | Existing | Validated ✓ |
-| SRCH-03 | Existing | Validated ✓ |
-| SRCH-04 | Existing | Validated ✓ |
-| FILT-01 | Phase 2 | Pending |
-| FILT-02 | Phase 2 | Pending |
-| FILT-03 | Phase 2 | Pending |
-| FILT-04 | Phase 2 | Pending |
-| FILT-05 | Phase 2 | Pending |
-| ACTV-01 | Phase 2 | Pending |
-| ACTV-02 | Phase 2 | Pending |
-| ACTV-03 | Phase 2 | Pending |
-| MOBIL-01 | Phase 3 | Pending |
-| MOBIL-02 | Phase 3 | Pending |
-| MOBIL-03 | Phase 3 | Pending |
-| MOBIL-04 | Phase 3 | Pending |
+| PROF-01 | Phase 1 — Account & Credits | Pending |
+| PROF-02 | Phase 1 — Account & Credits | Pending |
+| PROF-03 | Phase 1 — Account & Credits | Pending |
+| CRED-01 | Phase 1 — Account & Credits | Pending |
+| CRED-02 | Phase 1 — Account & Credits | Pending |
+| CRED-03 | Phase 1 — Account & Credits | Pending |
+| CRED-04 | Phase 1 — Account & Credits | Pending |
+| SRCH-01 | Existing — Validated | Complete ✓ |
+| SRCH-02 | Existing — Validated | Complete ✓ |
+| SRCH-03 | Existing — Validated | Complete ✓ |
+| SRCH-04 | Existing — Validated | Complete ✓ |
+| FILT-01 | Phase 2 — Power Features | Pending |
+| FILT-02 | Phase 2 — Power Features | Pending |
+| FILT-03 | Phase 2 — Power Features | Pending |
+| FILT-04 | Phase 2 — Power Features | Pending |
+| FILT-05 | Phase 2 — Power Features | Pending |
+| ACTV-01 | Phase 2 — Power Features | Pending |
+| ACTV-02 | Phase 2 — Power Features | Pending |
+| ACTV-03 | Phase 2 — Power Features | Pending |
+| MOBIL-01 | Phase 3 — Mobile Polish | Pending |
+| MOBIL-02 | Phase 3 — Mobile Polish | Pending |
+| MOBIL-03 | Phase 3 — Mobile Polish | Pending |
+| MOBIL-04 | Phase 3 — Mobile Polish | Pending |
 
 **Coverage:**
-- v1 requirements: 22 total
+- v1 requirements: 22 total (18 to build + 4 existing/validated)
 - Mapped to phases: 22
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-04*
-*Last updated: 2026-03-04 after initial definition*
+*Last updated: 2026-03-04 after roadmap creation*

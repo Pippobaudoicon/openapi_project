@@ -48,6 +48,7 @@ export const useSearchStore = defineStore('search', {
     parsedParams: {} as Record<string, string | number>,
     loading: false,
     error: null as string | null,
+    errorType: null as 'credit' | 'generic' | null,
     hasSearched: false,
     cachedResult: false,
   }),
@@ -62,6 +63,7 @@ export const useSearchStore = defineStore('search', {
       this.query = query
       this.loading = true
       this.error = null
+      this.errorType = null
       this.hasSearched = true
       this.cachedResult = false
 
@@ -106,7 +108,16 @@ export const useSearchStore = defineStore('search', {
           },
         }).catch(() => {})
       } catch (err: any) {
-        this.error = err?.data?.error || err?.message || 'Search failed. Please try again.'
+        const statusCode = err?.statusCode || err?.data?.statusCode
+        if (statusCode === 402 || statusCode === 429) {
+          this.errorType = 'credit'
+          this.error = statusCode === 402
+            ? 'Crediti insufficienti per eseguire questa ricerca.'
+            : 'Limite di spesa raggiunto. Riprova più tardi.'
+        } else {
+          this.errorType = 'generic'
+          this.error = err?.data?.error || err?.message || 'Search failed. Please try again.'
+        }
         this.results = []
       } finally {
         this.loading = false
@@ -120,6 +131,7 @@ export const useSearchStore = defineStore('search', {
       this.parsedParams = {}
       this.loading = false
       this.error = null
+      this.errorType = null
       this.hasSearched = false
       this.cachedResult = false
     },

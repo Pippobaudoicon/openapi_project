@@ -2,8 +2,16 @@
 const route = useRoute()
 const router = useRouter()
 const store = useSearchStore()
+const { fetch: refreshCredits } = useCredits()
 
 const queryFromUrl = computed(() => (route.query.q as string) || '')
+
+// Refresh credit balance after each non-cached search completes
+watch(() => store.loading, (isLoading, wasLoading) => {
+  if (wasLoading && !isLoading && !store.cachedResult) {
+    refreshCredits()
+  }
+})
 
 function handleSearch(query: string) {
   router.push({ query: { q: query } })
@@ -35,13 +43,13 @@ watch(queryFromUrl, (newQ, oldQ) => {
   >
     <div class="relative z-10 flex flex-col items-center">
       <!-- Logo icon -->
-      <div class="mb-4 flex items-center gap-3 animate-fade-in">
+      <!-- <div class="mb-4 flex items-center gap-3 animate-fade-in">
         <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500/10 ring-1 ring-indigo-500/20 dark:bg-indigo-400/10 dark:ring-indigo-400/20">
           <svg class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
           </svg>
         </div>
-      </div>
+      </div> -->
 
       <!-- Title -->
       <h1
@@ -91,8 +99,8 @@ watch(queryFromUrl, (newQ, oldQ) => {
   <!-- Results State -->
   <div v-else class="min-h-screen px-4 pb-12 pt-6">
     <div class="mx-auto max-w-3xl">
-      <!-- Top bar -->
-      <div class="mb-8 flex items-center gap-4 animate-fade-in">
+      <!-- Top bar — pr-14 avoids overlap with fixed AppHeader avatar -->
+      <div class="mb-8 flex items-center gap-4 pr-14 animate-fade-in">
         <NuxtLink
           to="/"
           @click.prevent="store.reset(); router.push('/')"
@@ -119,6 +127,7 @@ watch(queryFromUrl, (newQ, oldQ) => {
       <SearchErrorState
         v-else-if="store.error"
         :message="store.error"
+        :error-type="store.errorType"
         @retry="handleRetry"
       />
 

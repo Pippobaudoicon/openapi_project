@@ -53,7 +53,7 @@ watch(queryFromUrl, (newQ, oldQ) => {
 
       <!-- Title -->
       <h1
-        class="mb-3 font-display text-5xl font-800 tracking-tight sm:text-6xl animate-fade-in"
+        class="mb-3 font-display text-4xl sm:text-5xl md:text-6xl font-800 tracking-tight animate-fade-in"
         style="animation-delay: 50ms"
       >
         <span class="gradient-text">Smart Search</span>
@@ -61,7 +61,7 @@ watch(queryFromUrl, (newQ, oldQ) => {
 
       <!-- Subtitle -->
       <p
-        class="mb-10 max-w-md text-center text-base text-zinc-500 dark:text-zinc-400 animate-fade-in"
+        class="mb-8 sm:mb-10 max-w-md text-center text-sm sm:text-base text-zinc-500 dark:text-zinc-400 animate-fade-in px-2"
         style="animation-delay: 100ms"
       >
         Cerca aziende italiane con linguaggio naturale.
@@ -76,10 +76,10 @@ watch(queryFromUrl, (newQ, oldQ) => {
 
       <!-- Suggestions -->
       <div
-        class="mt-8 flex flex-wrap items-center justify-center gap-2 animate-fade-in opacity-0"
+        class="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 px-2 animate-fade-in opacity-0"
         style="animation-delay: 400ms"
       >
-        <span class="text-xs text-zinc-400 dark:text-zinc-500">Prova:</span>
+        <span class="text-[11px] sm:text-xs text-zinc-400 dark:text-zinc-500 mr-0.5">Prova:</span>
         <button
           v-for="suggestion in [
             'software companies in Milan',
@@ -88,7 +88,7 @@ watch(queryFromUrl, (newQ, oldQ) => {
           ]"
           :key="suggestion"
           @click="handleSearch(suggestion)"
-          class="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs text-zinc-500 transition-all hover:border-zinc-300 hover:text-zinc-700 dark:border-white/[0.06] dark:text-zinc-500 dark:hover:border-white/[0.12] dark:hover:text-zinc-300"
+          class="rounded-lg border border-zinc-200 px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs text-zinc-500 transition-all hover:border-zinc-300 hover:text-zinc-700 active:scale-95 dark:border-white/[0.06] dark:text-zinc-500 dark:hover:border-white/[0.12] dark:hover:text-zinc-300"
         >
           {{ suggestion }}
         </button>
@@ -97,14 +97,24 @@ watch(queryFromUrl, (newQ, oldQ) => {
   </div>
 
   <!-- Results State -->
-  <div v-else class="min-h-screen px-4 pb-12 pt-6">
+  <div v-else class="min-h-screen px-3 sm:px-4 pb-12 pt-6">
     <div class="mx-auto max-w-3xl">
       <!-- Top bar — pr-14 avoids overlap with fixed AppHeader avatar -->
-      <div class="mb-8 flex items-center gap-4 pr-14 animate-fade-in">
+      <div class="mb-6 sm:mb-8 flex items-center gap-3 sm:gap-4 pr-14 animate-fade-in">
+        <!-- Mobile back button -->
+        <button
+          class="sm:hidden shrink-0 flex items-center justify-center w-9 h-9 rounded-xl text-zinc-500 active:bg-zinc-100 dark:text-zinc-400 dark:active:bg-white/[0.06] transition-colors"
+          @click="store.reset(); router.push('/')"
+        >
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+        </button>
+        <!-- Desktop logo -->
         <NuxtLink
           to="/"
           @click.prevent="store.reset(); router.push('/')"
-          class="shrink-0"
+          class="shrink-0 hidden sm:block"
         >
           <span class="font-display text-lg font-700 tracking-tight">
             <span class="gradient-text">Smart Search</span>

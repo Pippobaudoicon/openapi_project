@@ -1,4 +1,8 @@
 <script setup lang="ts">
+const props = defineProps<{
+  inline?: boolean
+}>()
+
 const emit = defineEmits<{
   select: [query: string]
 }>()
@@ -14,6 +18,12 @@ interface HistoryEntry {
 const history = ref<HistoryEntry[]>([])
 const visible = ref(false)
 const loaded = ref(false)
+
+// In inline mode, auto-show whenever history is available
+const isVisible = computed(() => {
+  if (props.inline) return history.value.length > 0
+  return visible.value && history.value.length > 0
+})
 
 async function fetchHistory() {
   if (loaded.value) return
@@ -31,6 +41,7 @@ function show() {
 }
 
 function hide() {
+  if (props.inline) return
   setTimeout(() => { visible.value = false }, 150)
 }
 
@@ -78,8 +89,10 @@ defineExpose({ addQuery, show, hide, refreshHistory })
     leave-to-class="opacity-0 -translate-y-1"
   >
     <div
-      v-if="visible && history.length"
-      class="absolute left-0 right-0 top-full z-20 mt-2 overflow-hidden rounded-xl border border-zinc-200 bg-white/95 py-1 shadow-xl backdrop-blur-xl dark:border-white/[0.08] dark:bg-zinc-900/95"
+      v-if="isVisible"
+      :class="inline
+        ? 'py-1'
+        : 'absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-zinc-200 bg-white/95 py-1 shadow-xl backdrop-blur-xl dark:border-white/[0.08] dark:bg-zinc-900/95'"
     >
       <div class="flex items-center justify-between px-3 py-2">
         <span class="text-[11px] font-600 uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Recenti</span>

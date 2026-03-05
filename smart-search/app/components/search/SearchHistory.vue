@@ -92,7 +92,7 @@ defineExpose({ addQuery, show, hide, refreshHistory })
       v-if="isVisible"
       :class="inline
         ? 'py-1'
-        : 'absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-zinc-200 bg-white/95 py-1 shadow-xl backdrop-blur-xl dark:border-white/[0.08] dark:bg-zinc-900/95'"
+        : 'absolute left-0 right-0 top-full z-100 mt-2 overflow-hidden rounded-xl border border-zinc-200 bg-white/95 py-1 shadow-xl backdrop-blur-xl dark:border-white/[0.08] dark:bg-zinc-900/95'"
     >
       <div class="flex items-center justify-between px-3 py-2">
         <span class="text-[11px] font-600 uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Recenti</span>

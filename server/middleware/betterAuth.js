@@ -45,19 +45,23 @@ async function lookupSession(req) {
  * Builds the req.user object from a Better Auth user document.
  */
 function buildReqUser(user) {
+  // Convert _id to string to avoid BSON version conflicts between
+  // the raw MongoDB driver (used here) and Mongoose (used in routes).
+  // Mongoose's findById() accepts string IDs and converts internally.
+  const id = user._id.toString();
   return {
-    _id: user._id,
-    id: user._id.toString(),
+    _id: id,
+    id,
     email: user.email,
-    firstName: user.firstName,
-    lastName: user.lastName,
+    firstName: user.firstName || "",
+    lastName: user.lastName || "",
     role: user.role || "user",
     isActive: user.emailVerified || false,
-    company: user.company,
-    phone: user.phone,
-    creditBalance: user.creditBalance,
-    creditLimit: user.creditLimit,
-    creditSettings: user.creditSettings,
+    company: user.company || "",
+    phone: user.phone || "",
+    creditBalance: user.creditBalance ?? 0,
+    creditLimit: user.creditLimit ?? 0,
+    creditSettings: user.creditSettings || null,
   };
 }
 

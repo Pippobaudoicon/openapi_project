@@ -100,7 +100,7 @@ watch(queryFromUrl, (newQ, oldQ) => {
   <div v-else class="min-h-screen px-3 sm:px-4 pb-12 pt-6">
     <div class="mx-auto max-w-3xl">
       <!-- Top bar — pr-14 avoids overlap with fixed AppHeader avatar -->
-      <div class="mb-6 sm:mb-8 flex items-center gap-3 sm:gap-4 pr-14 animate-fade-in">
+      <div class="mb-6 sm:mb-8 flex items-center gap-3 sm:gap-4 pr-14 animate-fade-in relative z-10">
         <!-- Mobile back button -->
         <button
           class="sm:hidden shrink-0 flex items-center justify-center w-9 h-9 rounded-xl text-zinc-500 active:bg-zinc-100 dark:text-zinc-400 dark:active:bg-white/[0.06] transition-colors"

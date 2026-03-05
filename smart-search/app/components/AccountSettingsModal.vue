@@ -35,6 +35,7 @@ const twoFATotpURI = ref('')
 const twoFABackupCodes = ref<string[]>([])
 const twoFAVerifyCode = ref('')
 const twoFADisablePassword = ref('')
+const twoFAEnablePassword = ref('')
 
 const passwordMismatch = computed(() =>
   confirmPassword.value.length > 0 && newPassword.value !== confirmPassword.value
@@ -111,11 +112,15 @@ async function handlePasswordSubmit() {
 }
 
 async function startTwoFASetup() {
+  if (!twoFAEnablePassword.value) {
+    twoFAError.value = 'Inserisci la tua password per abilitare il 2FA'
+    return
+  }
   twoFALoading.value = true
   twoFAError.value = ''
   try {
     const result = await twoFactor.enable({
-      password: currentPassword.value || prompt('Inserisci la tua password per abilitare il 2FA') || '',
+      password: twoFAEnablePassword.value,
     })
     if (result.error) {
       twoFAError.value = result.error.message || 'Errore nell\'abilitazione del 2FA'
@@ -384,9 +389,20 @@ function handleBackdropClick(e: Event) {
                 <p class="text-sm text-zinc-500 dark:text-zinc-400">
                   Aggiungi un ulteriore livello di sicurezza al tuo account con un'app di autenticazione.
                 </p>
+                <div>
+                  <label class="mb-1.5 block text-sm font-500 text-zinc-600 dark:text-zinc-400">Password attuale</label>
+                  <input
+                    v-model="twoFAEnablePassword"
+                    type="password"
+                    autocomplete="current-password"
+                    placeholder="Inserisci la tua password"
+                    class="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 outline-none transition-colors focus:border-indigo-400 focus:bg-white dark:border-white/[0.08] dark:bg-zinc-800/50 dark:text-zinc-100 dark:focus:border-indigo-500 dark:focus:bg-zinc-800"
+                    @keyup.enter="startTwoFASetup"
+                  />
+                </div>
                 <button
                   @click="startTwoFASetup"
-                  :disabled="twoFALoading"
+                  :disabled="twoFALoading || !twoFAEnablePassword"
                   class="w-full rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-500 text-white transition-all hover:bg-zinc-800 disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
                 >
                   {{ twoFALoading ? 'Caricamento...' : 'Abilita 2FA' }}

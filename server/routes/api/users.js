@@ -10,7 +10,7 @@ const router = express.Router();
 // protect GET as well
 router.get('/profile', checkPermission('user'), async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password')
+    const user = await User.findById(req.user._id)
     if (!user) return res.status(404).json({ message: 'User not found' })
     res.json(user)
   } catch (err) {
@@ -25,7 +25,7 @@ router.put('/profile', checkPermission('user'), async (req, res) => {
             req.user._id,
             { $set: { firstName, lastName, company, phone } },
             { new: true, context: 'query' }
-        ).select('-password');
+        );
         if (!user) return res.status(404).json({ message: 'User not found' });
         res.json(user);
     } catch (err) {

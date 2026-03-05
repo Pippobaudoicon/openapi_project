@@ -31,6 +31,9 @@ openapi_project/
 ## Key Conventions
 
 - **Auth**: Better Auth (session-based, MongoDB adapter, runs in Nuxt Nitro). Express validates sessions via `requireAuth` middleware (`server/middleware/betterAuth.js`). Auth pages live at `smart-search/app/pages/auth/`. Supports email/password, Google OAuth, 2FA (TOTP).
+- **Auth middleware**: Use `optionalAuth` for routes where auth is helpful but not required. Both are in `server/middleware/betterAuth.js`.
+- **Better Auth composable**: Smart Search uses `useAuthClient()` (not `useAuth()`). Provides `authClient`, `twoFactor`, `user`, `fetchProfile`, `updateProfile`.
+- **User model**: Maps to Better Auth's `user` collection (not Mongoose default `users`). No `password` field — Better Auth manages credentials separately. `emailVerified` replaces the old `isActive` flag.
 - **CORS**: Single origin from `APP_URL` env var. Smart Search uses Nitro devProxy to avoid CORS.
 - **Credits**: Every API call costs credits. Tracked in CreditTransaction model. Always use `checkCreditBalance` + `trackOpenAPICredit` middleware.
 - **Caching**: CompanySearch model caches API responses with 30-day TTL. Use `checkCache` middleware.
@@ -109,3 +112,7 @@ Secrets (tokens, passwords) must never be hardcoded in `.bru` files. Declare the
 3. **IT-full can return 302** — needs polling loop until data ready.
 4. **`/:piva` route on company.js** returns cached data only — if not cached, returns 404. Use IT-advanced for fresh data.
 5. **Credit transactions are atomic** — use `CreditTransaction.createDebitWithLimits()`, not manual balance updates.
+6. **User model collection name**: Registered as `mongoose.model('User', schema, 'user')` (explicit 3rd arg). Hits the `user` collection that Better Auth writes to.
+7. **Session cookie parsing (Express)**: Better Auth tokens are `token.signature` format. `betterAuth.js` splits on `.` to extract just the token before querying the `session` collection.
+8. **2FA flow**: Setup is `twoFactor.enable({ password })` → QR render via `qrcode` npm package → `twoFactor.verifyTotp({ code })`. Disable via `twoFactor.disable({ password })`.
+9. **Password minimum length**: Better Auth enforces 8 chars minimum.

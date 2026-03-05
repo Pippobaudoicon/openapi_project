@@ -1,11 +1,11 @@
 <script setup lang="ts">
 definePageMeta({ layout: "auth" });
 
-const { twoFactor } = useAuthClient();
+const { twoFactor, session } = useAuthClient();
 const code = ref("");
 const error = ref("");
 const loading = ref(false);
-const trustDevice = ref(true);
+const trustDevice = ref(false);
 
 async function handleVerify() {
   error.value = "";
@@ -19,6 +19,7 @@ async function handleVerify() {
       error.value = result.error.message || "Invalid code";
       code.value = "";
     } else {
+      await session.value.refetch();
       navigateTo("/");
     }
   } catch (e: any) {

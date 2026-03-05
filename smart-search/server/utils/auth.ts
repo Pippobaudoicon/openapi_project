@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { twoFactor } from "better-auth/plugins";
 import { MongoClient } from "mongodb";
+import bcrypt from "bcrypt";
 
 const client = new MongoClient(
   process.env.MONGODB_URI || "mongodb://localhost:27017/openapi"
@@ -70,6 +71,21 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    },
+  },
+
+  advanced: {
+    password: {
+      hash: async (password: string) => {
+        return bcrypt.hash(password, 10);
+      },
+      verify: async ({ hash, password }: { hash: string; password: string }) => {
+        // Migrated bcrypt hashes start with $2b$ or $2a$
+        if (hash.startsWith("$2")) {
+          return bcrypt.compare(password, hash);
+        }
+        return false;
+      },
     },
   },
 

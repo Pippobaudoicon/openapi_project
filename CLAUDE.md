@@ -21,16 +21,16 @@ openapi_project/
 
 | Layer | Technology |
 |-------|-----------|
-| Backend | Express 4, Mongoose 8, Passport.js (local strategy + sessions) |
-| Smart Search | Nuxt 4.3, TailwindCSS, Pinia |
-| Modern Client | Vue 3, Vite, TailwindCSS, Pinia |
+| Backend | Express 4, Mongoose 8 (data API only, auth via Better Auth session validation) |
+| Smart Search | Nuxt 4.3, TailwindCSS, Pinia, Better Auth (auth server + Vue client) |
+| Modern Client | Vue 3, Vite, TailwindCSS, Pinia (legacy — auth moved to smart-search) |
 | Database | MongoDB Atlas, Meilisearch |
 | AI | OpenAI gpt-4.1-nano (query parsing, financial overviews) |
 | External | OpenAPI/Altravia (Italian company registry) |
 
 ## Key Conventions
 
-- **Auth**: Session-based (express-session + MongoStore), NOT JWT. Cookies are httpOnly.
+- **Auth**: Better Auth (session-based, MongoDB adapter, runs in Nuxt Nitro). Express validates sessions via `requireAuth` middleware (`server/middleware/betterAuth.js`). Auth pages live at `smart-search/app/pages/auth/`. Supports email/password, Google OAuth, 2FA (TOTP).
 - **CORS**: Single origin from `APP_URL` env var. Smart Search uses Nitro devProxy to avoid CORS.
 - **Credits**: Every API call costs credits. Tracked in CreditTransaction model. Always use `checkCreditBalance` + `trackOpenAPICredit` middleware.
 - **Caching**: CompanySearch model caches API responses with 30-day TTL. Use `checkCache` middleware.
@@ -62,6 +62,12 @@ Server env at `server/.env.development`. Required vars:
 - `ACCESS_TOKEN_COMPANY`, `ACCESS_TOKEN_VISURECAMERALI`
 - `APP_URL` (CORS origin), `SERVER_URL`
 
+Smart Search env (can be in `smart-search/.env` or inherited):
+- `BETTER_AUTH_SECRET` (or falls back to `SESSION_SECRET`)
+- `BETTER_AUTH_URL` (default `http://localhost:3001`)
+- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (for OAuth)
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` (for auth emails)
+
 ## Documentation
 
 See `docs/` for detailed reference:
@@ -74,7 +80,8 @@ See `docs/` for detailed reference:
 
 | Route file | Mount point | Purpose |
 |-----------|-------------|---------|
-| `server/routes/api/auth.js` | `/api/v1/auth` | Login, register, password reset |
+| `server/routes/api/auth.js` | `/api/v1/auth` | Session check only (auth lives in Better Auth/Nitro) |
+| `smart-search/server/routes/auth/[...all].ts` | `/auth/*` | Better Auth endpoints (login, register, OAuth, 2FA, etc.) |
 | `server/routes/api/openapi.js` | `/api/v1/openapi` | OpenAPI company data + search |
 | `server/routes/api/company.js` | `/api/v1/company` | Cached company data + LLM overview |
 | `server/routes/api/ai.js` | `/api/v1/ai` | Natural language query parsing |

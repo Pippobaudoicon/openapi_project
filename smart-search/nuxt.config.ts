@@ -12,6 +12,17 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:3000',
+    betterAuthSecret: process.env.BETTER_AUTH_SECRET || process.env.SESSION_SECRET,
+    betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3001',
+    // SMTP for auth emails
+    smtpHost: process.env.SMTP_HOST,
+    smtpPort: process.env.SMTP_PORT,
+    smtpSecure: process.env.SMTP_SECURE,
+    smtpUser: process.env.SMTP_USER,
+    smtpPassword: process.env.SMTP_PASSWORD,
+    // OAuth
+    googleClientId: process.env.GOOGLE_CLIENT_ID,
+    googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
     public: {
       clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
     },

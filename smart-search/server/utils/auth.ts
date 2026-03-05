@@ -19,16 +19,29 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
-      // Will be wired to nodemailer in Task 13
-      console.log(`[Auth] Password reset for ${user.email}: ${url}`);
+      const { sendEmail } = await import("~/server/utils/email");
+      await sendEmail(
+        user.email,
+        "Password Reset Request",
+        `<h1>Reset Your Password</h1>
+         <p>Click the link below to reset your password:</p>
+         <a href="${url}">${url}</a>
+         <p>This link will expire in 1 hour.</p>`
+      );
     },
   },
 
   emailVerification: {
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
-      // Will be wired to nodemailer in Task 13
-      console.log(`[Auth] Verify email for ${user.email}: ${url}`);
+      const { sendEmail } = await import("~/server/utils/email");
+      await sendEmail(
+        user.email,
+        "Verify Your Email",
+        `<h1>Email Verification</h1>
+         <p>Click the link below to verify your email address:</p>
+         <a href="${url}">${url}</a>`
+      );
     },
   },
 
@@ -64,8 +77,13 @@ export const auth = betterAuth({
     twoFactor({
       otpOptions: {
         async sendOTP({ user, otp }) {
-          // Will be wired to nodemailer in Task 13
-          console.log(`[Auth] 2FA OTP for ${user.email}: ${otp}`);
+          const { sendEmail } = await import("~/server/utils/email");
+          await sendEmail(
+            user.email,
+            "Your Verification Code",
+            `<h1>Your Code: ${otp}</h1>
+             <p>This code expires in 3 minutes.</p>`
+          );
         },
       },
     }),

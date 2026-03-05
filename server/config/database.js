@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import MongoStore from 'connect-mongo';
 
 // Use module-level caching instead of global
 const connectionState = {
@@ -63,11 +62,4 @@ const connectDB = async () => {
     }
 };
 
-const sessionStore = MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI,
-    ttl: 24 * 60 * 60, // 1 day
-    touchAfter: 24 * 3600 // Only update session every 24 hours unless data changes
-});
-
 export default connectDB;
-export { sessionStore };

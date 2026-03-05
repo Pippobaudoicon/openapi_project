@@ -4,12 +4,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const { isAuthenticated, isPending } = useAuthClient();
 
-  // On SSR, check session server-side
+  // On SSR, check session via Better Auth API endpoint
   if (import.meta.server) {
-    const { auth } = await import("~/server/utils/auth");
     const headers = useRequestHeaders(["cookie"]);
-    const session = await auth.api.getSession({ headers });
-    if (!session) return navigateTo("/auth/login");
+    try {
+      const session = await $fetch("/_auth/get-session", { headers });
+      if (!session) return navigateTo("/auth/login");
+    } catch {
+      return navigateTo("/auth/login");
+    }
     return;
   }
 

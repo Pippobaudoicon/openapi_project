@@ -34,7 +34,7 @@ async function handleRegister() {
       firstName: form.firstName,
       lastName: form.lastName,
       company: form.company,
-    });
+    } as any);
     if (result.error) {
       error.value = result.error.message || "Registration failed";
     } else {

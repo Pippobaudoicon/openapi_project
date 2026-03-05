@@ -3,6 +3,7 @@ import { twoFactorClient } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
   baseURL: "", // same-origin
+  basePath: "/_auth",
   plugins: [
     twoFactorClient({
       onTwoFactorRedirect() {
@@ -15,12 +16,12 @@ export const authClient = createAuthClient({
 export const useAuthClient = () => {
   const session = authClient.useSession();
 
-  const user = computed(() => session.value?.data?.user ?? null);
+  const user = computed(() => (session.value?.data?.user as any) ?? null);
   const isAuthenticated = computed(() => !!session.value?.data?.session);
   const isPending = computed(() => session.value?.isPending ?? true);
 
   const displayName = computed(() => {
-    const u = user.value;
+    const u = user.value as any;
     if (!u) return "";
     if (u.firstName || u.lastName) {
       return [u.firstName, u.lastName].filter(Boolean).join(" ");
@@ -29,7 +30,7 @@ export const useAuthClient = () => {
   });
 
   const initials = computed(() => {
-    const u = user.value;
+    const u = user.value as any;
     if (!u) return "";
     if (u.firstName && u.lastName) {
       return (u.firstName[0] + u.lastName[0]).toUpperCase();

@@ -11,7 +11,7 @@ async function handleSubmit() {
   error.value = "";
   loading.value = true;
   try {
-    const result = await authClient.forgetPassword({
+    const result = await authClient.requestPasswordReset({
       email: email.value,
       redirectTo: "/auth/reset-password",
     });

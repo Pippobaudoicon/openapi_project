@@ -56,7 +56,6 @@ export default defineNuxtConfig({
   vite: {
     server: {
       allowedHosts: true,
-      http2: false,
     },
   },
 

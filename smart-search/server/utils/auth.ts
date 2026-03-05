@@ -12,15 +12,26 @@ const db = client.db();
 export const auth = betterAuth({
   database: mongodbAdapter(db, { client }),
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3001",
-  basePath: "/auth",
+  basePath: "/_auth",
   secret: process.env.BETTER_AUTH_SECRET || process.env.SESSION_SECRET,
   appName: "OpenAPI Platform",
 
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    password: {
+      hash: async (password: string) => {
+        return bcrypt.hash(password, 10);
+      },
+      verify: async ({ hash, password }: { hash: string; password: string }) => {
+        if (hash.startsWith("$2")) {
+          return bcrypt.compare(password, hash);
+        }
+        return false;
+      },
+    },
     sendResetPassword: async ({ user, url }) => {
-      const { sendEmail } = await import("~/server/utils/email");
+      const { sendEmail } = await import("./email");
       await sendEmail(
         user.email,
         "Password Reset Request",
@@ -35,7 +46,7 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
-      const { sendEmail } = await import("~/server/utils/email");
+      const { sendEmail } = await import("./email");
       await sendEmail(
         user.email,
         "Verify Your Email",
@@ -74,26 +85,11 @@ export const auth = betterAuth({
     },
   },
 
-  advanced: {
-    password: {
-      hash: async (password: string) => {
-        return bcrypt.hash(password, 10);
-      },
-      verify: async ({ hash, password }: { hash: string; password: string }) => {
-        // Migrated bcrypt hashes start with $2b$ or $2a$
-        if (hash.startsWith("$2")) {
-          return bcrypt.compare(password, hash);
-        }
-        return false;
-      },
-    },
-  },
-
   plugins: [
     twoFactor({
       otpOptions: {
         async sendOTP({ user, otp }) {
-          const { sendEmail } = await import("~/server/utils/email");
+          const { sendEmail } = await import("./email");
           await sendEmail(
             user.email,
             "Your Verification Code",

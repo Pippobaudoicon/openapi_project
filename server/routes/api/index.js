@@ -8,20 +8,23 @@ import userRoutes from './users.js';
 import creditRoutes from './credits.js';
 import aiRoutes from './ai.js';
 
+import { requireAuth } from '../../middleware/betterAuth.js';
 import { checkRole } from '../../middleware/roleAuth.js';
 import { fileService } from '../../services/fileService.js';
 import { path, dataCompaniesDir, companiesDir } from '../../utils/paths.js';
 
 const router = express.Router();
 
-// Mount all routes from openapi.js under /v1
+// Auth routes don't need requireAuth (Better Auth handles its own auth)
 router.use('/v1/auth', authRoutes);
-router.use('/v1/users', userRoutes);
-router.use('/v1/activities', activityRoutes);
-router.use('/v1/credits', creditRoutes);
-router.use('/v1', openapiRoutes);
-router.use('/v1/company', companyRoutes);
-router.use('/v1/ai', aiRoutes);
+
+// All other routes require a valid Better Auth session
+router.use('/v1/users', requireAuth, userRoutes);
+router.use('/v1/activities', requireAuth, activityRoutes);
+router.use('/v1/credits', requireAuth, creditRoutes);
+router.use('/v1', requireAuth, openapiRoutes);
+router.use('/v1/company', requireAuth, companyRoutes);
+router.use('/v1/ai', requireAuth, aiRoutes);
 
 //Convert base64 to zip file and saves it to disk
 router.post('/v1/base64tozip', express.json({ limit: '10mb' }), (req, res) => {

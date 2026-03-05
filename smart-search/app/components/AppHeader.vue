@@ -76,13 +76,18 @@ const formattedBalance = computed(() => {
 
     <!-- User Avatar Menu -->
     <div ref="menuRef" class="relative">
-      <button
-        @click="menuOpen = !menuOpen"
-        class="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white/80 text-xs font-600 text-zinc-600 backdrop-blur-sm transition-all hover:border-zinc-300 hover:text-zinc-800 dark:border-white/[0.08] dark:bg-zinc-900/80 dark:text-zinc-300 dark:hover:border-white/[0.15] dark:hover:text-zinc-100"
-        :title="displayName"
-      >
-        {{ initials }}
-      </button>
+      <ClientOnly>
+        <button
+          @click="menuOpen = !menuOpen"
+          class="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white/80 text-xs font-600 text-zinc-600 backdrop-blur-sm transition-all hover:border-zinc-300 hover:text-zinc-800 dark:border-white/[0.08] dark:bg-zinc-900/80 dark:text-zinc-300 dark:hover:border-white/[0.15] dark:hover:text-zinc-100"
+          :title="displayName"
+        >
+          {{ initials }}
+        </button>
+        <template #fallback>
+          <div class="h-10 w-10 rounded-xl border border-zinc-200 bg-white/80 dark:border-white/[0.08] dark:bg-zinc-900/80" />
+        </template>
+      </ClientOnly>
 
       <!-- Dropdown Menu -->
       <Transition

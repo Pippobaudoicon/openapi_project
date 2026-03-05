@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { user, displayName, initials, logout } = useAuth()
+const { user, displayName, initials, signOut } = useAuthClient()
 const { balance, loading: creditsLoading, fetch: fetchCredits } = useCredits()
 const { isDark, toggle: toggleTheme } = useTheme()
 
@@ -28,7 +28,8 @@ function openCreditPanel() {
 
 async function handleLogout() {
   closeMenu()
-  await logout()
+  await signOut()
+  navigateTo('/auth/login')
 }
 
 // Close menu on click outside
